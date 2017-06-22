@@ -6,11 +6,11 @@ function GameLoop(canvas) {
 GameLoop.prototype.start = function() {
   var self = this;
   
-  var lastTime = Date.now(), timeSinceLastFrame = 0;
+  var lastTime = window.performance.now(), timeSinceLastFrame = 0;
   var lastFPSUpdate = 0;
   var fps = 0;
   function gameLoop() {
-    var now = Date.now();
+    var now = window.performance.now();
     if (now == lastTime) {
       requestAnimationFrame(gameLoop);
       return;

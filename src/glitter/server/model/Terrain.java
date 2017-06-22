@@ -39,6 +39,10 @@ public class Terrain {
         ret.tiles[i][j] = Tile.GRASS;
       }
     }
+    ret.tiles[4][4] = Tile.STONE;
+    ret.tiles[3][2] = Tile.STONE;
+    ret.tiles[4][3] = Tile.STONE;
+    ret.tiles[3][3] = Tile.STONE;
     return ret;
   }
 
