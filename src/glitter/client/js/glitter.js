@@ -1,41 +1,24 @@
+window.TILE_SIZE = 48;
+
 function Glitter() {
-  this.world = new World();
-  this.connectToServer();
   this.initGame();
 }
 
-Glitter.prototype.connectToServer = function() {
-  var self = this;
-  var socket = new Socket("$$(websocketIP)", "$$(websocketPort)", false);
-  socket.onMessage(function(msg) {
-    var command = msg.command;
-    if (command == "enterLobby") {
-      self.world.terrain = new Terrain(msg.world.terrain);
-      self.world.render();
-    } else {
-      console.log("Unknown command: " + command);
-      console.log(msg);
-    }
-  });
-  socket.open();
-}
-
 Glitter.prototype.initGame = function() {
-  var self = this;
-  var canvas = new Canvas();
+  window.canvas = new Canvas();
+  window.world = new World();
+  window.camera = new Camera(world, this.canvas);
+  window.input = new Input();
+  
+  input.listen();
+
   var loop = new GameLoop(canvas);
-  var camera = new Camera(this.world, this.canvas);
-
-  canvas.stage.addChild(this.world.container);
-
   loop.start();
 
-  this.canvas = canvas;
-  this.loop = loop;
-
-  PIXI.loader.add("/tiles.png").load(function() {
+  PIXI.loader.add("tiles.png").add("wizard.png").load(function() {
     console.log("done loading sprites.");
-    self.world.render();
+
+    window.network = new Network("$$(websocketIP)", $$(websocketPort));
   });
 }
 
