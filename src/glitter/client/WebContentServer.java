@@ -1,15 +1,13 @@
 package glitter.client;
 
-import java.io.File;
 import com.google.common.base.Stopwatch;
 import bowser.WebServer;
 import glitter.client.home.HomePage;
 import glitter.client.js.JSController;
 import ox.Config;
 import ox.Log;
-import ox.OS;
 
-public class GlitterWebServer {
+public class WebContentServer {
 
   private static final Config config = Config.load("glitter");
   public static final boolean devMode = config.getBoolean("devMode", false);
@@ -27,12 +25,6 @@ public class GlitterWebServer {
     server.start();
 
     Log.info("Glitter Server started on port %d (%s)", port, watch);
-  }
-
-  public static void main(String[] args) {
-    Log.logToFolder(new File(OS.getHomeFolder(), "log"));
-
-    new GlitterWebServer().run();
   }
 
 }
