@@ -3,7 +3,6 @@
  */
 
 function Input() {
-  this.keys = {};
   this.rect = new PIXI.Rectangle();
 
   // whether the user has pressed any keys since the last update
@@ -11,19 +10,31 @@ function Input() {
 }
 
 Input.prototype.update = function(t) {
+  var self = this;
+
   if (window.me == null) {
     return;
   }
 
   if (this.dirty) {
+    var keyList = [];
+    Object.keys(me.keys).forEach(function(key) {
+      keyList.push(key);
+    });
     network.send({
       command : "keys",
-      keys : this.keys
+      keys : keyList
     });
     this.dirty = false;
   }
 
-  var keys = this.keys;
+  $.each(world.idPlayers, function(id, player) {
+    self.movePlayer(player, t);
+  });
+}
+
+Input.prototype.movePlayer = function(player, t) {
+  var keys = player.keys;
 
   var speed = 3;
   var distance = speed * TILE_SIZE * t / 1000;
@@ -44,10 +55,10 @@ Input.prototype.update = function(t) {
   }
 
   if (dx != 0) {
-    this.move(me, dx, 0);
+    this.move(player, dx, 0);
   }
   if (dy != 0) {
-    this.move(me, 0, dy);
+    this.move(player, 0, dy);
   }
 }
 
@@ -84,13 +95,14 @@ Input.prototype.intersectsBadTerrain = function(rect) {
 
 Input.prototype.listen = function() {
   var self = this;
-  var keys = self.keys;
   $(window).keydown(function(e) {
-    keys[e.key] = true;
-    self.dirty = true;
+    if (!me.keys[e.key]) {
+      me.keys[e.key] = true;
+      self.dirty = true;
+    }
   });
   $(window).keyup(function(e) {
-    delete keys[e.key];
+    delete me.keys[e.key];
     self.dirty = true;
   });
 }

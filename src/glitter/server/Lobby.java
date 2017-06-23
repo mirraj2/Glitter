@@ -8,6 +8,10 @@ public class Lobby {
 
   private final World world = new World();
 
+  public Lobby() {
+    world.startLoop();
+  }
+
   public void accept(ClientSocket socket) {
     Player player = new Player(socket);
     world.addPlayer(player);

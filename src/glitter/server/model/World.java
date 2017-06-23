@@ -5,6 +5,8 @@ import java.util.List;
 import com.google.common.collect.Lists;
 import ox.Json;
 import ox.Log;
+import ox.Threads;
+import ox.util.Utils;
 
 public class World {
 
@@ -15,18 +17,54 @@ public class World {
     terrain = Terrain.createLobby();
   }
 
+  private void update(double t) {
+    for (Player player : players) {
+      player.flushMessages();
+    }
+  }
+
+  public void startLoop() {
+    Threads.run(() -> {
+      long lastFPSUpdate = System.nanoTime();
+      long MAX_UPDATE_TIME = 100;
+      int frames = 0;
+      double t = 10;
+      while (true) {
+        long now = System.nanoTime();
+
+        if (now - lastFPSUpdate >= 1_000_000_000) {
+          // Log.debug("Server FPS: " + frames);
+          frames = 0;
+          lastFPSUpdate = now;
+        }
+
+        double timeLeft = t;
+        while (timeLeft > 0) {
+          double tickTime = Math.min(timeLeft, MAX_UPDATE_TIME);
+          try {
+            update(tickTime);
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+          timeLeft -= MAX_UPDATE_TIME;
+        }
+
+        frames++;
+        t = (System.nanoTime() - now) / 1_000_000d;
+        Utils.sleep((long) Math.floor(1000 / 40.0 - t));
+        t = (System.nanoTime() - now) / 1_000_000d;
+      }
+    });
+  }
+
   public void addPlayer(Player player) {
     players.add(player);
+    player.world = this;
     spawnInRandomLocation(player);
 
     Log.debug("player connected. (%d players in world)", players.size());
     player.socket.onClose(() -> {
-      Log.debug("player disconnected. (%d players in world)", players.size());
-      players.remove(player);
-
-      sendToAll(Json.object()
-          .with("command", "removePlayer")
-          .with("id", player.id));
+      removePlayer(player);
     });
 
     player.send(Json.object()
@@ -39,13 +77,20 @@ public class World {
         .with("command", "takeControl")
         .with("id", player.id));
 
-    Json commands = Json.array();
     for (Player p : players) {
       if (p != player) {
-        commands.add(createAddPlayerJson(p));
+        player.send(createAddPlayerJson(p));
       }
     }
-    player.send(commands);
+  }
+
+  private void removePlayer(Player player) {
+    Log.debug("player disconnected. (%d players in world)", players.size());
+    players.remove(player);
+
+    sendToAll(Json.object()
+        .with("command", "removePlayer")
+        .with("id", player.id));
   }
 
   private Json createAddPlayerJson(Player p) {
@@ -68,9 +113,15 @@ public class World {
     }
   }
 
-  private void sendToAll(Json json) {
+  public void sendToAll(Json json) {
+    sendToAll(json, null);
+  }
+
+  public void sendToAll(Json json, Player exception) {
     for (Player player : players) {
-      player.send(json);
+      if (player != exception) {
+        player.send(json);
+      }
     }
   }
 

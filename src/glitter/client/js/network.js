@@ -31,6 +31,8 @@ Network.prototype.handleMessage = function(msg) {
     world.removePlayer(msg.id);
   } else if (command == "takeControl") {
     window.me = world.idPlayers[msg.id];
+  } else if(command == "keys"){
+    world.idPlayers[msg.playerId].setKeys(msg.keys);
   } else {
     console.log("Unknown command: " + command);
     console.log(msg);

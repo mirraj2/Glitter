@@ -5,7 +5,10 @@ function Player(data) {
   this.width = 48;
   this.height = 64;
   this.sprite = null;
-  this.hitbox = new PIXI.Rectangle(12, 48, 24, 16)
+  this.hitbox = new PIXI.Rectangle(12, 48, 24, 16);
+
+  // the keys this player has pressed down
+  this.keys = {};
 }
 
 Player.prototype.setX = function(x) {
@@ -16,4 +19,11 @@ Player.prototype.setX = function(x) {
 Player.prototype.setY = function(y) {
   this.y = y;
   this.sprite.y = y;
+}
+
+Player.prototype.setKeys = function(keys) {
+  this.keys = {};
+  for(var i = 0; i < keys.length; i++){
+    this.keys[keys[i]] = true;
+  }
 }
