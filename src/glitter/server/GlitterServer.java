@@ -8,7 +8,7 @@ import ox.OS;
 
 public class GlitterServer {
 
-  public static final String ip = "glitter.io";
+  public static final String ip = "playglitter.com";
   public static final int port = 8081;
 
   private final Lobby lobby = new Lobby();

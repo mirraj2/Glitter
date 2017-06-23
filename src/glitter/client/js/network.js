@@ -4,6 +4,12 @@ function Network(ip, port) {
   $(window).on("beforeunload", function() {
     socket.close();
   });
+
+  this.socket = socket;
+}
+
+Network.prototype.send = function(msg) {
+  this.socket.send(msg);
 }
 
 Network.prototype.connectToServer = function(ip, port) {
@@ -16,7 +22,7 @@ Network.prototype.connectToServer = function(ip, port) {
 Network.prototype.handleMessage = function(msg) {
   // console.log(msg);
   var command = msg.command;
-  if (command == "enterLobby") {
+  if (command == "enterWorld") {
     world.terrain = new Terrain(msg.world.terrain);
     world.renderTiles();
   } else if (command == "addPlayer") {

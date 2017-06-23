@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="build" name="Glitter">
+    <property environment="env"/>
+    <property name="ox.location" value="../ox"/>
+    <property name="bowser.location" value="../bowser"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
+    <path id="ox.classpath">
+        <pathelement location="${ox.location}/bin"/>
+        <pathelement location="${ox.location}/lib/gson-2.3.jar"/>
+        <pathelement location="${ox.location}/lib/objenesis-2.1.jar"/>
+        <pathelement location="${ox.location}/lib/guava-20.0.jar"/>
+    </path>
+    <path id="bowser.classpath">
+        <pathelement location="${bowser.location}/bin"/>
+        <pathelement location="${bowser.location}/lib/simple-5.1.5.jar"/>
+        <path refid="ox.classpath"/>
+    </path>
+    <path id="Glitter.classpath">
+        <pathelement location="bin"/>
+        <path refid="bowser.classpath"/>
+        <path refid="ox.classpath"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall">
+        <ant antfile="build.xml" dir="${ox.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${bowser.location}" inheritAll="false" target="clean"/>
+    </target>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects">
+        <ant antfile="build.xml" dir="${ox.location}" inheritAll="false" target="build-project"/>
+        <ant antfile="build.xml" dir="${bowser.location}" inheritAll="false" target="build-project"/>
+    </target>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="Glitter.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target name="GlitterServer">
+        <java classname="glitter.server.GlitterServer" failonerror="true" fork="yes">
+            <classpath refid="Glitter.classpath"/>
+        </java>
+    </target>
+</project>

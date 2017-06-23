@@ -5,11 +5,22 @@
 function Input() {
   this.keys = {};
   this.rect = new PIXI.Rectangle();
+
+  // whether the user has pressed any keys since the last update
+  this.dirty = false;
 }
 
 Input.prototype.update = function(t) {
   if (window.me == null) {
     return;
+  }
+
+  if (this.dirty) {
+    network.send({
+      command : "keys",
+      keys : this.keys
+    });
+    this.dirty = false;
   }
 
   var keys = this.keys;
@@ -72,11 +83,14 @@ Input.prototype.intersectsBadTerrain = function(rect) {
 }
 
 Input.prototype.listen = function() {
-  var keys = this.keys;
+  var self = this;
+  var keys = self.keys;
   $(window).keydown(function(e) {
     keys[e.key] = true;
+    self.dirty = true;
   });
   $(window).keyup(function(e) {
-    keys[e.key] = false;
+    delete keys[e.key];
+    self.dirty = true;
   });
 }
