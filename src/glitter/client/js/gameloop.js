@@ -8,7 +8,7 @@ GameLoop.prototype.start = function() {
   var lastFPSUpdate = 0;
   var fps = 0;
   var MAX_UPDATE_TIME = 100;
-  
+
   function gameLoop() {
     var now = performance.now();
     if (now == lastTime) {
@@ -34,6 +34,16 @@ GameLoop.prototype.start = function() {
       t -= MAX_UPDATE_TIME;
     }
     canvas.render();
+
+    // update the countdown timer
+    if (window.gameStartTime) {
+      var timeLeft = window.gameStartTime - Date.now();
+      if (timeLeft < 0) {
+        timeLeft = 0;
+      }
+      $(".countdown .num").text(Math.ceil(timeLeft / 1000.0));
+    }
+
     requestAnimationFrame(gameLoop);
   }
 

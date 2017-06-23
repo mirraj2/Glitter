@@ -6,3 +6,64 @@ html, body {
   overflow: hidden;
   background: black;
 }
+
+.gui {
+  pointer-events: none;
+}
+
+.numPlayers {
+  position: fixed;
+  right: 24px;
+  top: 24px;
+  color: white;
+  padding: 4px 8px;
+  background: rgba(100, 100, 100, .8);
+  border-radius: 8px;
+  border: solid thin rgba(255, 255, 255, .1);
+  display: none;
+}
+
+.numPlayers .count {
+  font-family: "Verdana";
+  font-size: 28px;
+  text-align: center;
+}
+
+.numPlayers label {
+  text-transform: uppercase;
+  text-align: center;
+  color: rgb(200, 200, 200);
+  font-size: 18px;
+  font-family: "Arial";
+  display: block;
+  margin-top: 4px;
+}
+
+.fps {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  color: rgba(255, 255, 255, .2);
+}
+
+.countdown {
+  color: rgb(200, 200, 200);
+  font-size: 18px;
+  font-family: "Arial";
+  text-transform: uppercase;
+  text-align: center;
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  background: rgba(100, 100, 100, .8);
+  border-radius: 2px;
+  border: solid thin rgba(255, 255, 255, .1);
+}
+
+.countdown .num {
+  color: white;
+  font-family: "Verdana";
+  font-size: 28px;
+}

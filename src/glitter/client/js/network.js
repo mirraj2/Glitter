@@ -6,6 +6,9 @@ function Network(ip, port) {
   });
 
   this.socket = socket;
+  
+  //TODO receive from the server how much longer til the game starts
+  window.gameStartTime = Date.now() + 60000;
 }
 
 Network.prototype.send = function(msg) {
@@ -31,6 +34,7 @@ Network.prototype.handleMessage = function(msg) {
     world.removePlayer(msg.id);
   } else if (command == "takeControl") {
     window.me = world.idPlayers[msg.id];
+    $(".numPlayers").show();
   } else if(command == "playerState"){
     var player = world.idPlayers[msg.id];
     player.x = msg.x;

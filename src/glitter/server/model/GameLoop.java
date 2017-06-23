@@ -1,7 +1,6 @@
 package glitter.server.model;
 
 import java.util.function.Consumer;
-import ox.Log;
 import ox.Threads;
 import ox.util.Utils;
 
@@ -33,7 +32,7 @@ public class GameLoop {
 
         if (now - lastFPSUpdate >= 1_000_000_000) {
           double averageFrameTime = timeSpentOnUpdate / numFrames;
-          Log.debug("Server FPS: " + Utils.format(1000.0 / averageFrameTime));
+          // Log.debug("Server FPS: " + Utils.format(1000.0 / averageFrameTime));
           timeSpentOnUpdate = numFrames = 0;
           lastFPSUpdate = now;
         }

@@ -7,7 +7,7 @@ function Glitter() {
 Glitter.prototype.initGame = function() {
   window.canvas = new Canvas();
   window.world = new World();
-  window.camera = new Camera(world, this.canvas);
+  window.camera = new Camera();
   window.input = new Input();
   
   input.listen();

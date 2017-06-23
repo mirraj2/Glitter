@@ -19,12 +19,16 @@ World.prototype.addPlayer = function(player) {
   sprite.y = player.y;
 
   this.container.addChild(sprite);
+
+  $(".numPlayers .count").text(Object.keys(this.idPlayers).length);
 }
 World.prototype.removePlayer = function(playerId) {
   var player = this.idPlayers[playerId];
   delete this.idPlayers[playerId];
 
   this.container.removeChild(player.sprite);
+
+  $(".numPlayers .count").text(Object.keys(this.idPlayers).length);
 }
 
 World.prototype.renderTiles = function() {
@@ -48,8 +52,8 @@ World.prototype.renderTiles = function() {
       var tile = new PIXI.Sprite(texture);
       tile.x = i * TILE_SIZE;
       tile.y = j * TILE_SIZE;
-      tile.width = TILE_SIZE - 1;
-      tile.height = TILE_SIZE - 1;
+      tile.width = TILE_SIZE;
+      tile.height = TILE_SIZE;
       this.tiles.addChild(tile);
     }
   }

@@ -13,12 +13,12 @@ function Player(data) {
 
 Player.prototype.setX = function(x) {
   this.x = x;
-  this.sprite.x = x;
+  this.sprite.x = Math.round(x);
 }
 
 Player.prototype.setY = function(y) {
   this.y = y;
-  this.sprite.y = y;
+  this.sprite.y = Math.round(y);
 }
 
 Player.prototype.setKeys = function(keys) {
