@@ -97,14 +97,48 @@ Input.prototype.intersectsBadTerrain = function(rect) {
 
 Input.prototype.listen = function() {
   var self = this;
+  var consoleVisible = false;
   $(window).keydown(function(e) {
-    if (!me.keys[e.key]) {
+    if (e.key == "Enter") {
+      if (consoleVisible) {
+        var text = $(".console input").val().trim();
+        $(".console input").val("");
+        if (text) {
+          network.send({
+            command : "consoleInput",
+            text : text
+          });
+        } else {
+          $(".console").stop().fadeOut();
+          consoleVisible = false;
+        }
+      } else {
+        $(".console").stop().fadeIn();
+        $(".console input").focus();
+        consoleVisible = true;
+      }
+    } else if (e.key == "/") {
+      if (!consoleVisible) {
+        $(".console").stop().fadeIn();
+        $(".console input").focus();
+        consoleVisible = true;
+      }
+    }
+    if (consoleVisible) {
+      return;
+    }
+    if (window.me && !me.keys[e.key]) {
       me.keys[e.key] = true;
       self.dirty = true;
     }
   });
   $(window).keyup(function(e) {
-    delete me.keys[e.key];
-    self.dirty = true;
+    if (window.me) {
+      delete me.keys[e.key];
+      self.dirty = true;
+    }
+  });
+  $(".console input").blur(function() {
+    $(this).focus();
   });
 }

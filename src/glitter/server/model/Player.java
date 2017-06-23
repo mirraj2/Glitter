@@ -109,8 +109,10 @@ public class Player {
           .with("x", x)
           .with("y", y)
           .with("keys", Json.array(keysToTransmit)), this);
+    } else if (command.equals("consoleInput")) {
+      world.console.handle(this, json.get("text"));
     } else {
-      Log.error("Don't know how to handle command: " + command);
+      Log.error("Player.java: Don't know how to handle command: " + command);
     }
   }
 

@@ -6,9 +6,6 @@ function Network(ip, port) {
   });
 
   this.socket = socket;
-  
-  //TODO receive from the server how much longer til the game starts
-  window.gameStartTime = Date.now() + 60000;
 }
 
 Network.prototype.send = function(msg) {
@@ -35,11 +32,16 @@ Network.prototype.handleMessage = function(msg) {
   } else if (command == "takeControl") {
     window.me = world.idPlayers[msg.id];
     $(".numPlayers").show();
-  } else if(command == "playerState"){
+  } else if (command == "playerState") {
     var player = world.idPlayers[msg.id];
     player.x = msg.x;
     player.y = msg.y;
     player.setKeys(msg.keys);
+  } else if (command == "countdown") {
+    window.gameStartTime = Date.now() + msg.millisLeft;
+    $(".countdown").fadeIn();
+  } else if (command == "consoleOutput") {
+    $("<div>").text(msg.text).appendTo(".console .output");
   } else {
     console.log("Unknown command: " + command);
     console.log(msg);

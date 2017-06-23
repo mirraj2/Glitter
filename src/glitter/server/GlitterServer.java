@@ -11,7 +11,7 @@ public class GlitterServer {
   public static final String ip = "playglitter.com";
   public static final int port = 8081;
 
-  private final Lobby lobby = new Lobby();
+  private final Lobby lobby = Lobby.get();
 
   public void run() {
     new WebContentServer().run();

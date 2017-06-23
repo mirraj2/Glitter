@@ -9,7 +9,8 @@ import ox.Log;
 public class World {
 
   public final Terrain terrain;
-  public final List<Player> players = Lists.newArrayList();
+  public final List<Player> players = Lists.newCopyOnWriteArrayList();
+  public final AdminConsole console = new AdminConsole(this);
 
   public World() {
     terrain = Terrain.createLobby();

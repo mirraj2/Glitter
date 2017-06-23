@@ -7,6 +7,10 @@ html, body {
   background: black;
 }
 
+.hidden {
+  display: none;
+}
+
 .gui {
   pointer-events: none;
 }
@@ -20,7 +24,6 @@ html, body {
   background: rgba(100, 100, 100, .8);
   border-radius: 8px;
   border: solid thin rgba(255, 255, 255, .1);
-  display: none;
 }
 
 .numPlayers .count {
@@ -66,4 +69,35 @@ html, body {
   color: white;
   font-family: "Verdana";
   font-size: 28px;
+}
+
+.console {
+  position: fixed;
+  left: 0px;
+  bottom: 0px;
+  width: 50%;
+  height: 30%;
+  background: rgba(0, 0, 0, .6);
+  pointer-events: initial;
+  border: solid 1px rgba(255, 255, 255, .5);
+  font-family: "Courier New";
+  color: white;
+}
+
+.console .output {
+  width: 100%;
+  height: calc(100% - 30px);
+  overflow-y: auto;
+}
+
+.console input {
+  width: 100%;
+  height: 30px;
+  box-sizing: border-box;
+  background: transparent;
+  padding: 0px 4px;
+  outline: none;
+  border: none;
+  border-top: solid 1px rgba(255, 255, 255, .5);
+  color: white;
 }
