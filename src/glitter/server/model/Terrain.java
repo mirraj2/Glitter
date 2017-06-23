@@ -20,6 +20,14 @@ public class Terrain {
         .with("tiles", serializeTiles());
   }
 
+  public boolean isWalkable(int i, int j) {
+    if (i < 0 || j < 0 || i >= width || j >= height) {
+      return false;
+    }
+    Tile tile = tiles[i][j];
+    return tile.isWalkable();
+  }
+
   private Json serializeTiles() {
     Json ret = Json.array();
     for (int i = 0; i < width; i++) {

@@ -5,8 +5,6 @@ import java.util.List;
 import com.google.common.collect.Lists;
 import ox.Json;
 import ox.Log;
-import ox.Threads;
-import ox.util.Utils;
 
 public class World {
 
@@ -17,44 +15,18 @@ public class World {
     terrain = Terrain.createLobby();
   }
 
+  public void start() {
+    new GameLoop(this::update);
+  }
+
   private void update(double t) {
+    for (Player player : players) {
+      player.update(t);
+    }
+
     for (Player player : players) {
       player.flushMessages();
     }
-  }
-
-  public void startLoop() {
-    Threads.run(() -> {
-      long lastFPSUpdate = System.nanoTime();
-      long MAX_UPDATE_TIME = 100;
-      int frames = 0;
-      double t = 10;
-      while (true) {
-        long now = System.nanoTime();
-
-        if (now - lastFPSUpdate >= 1_000_000_000) {
-          // Log.debug("Server FPS: " + frames);
-          frames = 0;
-          lastFPSUpdate = now;
-        }
-
-        double timeLeft = t;
-        while (timeLeft > 0) {
-          double tickTime = Math.min(timeLeft, MAX_UPDATE_TIME);
-          try {
-            update(tickTime);
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-          timeLeft -= MAX_UPDATE_TIME;
-        }
-
-        frames++;
-        t = (System.nanoTime() - now) / 1_000_000d;
-        Utils.sleep((long) Math.floor(1000 / 40.0 - t));
-        t = (System.nanoTime() - now) / 1_000_000d;
-      }
-    });
   }
 
   public void addPlayer(Player player) {

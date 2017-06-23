@@ -9,7 +9,7 @@ public class Lobby {
   private final World world = new World();
 
   public Lobby() {
-    world.startLoop();
+    world.start();
   }
 
   public void accept(ClientSocket socket) {

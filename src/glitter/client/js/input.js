@@ -22,8 +22,10 @@ Input.prototype.update = function(t) {
       keyList.push(key);
     });
     network.send({
-      command : "keys",
-      keys : keyList
+      command : "myState",
+      keys : keyList,
+      x : me.x,
+      y : me.y
     });
     this.dirty = false;
   }
