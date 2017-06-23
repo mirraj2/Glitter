@@ -14,7 +14,7 @@ public class HomePage extends Controller {
 
   private final Data data = context -> {
     boolean devMode = WebContentServer.devMode;
-    context.put("websocketIP", devMode ? "localhost" : "localhost");
+    context.put("websocketIP", devMode ? "localhost" : "playglitter.com");
     context.put("websocketPort", GlitterServer.port);
   };
 
