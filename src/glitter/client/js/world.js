@@ -59,13 +59,15 @@ World.prototype.renderTiles = function() {
     var col = tiles[i];
     for (var j = 0; j < col.length; j++) {
       var t = tiles[i][j];
-      var texture = textures[t];
-      var tile = new PIXI.Sprite(texture);
-      tile.x = i * TILE_SIZE;
-      tile.y = j * TILE_SIZE;
-      tile.width = TILE_SIZE;
-      tile.height = TILE_SIZE;
-      this.tiles.addChild(tile);
+      if(t > 0){
+        var texture = textures[t];
+        var tile = new PIXI.Sprite(texture);
+        tile.x = i * TILE_SIZE;
+        tile.y = j * TILE_SIZE;
+        tile.width = TILE_SIZE;
+        tile.height = TILE_SIZE;
+        this.tiles.addChild(tile);
+      }
     }
   }
 }

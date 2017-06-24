@@ -4,6 +4,7 @@ import com.google.common.base.Stopwatch;
 import bowser.WebServer;
 import glitter.client.home.HomePage;
 import glitter.client.js.JSController;
+import glitter.client.perlin.PerlinPage;
 import ox.Config;
 import ox.Log;
 
@@ -20,6 +21,7 @@ public class WebContentServer {
 
     WebServer server = new WebServer("Glitter", port, devMode)
         .controller(new HomePage())
+        .controller(new PerlinPage())
         .controller(new JSController());
 
     server.start();

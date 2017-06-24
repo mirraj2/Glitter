@@ -1,5 +1,6 @@
 package glitter.server.model;
 
+import glitter.server.gen.terrain.TerrainGen;
 import ox.Json;
 
 public class Terrain {
@@ -47,26 +48,26 @@ public class Terrain {
   }
 
   public static Terrain createLobby() {
-    // return TerrainGen.generateFor(1);
-    Terrain ret = new Terrain(16, 8);
-    for (int i = 0; i < ret.width; i++) {
-      for (int j = 0; j < ret.height; j++) {
-        ret.tiles[i][j] = Tile.GRASS;
-      }
-    }
-    for (int i = 3; i <= 4; i++) {
-      for (int j = 2; j <= 4; j++) {
-        ret.tiles[i][j] = Tile.WATER;
-      }
-    }
-    for (int i = 3; i <= 6; i++) {
-      for (int j = 5; j <= 5; j++) {
-        ret.tiles[i][j] = Tile.WATER;
-      }
-    }
-    ret.tiles[5][4] = Tile.WATER;
-    ret.tiles[3][5] = Tile.GRASS;
-    return ret;
+    return TerrainGen.generateFor(1);
+    // Terrain ret = new Terrain(16, 8);
+    // for (int i = 0; i < ret.width; i++) {
+    // for (int j = 0; j < ret.height; j++) {
+    // ret.tiles[i][j] = Tile.GRASS;
+    // }
+    // }
+    // for (int i = 3; i <= 4; i++) {
+    // for (int j = 2; j <= 4; j++) {
+    // ret.tiles[i][j] = Tile.WATER;
+    // }
+    // }
+    // for (int i = 3; i <= 6; i++) {
+    // for (int j = 5; j <= 5; j++) {
+    // ret.tiles[i][j] = Tile.WATER;
+    // }
+    // }
+    // ret.tiles[5][4] = Tile.WATER;
+    // ret.tiles[3][5] = Tile.GRASS;
+    // return ret;
   }
 
 }
