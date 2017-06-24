@@ -40,6 +40,16 @@ public class Terrain {
     return ret;
   }
 
+  public static Terrain createRealWorld() {
+    Terrain ret = new Terrain(4, 4);
+    for (int i = 0; i < ret.width; i++) {
+      for (int j = 0; j < ret.height; j++) {
+        ret.tiles[i][j] = Tile.GRASS;
+      }
+    }
+    return ret;
+  }
+
   public static Terrain createLobby() {
     Terrain ret = new Terrain(16, 8);
     for (int i = 0; i < ret.width; i++) {

@@ -3,9 +3,11 @@ function World() {
   this.idPlayers = {};
   this.container = new PIXI.Container();
   this.tiles = new PIXI.Container();
+  this.players = new PIXI.Container();
 
   canvas.stage.addChild(this.container);
   this.container.addChild(this.tiles);
+  this.container.addChild(this.players);
 }
 
 World.prototype.addPlayer = function(player) {
@@ -18,17 +20,26 @@ World.prototype.addPlayer = function(player) {
   sprite.x = player.x;
   sprite.y = player.y;
 
-  this.container.addChild(sprite);
+  this.players.addChild(sprite);
 
   $(".numPlayers .count").text(Object.keys(this.idPlayers).length);
 }
+
 World.prototype.removePlayer = function(playerId) {
   var player = this.idPlayers[playerId];
+  if (!player) {
+    return;
+  }
+
   delete this.idPlayers[playerId];
 
-  this.container.removeChild(player.sprite);
+  this.players.removeChild(player.sprite);
 
   $(".numPlayers .count").text(Object.keys(this.idPlayers).length);
+}
+
+World.prototype.removeAllPlayers = function() {
+  this.players.removeChildren();
 }
 
 World.prototype.renderTiles = function() {

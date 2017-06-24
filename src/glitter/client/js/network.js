@@ -20,11 +20,17 @@ Network.prototype.connectToServer = function(ip, port) {
 }
 
 Network.prototype.handleMessage = function(msg) {
-  // console.log(msg);
+   console.log(msg);
   var command = msg.command;
   if (command == "enterWorld") {
+    if($(".countdown").is(":visible")){
+      $(".numPlayers label").text("alive");
+      $(".countdown").hide();
+    }
     world.terrain = new Terrain(msg.world.terrain);
     world.renderTiles();
+    world.removeAllPlayers();
+    window.me = null;
   } else if (command == "addPlayer") {
     world.addPlayer(new Player(msg.player));
   } else if (command == "removePlayer") {
@@ -34,8 +40,8 @@ Network.prototype.handleMessage = function(msg) {
     $(".numPlayers").show();
   } else if (command == "playerState") {
     var player = world.idPlayers[msg.id];
-    player.x = msg.x;
-    player.y = msg.y;
+    player.setX(msg.x);
+    player.setY(msg.y);
     player.setKeys(msg.keys);
   } else if (command == "countdown") {
     window.gameStartTime = Date.now() + msg.millisLeft;

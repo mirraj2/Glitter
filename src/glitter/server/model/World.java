@@ -1,19 +1,19 @@
 package glitter.server.model;
 
 import static ox.util.Utils.random;
-import java.util.List;
-import com.google.common.collect.Lists;
+import java.util.Collection;
 import ox.Json;
 import ox.Log;
 
 public class World {
 
   public final Terrain terrain;
-  public final List<Player> players = Lists.newCopyOnWriteArrayList();
+  public final Collection<Player> players;
   public final AdminConsole console = new AdminConsole(this);
 
-  public World() {
-    terrain = Terrain.createLobby();
+  public World(Terrain terrain, Collection<Player> players) {
+    this.terrain = terrain;
+    this.players = players;
   }
 
   public void start() {
@@ -36,9 +36,6 @@ public class World {
     spawnInRandomLocation(player);
 
     Log.debug("player connected. (%d players in world)", players.size());
-    player.socket.onClose(() -> {
-      removePlayer(player);
-    });
 
     player.send(Json.object()
         .with("command", "enterWorld")
@@ -57,7 +54,7 @@ public class World {
     }
   }
 
-  private void removePlayer(Player player) {
+  public void removePlayer(Player player) {
     Log.debug("player disconnected. (%d players in world)", players.size());
     players.remove(player);
 
