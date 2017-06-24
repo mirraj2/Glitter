@@ -38,7 +38,7 @@ Input.prototype.update = function(t) {
 Input.prototype.movePlayer = function(player, t) {
   var keys = player.keys;
 
-  var speed = 3;
+  var speed = 30;
   var distance = speed * TILE_SIZE * t / 1000;
 
   var dx = 0, dy = 0;
@@ -71,9 +71,9 @@ Input.prototype.move = function(player, dx, dy) {
   rect.width = player.hitbox.width;
   rect.height = player.hitbox.height;
 
-  if (this.intersectsBadTerrain(rect)) {
-    return;
-  }
+//  if (this.intersectsBadTerrain(rect)) {
+//    return;
+//  }
 
   player.setX(player.x + dx);
   player.setY(player.y + dy);
