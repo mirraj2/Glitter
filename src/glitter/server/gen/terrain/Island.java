@@ -1,14 +1,14 @@
 package glitter.server.gen.terrain;
 
-import java.util.List;
+import java.util.Set;
 import ox.Rect;
 
 public class Island {
 
-  public final List<Point> points;
+  public final Set<Point> points;
   public final Rect bounds;
 
-  public Island(List<Point> points) {
+  public Island(Set<Point> points) {
     this.points = points;
 
     int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
