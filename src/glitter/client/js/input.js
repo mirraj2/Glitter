@@ -39,6 +39,9 @@ Input.prototype.movePlayer = function(player, t) {
   var keys = player.keys;
 
   var speed = 6;
+  if (player.flying) {
+    speed *= 10;
+  }
   var distance = speed * TILE_SIZE * t / 1000;
 
   var dx = 0, dy = 0;
@@ -65,14 +68,16 @@ Input.prototype.movePlayer = function(player, t) {
 }
 
 Input.prototype.move = function(player, dx, dy) {
-  var rect = this.rect;
-  rect.x = player.x + dx + player.hitbox.x;
-  rect.y = player.y + dy + player.hitbox.y;
-  rect.width = player.hitbox.width;
-  rect.height = player.hitbox.height;
+  if (!player.flying) {
+    var rect = this.rect;
+    rect.x = player.x + dx + player.hitbox.x;
+    rect.y = player.y + dy + player.hitbox.y;
+    rect.width = player.hitbox.width;
+    rect.height = player.hitbox.height;
 
-  if (this.intersectsBadTerrain(rect)) {
-    return;
+    if (this.intersectsBadTerrain(rect)) {
+      return;
+    }
   }
 
   player.setX(player.x + dx);
@@ -104,14 +109,17 @@ Input.prototype.listen = function() {
         var text = $(".console input").val().trim();
         $(".console input").val("");
         if (text) {
-          network.send({
-            command : "consoleInput",
-            text : text
-          });
-        } else {
-          $(".console").stop().fadeOut();
-          consoleVisible = false;
+          if (text == "/fly") {
+            me.flying = !me.flying;
+          } else {
+            network.send({
+              command : "consoleInput",
+              text : text
+            });
+          }
         }
+        $(".console").stop().fadeOut();
+        consoleVisible = false;
       } else {
         $(".console").stop().fadeIn();
         $(".console input").focus();

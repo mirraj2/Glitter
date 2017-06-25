@@ -6,6 +6,7 @@ function Player(data) {
   this.height = 64;
   this.sprite = null;
   this.hitbox = new PIXI.Rectangle(12, 48, 24, 16);
+  this.flying = false;
 
   // the keys this player has pressed down
   this.keys = {};
