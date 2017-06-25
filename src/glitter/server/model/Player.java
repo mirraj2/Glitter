@@ -3,6 +3,7 @@ package glitter.server.model;
 import static ox.util.Functions.toSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import bowser.websocket.ClientSocket;
@@ -130,7 +131,11 @@ public class Player {
     try {
       socket.send(outboundMessageBuffer);
     } catch (Exception e) {
-      e.printStackTrace();
+      if ("Broken pipe".equals(Throwables.getRootCause(e).getMessage())) {
+        // ignore
+      } else {
+        e.printStackTrace();
+      }
     } finally {
       outboundMessageBuffer.clear();
     }

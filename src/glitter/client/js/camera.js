@@ -12,5 +12,9 @@ Camera.prototype.update = function(t) {
   if (window.me) {
     world.container.x = Math.round(w / 2 - (Math.round(me.x) + me.width / 2));
     world.container.y = Math.round(h / 2 - (Math.round(me.y) + me.height / 2));
+//    world.container.x = 100;
+//    world.container.y = 100;
+//    world.container.scale.x = .1;
+//    world.container.scale.y = .1;
   }
 }

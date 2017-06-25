@@ -21,7 +21,16 @@ public class Island {
       maxY = Math.max(p.y, maxY);
     }
 
-    bounds = new Rect(minX, minY, maxX - minX, maxY - minY);
+    bounds = new Rect(minX, minY, maxX - minX + 1, maxY - minY + 1);
+  }
+
+  public int size() {
+    return points.size();
+  }
+
+  @Override
+  public String toString() {
+    return points.toString();
   }
 
 }
