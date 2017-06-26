@@ -1,6 +1,6 @@
 function MiniMap() {
   var self = this;
-  
+
   this.container = new PIXI.Container();
   this.tiles = new PIXI.Container();
   this.width = 170;
@@ -11,10 +11,10 @@ function MiniMap() {
   background.beginFill(0x444444, .8);
   background.drawCircle(this.width / 2, this.height / 2, this.width / 2);
   background.endFill();
-  
+
   var redDot = new PIXI.Graphics();
   redDot.beginFill(0xFF0000, 1);
-  redDot.drawCircle(this.width/2, this.height/2, 2);
+  redDot.drawCircle(this.width / 2, this.height / 2, 2);
   redDot.endFill();
 
   var mask = new PIXI.Graphics();
@@ -29,14 +29,14 @@ function MiniMap() {
   this.container.addChild(this.tiles);
   this.container.addChild(redDot);
   canvas.stage.addChild(this.container);
-  
-  $(window).resize(function(){
+
+  $(window).resize(function() {
     self.onResize();
   });
   self.onResize();
 }
 
-MiniMap.prototype.onResize = function(){
+MiniMap.prototype.onResize = function() {
   this.container.x = $(document).width() - this.width - 4;
   this.container.y = $(document).height() - this.height - 4;
 }
@@ -67,6 +67,9 @@ MiniMap.prototype.renderMap = function() {
     for (var j = 0; j < col.length; j++) {
       var t = tiles[i][j];
       if (t > 0) {
+        if (t == 5) {
+          t = 1;// show chests as grass
+        }
         var texture = textures[t];
         var tile = new PIXI.Sprite(texture);
         tile.x = i * tileSize;

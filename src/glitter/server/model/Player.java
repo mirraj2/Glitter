@@ -58,6 +58,11 @@ public class Player {
       dx += distance;
     }
 
+    if (dx != 0 && dy != 0) {
+      dx /= 1.4142135; // divide by sqrt(2)
+      dy /= 1.4142135; // divide by sqrt(2)
+    }
+
     if (dx != 0) {
       move(dx, 0);
     }
