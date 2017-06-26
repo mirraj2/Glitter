@@ -118,7 +118,7 @@ Input.prototype.listen = function() {
             });
           }
         }
-        $(".console").stop().fadeOut();
+        $(".console").stop().hide();
         consoleVisible = false;
       } else {
         $(".console").stop().fadeIn();

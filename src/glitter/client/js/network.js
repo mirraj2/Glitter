@@ -27,9 +27,10 @@ Network.prototype.handleMessage = function(msg) {
       $(".numPlayers label").text("alive");
       $(".countdown").hide();
     }
+    world.removeAllPlayers();
     world.terrain = new Terrain(msg.world.terrain);
     world.renderTiles();
-    world.removeAllPlayers();
+    minimap.renderMap();
     window.me = null;
   } else if (command == "addPlayer") {
     world.addPlayer(new Player(msg.player));

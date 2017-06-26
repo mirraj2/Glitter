@@ -9,6 +9,7 @@ Glitter.prototype.initGame = function() {
   window.world = new World();
   window.camera = new Camera();
   window.input = new Input();
+  window.minimap = new MiniMap();
   
   input.listen();
 
