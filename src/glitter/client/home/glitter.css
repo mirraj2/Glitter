@@ -44,8 +44,8 @@ html, body {
 
 .fps {
   position: fixed;
-  right: 12px;
-  bottom: 12px;
+  left: 12px;
+  top: 12px;
   color: rgba(255, 255, 255, .2);
 }
 

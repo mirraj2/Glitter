@@ -31,6 +31,7 @@ GameLoop.prototype.start = function() {
       var tickTime = Math.min(t, MAX_UPDATE_TIME);
       input.update(tickTime);
       camera.update(tickTime);
+      minimap.update();
       t -= MAX_UPDATE_TIME;
     }
     canvas.render();

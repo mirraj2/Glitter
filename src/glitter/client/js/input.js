@@ -104,7 +104,8 @@ Input.prototype.listen = function() {
   var self = this;
   var consoleVisible = false;
   $(window).keydown(function(e) {
-    if (e.key == "Enter") {
+    e.key = e.key.toLowerCase();
+    if (e.key == "enter") {
       if (consoleVisible) {
         var text = $(".console input").val().trim();
         $(".console input").val("");
@@ -141,6 +142,7 @@ Input.prototype.listen = function() {
     }
   });
   $(window).keyup(function(e) {
+    e.key = e.key.toLowerCase();
     if (window.me) {
       delete me.keys[e.key];
       self.dirty = true;

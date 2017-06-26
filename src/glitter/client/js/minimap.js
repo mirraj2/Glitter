@@ -1,22 +1,55 @@
 function MiniMap() {
+  var self = this;
+  
   this.container = new PIXI.Container();
-  this.container.x = $(document).width() - 128;
-  this.container.y = $(document).height() - 128;
-//  this.container.width = 128;
-//  this.container.height = 128;
-  console.log(this.container.x);
-  console.log(this.container.y);
+  this.tiles = new PIXI.Container();
+  this.width = 170;
+  this.height = 170;
+
+  var background = new PIXI.Graphics();
+  background.lineStyle(2, 0xFFFFFF, .8);
+  background.beginFill(0x444444, .8);
+  background.drawCircle(this.width / 2, this.height / 2, this.width / 2);
+  background.endFill();
+  
+  var redDot = new PIXI.Graphics();
+  redDot.beginFill(0xFF0000, 1);
+  redDot.drawCircle(this.width/2, this.height/2, 2);
+  redDot.endFill();
+
+  var mask = new PIXI.Graphics();
+  mask.lineStyle(1, 0xFFFFFF, 1);
+  mask.beginFill(0x444444, 1);
+  mask.drawCircle(this.width / 2, this.height / 2, this.width / 2);
+  mask.endFill();
+  this.container.addChild(mask);
+  this.tiles.mask = mask;
+
+  this.container.addChild(background);
+  this.container.addChild(this.tiles);
+  this.container.addChild(redDot);
   canvas.stage.addChild(this.container);
+  
+  $(window).resize(function(){
+    self.onResize();
+  });
+  self.onResize();
+}
+
+MiniMap.prototype.onResize = function(){
+  this.container.x = $(document).width() - this.width - 4;
+  this.container.y = $(document).height() - this.height - 4;
+}
+
+MiniMap.prototype.update = function() {
+  if (window.me) {
+    this.tiles.x = Math.round(this.width / 2 - me.x / TILE_SIZE);
+    this.tiles.y = Math.round(this.height / 2 - me.y / TILE_SIZE);
+  }
 }
 
 MiniMap.prototype.renderMap = function() {
-  this.container.removeChildren();
-  
-  var graphics = new PIXI.Graphics();
-  graphics.lineStyle(1, "gray", .5);
-  graphics.beginFill("black", .8);
-  graphics.drawRect(0, 0, 128, 128);
-  this.container.addChild(graphics);
+  this.tiles.removeChildren();
 
   var sheet = PIXI.loader.resources["tiles.png"].texture;
 
@@ -40,7 +73,7 @@ MiniMap.prototype.renderMap = function() {
         tile.y = j * tileSize;
         tile.width = tileSize;
         tile.height = tileSize;
-        this.container.addChild(tile);
+        this.tiles.addChild(tile);
       }
     }
   }
