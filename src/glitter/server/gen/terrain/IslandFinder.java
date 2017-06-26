@@ -2,12 +2,12 @@ package glitter.server.gen.terrain;
 
 import static ox.util.Utils.propagate;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import glitter.server.gen.terrain.Traversals.TState;
 import glitter.server.gen.terrain.perlin.ContinentsAndIslands;
 import glitter.server.gen.terrain.perlin.NoiseFunction;
 import ox.Log;
@@ -53,38 +53,23 @@ public class IslandFinder {
 
     Stopwatch watch = Stopwatch.createStarted();
 
-    int x = centerX, y = centerY;
-    int dirIndex = -1;
-    int radius = 1;
-    int c = 0;
-    int segments = 0;
-    int islandTileCount = 0;
+    AtomicInteger islandTileCount = new AtomicInteger(0);
 
-    while (true) {
-      Island island = findIsland(islands.noiseCache, noiseFunction, x, y,
-          (int) Math.min(((1.1 * minTiles) - islandTileCount), minTiles * .7));
+    Traversals.spiral(centerX, centerY, p -> {
+      Island island = findIsland(islands.noiseCache, noiseFunction, p.x, p.y,
+          (int) Math.min(((1.1 * minTiles) - islandTileCount.get()), minTiles * .7));
       if (island != null) {
         if (island.size() < MIN_ISLAND_SIZE) {
-          continue;
+          return true;
         }
         Log.debug("adding island: " + island.points.size() + " tiles");
         islands.add(island);
-        islandTileCount += island.size();
-        if (islandTileCount >= minTiles) {
-          break;
+        if (islandTileCount.addAndGet(island.size()) >= minTiles) {
+          return false;
         }
       }
-      if (++c == radius) {
-        c = 0;
-        dirIndex = (dirIndex + 1) % 4;
-        if (segments++ % 2 == 0) {
-          radius++;
-        }
-      }
-      Point dir = TerrainGen.dirs[dirIndex];
-      x += dir.x;
-      y += dir.y;
-    }
+      return true;
+    });
 
     Log.debug("finished initial island search in " + watch);
 
@@ -96,44 +81,28 @@ public class IslandFinder {
   private Island findIsland(Map<Point, Double> noiseCache, NoiseFunction noiseFunction, int x, int y, int maxSize) {
     pointBuf.x = x;
     pointBuf.y = y;
-    Double val = noiseCache.get(pointBuf);
 
-    if (val != null) {
-      return null;
-    }
-
-    Point p = new Point(x, y);
-
-    val = noiseFunction.getValue(p.x, p.y);
-    noiseCache.put(p, val);
-    if (val < threshold) {
+    if (noiseCache.get(pointBuf) != null) {
       return null;
     }
 
     Set<Point> points = Sets.newHashSet();
-    Queue<Point> queue = Lists.newLinkedList();
-    queue.add(p);
-
-    while (!queue.isEmpty()) {
-      p = queue.poll();
-      points.add(p);
-
-      if (points.size() > maxSize) {
-        throw new RuntimeException("Island too big!");
-      }
-
-      for (Point dir : TerrainGen.dirs) {
-        Point next = new Point(p.x + dir.x, p.y + dir.y);
-        val = noiseCache.get(next);
-        if (val == null) {
-          val = noiseFunction.getValue(next.x, next.y);
-          noiseCache.put(next, val);
-          if (val >= threshold) {
-            queue.add(next);
+    
+    Traversals.flood(new Point(x, y), p -> {
+      Double val = noiseCache.get(p);
+      if (val == null) {
+        val = noiseFunction.getValue(p.x, p.y);
+        noiseCache.put(p, val);
+        if (val >= threshold) {
+          points.add(p);
+          if (points.size() > maxSize) {
+            throw new RuntimeException("Island too big!");
           }
+          return TState.FILL;
         }
       }
-    }
+      return TState.NO_FILL;
+    });
 
     return new Island(points);
   }

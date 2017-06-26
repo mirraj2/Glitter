@@ -35,7 +35,7 @@ public class TerrainSmoother {
     for (int i = island.bounds.x(); i < island.bounds.maxX(); i++) {
       looping: for (int j = island.bounds.y(); j < island.bounds.maxY(); j++) {
         if (noise[i][j] < threshold) {
-          for (Point dir : TerrainGen.dirs) {
+          for (Point dir : Traversals.dirs) {
             buf.x = i + dir.x;
             buf.y = j + dir.y;
             if (!island.points.contains(buf)) {
@@ -55,7 +55,7 @@ public class TerrainSmoother {
     looping: while (iter.hasNext()) {
       Point p = iter.next();
       int tileCount = 0;
-      for (Point dir : TerrainGen.dirs) {
+      for (Point dir : Traversals.dirs) {
         if (noise[p.x + dir.x][p.y + dir.y] >= threshold) {
           if (++tileCount > 1) {
             continue looping;

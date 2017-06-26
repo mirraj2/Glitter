@@ -14,6 +14,7 @@ public class TerrainGen {
 
   private final IslandFinder islandFinder = new IslandFinder(rand, threshold);
   private final TerrainSmoother smoother = new TerrainSmoother(threshold);
+  private final BridgeBuilder bridgeBuilder = new BridgeBuilder(rand, threshold);
 
   private Terrain generate(int minTiles) {
     Log.info("Generating terrain (%d tiles)", minTiles);
@@ -22,6 +23,8 @@ public class TerrainGen {
     Log.debug("Generated %d islands.", islands.size());
 
     smoother.smooth(islands);
+
+    bridgeBuilder.genBridges(islands);
 
     Tile[][] tiles = new Tile[islands.noise.length][islands.noise[0].length];
     for (int i = 0; i < tiles.length; i++) {
@@ -38,15 +41,18 @@ public class TerrainGen {
       }
     }
 
+    for (Point p : islands.bridges) {
+      tiles[p.x][p.y] = Tile.BRIDGE;
+    }
+    for (Point p : islands.debug) {
+      tiles[p.x][p.y] = Tile.LAVA;
+    }
+
     Log.debug("Finished generating terrain (%d x %d) (%d tiles)", tiles.length, tiles[0].length,
         grassCount);
 
     return new Terrain(tiles);
   }
-
-  public static final Point[] dirs = new Point[] {
-      new Point(0, -1), new Point(-1, 0),
-      new Point(0, 1), new Point(1, 0) };
 
   public static Terrain generateFor(int numPlayers) {
     // let's give each player about 2000 tiles of space
