@@ -48,7 +48,7 @@ World.prototype.renderTiles = function() {
   var sheet = PIXI.loader.resources["tiles.png"].texture;
 
   var textures = [];
-  for (var i = 0; i < 5; i++) {
+  for (var i = 0; i < sheet.width / TILE_SIZE; i++) {
     var texture = new PIXI.Texture(sheet.baseTexture);
     texture.frame = new PIXI.Rectangle(TILE_SIZE * i, 0, TILE_SIZE, TILE_SIZE);
     textures.push(texture);
@@ -59,7 +59,7 @@ World.prototype.renderTiles = function() {
     var col = tiles[i];
     for (var j = 0; j < col.length; j++) {
       var t = tiles[i][j];
-      if(t > 0){
+      if (t > 0) {
         var texture = textures[t];
         var tile = new PIXI.Sprite(texture);
         tile.x = i * TILE_SIZE;

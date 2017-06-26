@@ -1,13 +1,16 @@
 package glitter.server.gen.terrain;
 
-import java.util.Random;
+import java.util.List;
+import com.google.common.collect.Lists;
+import glitter.server.arch.GMath;
+import glitter.server.arch.GRandom;
 import glitter.server.model.Terrain;
 import glitter.server.model.Tile;
 import ox.Log;
 
 public class TerrainGen {
 
-  private final Random rand = new Random();
+  private final GRandom rand = new GRandom();
 
   // threshold for land, in the noise
   private final double threshold = .6;
@@ -23,35 +26,67 @@ public class TerrainGen {
     Log.debug("Generated %d islands.", islands.size());
 
     smoother.smooth(islands);
-
     bridgeBuilder.genBridges(islands);
 
-    Tile[][] tiles = new Tile[islands.noise.length][islands.noise[0].length];
-    for (int i = 0; i < tiles.length; i++) {
-      for (int j = 0; j < tiles[0].length; j++) {
-        tiles[i][j] = Tile.VOID;
+    Tile[][] tiles = createTiles(islands);
+
+    genTreasureChests(islands, tiles);
+
+    Log.debug("Finished generating terrain (%d x %d)", tiles.length, tiles[0].length);
+
+    return new Terrain(tiles);
+  }
+
+  private void genTreasureChests(Islands islands, Tile[][] tiles) {
+    for (Island island : islands) {
+      // on average, spawn 1 treasure chest for every 200 tiles
+      int numChests = GMath.round(island.points.size() / 200 * (1 + rand.gauss() * .10));
+      if (numChests <= 0 && rand.nextDouble() > .1) {
+        numChests = 1;
+      }
+      Log.debug("island will have %d chests", numChests);
+      List<Point> chestLocations = Lists.newArrayList();
+      int minDistance = 20;
+      outerloop: while (numChests > 0) {
+
+        Point p = rand.random(island.points);
+        // check to see if this chest location is too close to another chest
+        for (Point pp : chestLocations) {
+          if (GMath.distSquared(p, pp) < minDistance * minDistance) {
+            minDistance = Math.max(minDistance - 1, 0);
+            continue outerloop;
+          }
+        }
+
+        chestLocations.add(p);
+        tiles[p.x][p.y] = Tile.CHEST;
+        numChests--;
+      }
+    }
+  }
+
+  private Tile[][] createTiles(Islands islands) {
+    Tile[][] ret = new Tile[islands.noise.length][islands.noise[0].length];
+    for (int i = 0; i < ret.length; i++) {
+      for (int j = 0; j < ret[0].length; j++) {
+        ret[i][j] = Tile.VOID;
       }
     }
 
-    int grassCount = 0;
     for (Island island : islands) {
       for (Point p : island.points) {
-        tiles[p.x][p.y] = Tile.GRASS;
-        grassCount++;
+        ret[p.x][p.y] = Tile.GRASS;
       }
     }
 
     for (Point p : islands.bridges) {
-      tiles[p.x][p.y] = Tile.BRIDGE;
+      ret[p.x][p.y] = Tile.BRIDGE;
     }
     for (Point p : islands.debug) {
-      tiles[p.x][p.y] = Tile.LAVA;
+      ret[p.x][p.y] = Tile.LAVA;
     }
 
-    Log.debug("Finished generating terrain (%d x %d) (%d tiles)", tiles.length, tiles[0].length,
-        grassCount);
-
-    return new Terrain(tiles);
+    return ret;
   }
 
   public static Terrain generateFor(int numPlayers) {

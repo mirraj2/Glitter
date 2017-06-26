@@ -4,21 +4,21 @@ import static ox.util.Functions.map;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import glitter.server.arch.GRandom;
 import glitter.server.arch.Ref;
 import glitter.server.gen.terrain.Traversals.TState;
 import ox.Log;
 
 public class BridgeBuilder {
 
-  private final Random rand;
+  private final GRandom rand;
   private final double threshold;
 
-  public BridgeBuilder(Random rand, double threshold) {
+  public BridgeBuilder(GRandom rand, double threshold) {
     this.rand = rand;
     this.threshold = threshold;
   }

@@ -2,11 +2,11 @@ package glitter.server.gen.terrain;
 
 import static ox.util.Utils.propagate;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Sets;
+import glitter.server.arch.GRandom;
 import glitter.server.gen.terrain.Traversals.TState;
 import glitter.server.gen.terrain.perlin.ContinentsAndIslands;
 import glitter.server.gen.terrain.perlin.NoiseFunction;
@@ -18,10 +18,10 @@ import ox.Log;
 public class IslandFinder {
 
   private final int MIN_ISLAND_SIZE = 64;
-  private final Random rand;
+  private final GRandom rand;
   private final double threshold;
 
-  public IslandFinder(Random rand, double threshold) {
+  public IslandFinder(GRandom rand, double threshold) {
     this.rand = rand;
     this.threshold = threshold;
   }
