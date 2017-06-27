@@ -1,4 +1,4 @@
-window.TILE_SIZE = 48;
+window.Tile.SIZE = 48;
 
 function Glitter() {
   this.initGame();

@@ -1,16 +1,14 @@
 package glitter.server.model;
 
 import java.util.List;
-import com.google.common.collect.Lists;
-import glitter.server.gen.terrain.TerrainGen;
+import glitter.server.gen.world.WorldGen;
 
 public class Match {
 
   private final World world;
 
   private Match(List<Player> players) {
-    Terrain terrain = TerrainGen.generateFor(players.size());
-    this.world = new World(terrain, Lists.newCopyOnWriteArrayList());
+    this.world = WorldGen.generateFor(players.size());
     for (Player player : players) {
       this.world.addPlayer(player);
     }

@@ -1,10 +1,14 @@
-package glitter.server.gen.terrain;
+package glitter.server.gen.world;
 
 public class Point {
 
   public int x, y;
 
   public Point() {
+  }
+
+  public Point(Point p) {
+    this(p.x, p.y);
   }
 
   public Point(int x, int y) {

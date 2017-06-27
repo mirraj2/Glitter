@@ -1,4 +1,4 @@
-package glitter.server.gen.terrain.perlin;
+package glitter.server.gen.world.perlin;
 
 public interface ColoringFunction {
 

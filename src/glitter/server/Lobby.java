@@ -5,10 +5,9 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.collect.ImmutableList;
 import bowser.websocket.ClientSocket;
 import glitter.server.arch.SwappingQueue;
-import glitter.server.gen.terrain.TerrainGen;
+import glitter.server.gen.world.WorldGen;
 import glitter.server.model.Match;
 import glitter.server.model.Player;
-import glitter.server.model.Terrain;
 import glitter.server.model.World;
 import ox.Json;
 import ox.Log;
@@ -23,7 +22,7 @@ public class Lobby {
 
   private static final long COUNTDOWN_TIME = TimeUnit.SECONDS.toMillis(60);
 
-  private final World world = new World(createLobbyTerrain(), new SwappingQueue<Player>());
+  private final World world = createLobbyWorld();
 
   /**
    * The time that the next game will begin.
@@ -75,8 +74,10 @@ public class Lobby {
     }
   }
 
-  private Terrain createLobbyTerrain() {
-    return TerrainGen.generateFor(2);
+  private World createLobbyWorld() {
+    World world = WorldGen.generateFor(2);
+    world.players = new SwappingQueue<Player>();
+    return world;
     // Terrain ret = new Terrain(16, 8);
     // for (int i = 0; i < ret.width; i++) {
     // for (int j = 0; j < ret.height; j++) {

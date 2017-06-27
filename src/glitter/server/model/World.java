@@ -2,18 +2,21 @@ package glitter.server.model;
 
 import static ox.util.Utils.random;
 import java.util.Collection;
+import java.util.Map;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import ox.Json;
 import ox.Log;
 
 public class World {
 
   public final Terrain terrain;
-  public final Collection<Player> players;
+  public Collection<Player> players = Lists.newCopyOnWriteArrayList();
+  public final Map<Long, Entity> idEntities = Maps.newConcurrentMap();
   public final AdminConsole console = new AdminConsole(this);
 
-  public World(Terrain terrain, Collection<Player> players) {
+  public World(Terrain terrain) {
     this.terrain = terrain;
-    this.players = players;
   }
 
   public void start() {
@@ -97,7 +100,8 @@ public class World {
 
   public Json toJson() {
     return Json.object()
-        .with("terrain", terrain.toJson());
+        .with("terrain", terrain.toJson())
+        .with("chests", Json.array(idEntities.values(), Entity::toJson));
   }
 
 }

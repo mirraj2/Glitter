@@ -24,7 +24,18 @@ Player.prototype.setY = function(y) {
 
 Player.prototype.setKeys = function(keys) {
   this.keys = {};
-  for(var i = 0; i < keys.length; i++){
+  for (var i = 0; i < keys.length; i++) {
     this.keys[keys[i]] = true;
   }
+}
+
+Player.prototype.getHitbox = function(rect, buffer) {
+  if (!buffer) {
+    buffer = 0;
+  }
+  rect.x = this.x + this.hitbox.x - buffer;
+  rect.y = this.y + this.hitbox.y - buffer;
+  rect.width = this.hitbox.width + buffer * 2;
+  rect.height = this.hitbox.height + buffer * 2;
+  return rect;
 }

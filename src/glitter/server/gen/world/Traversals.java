@@ -1,4 +1,4 @@
-package glitter.server.gen.terrain;
+package glitter.server.gen.world;
 
 import java.util.Collection;
 import java.util.List;

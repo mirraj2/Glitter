@@ -1,13 +1,37 @@
 function World() {
   this.terrain = null;
   this.idPlayers = {};
+  this.idEntities = {};
   this.container = new PIXI.Container();
   this.tiles = new PIXI.Container();
+  this.entities = new PIXI.Container();
   this.players = new PIXI.Container();
 
   canvas.stage.addChild(this.container);
   this.container.addChild(this.tiles);
+  this.container.addChild(this.entities);
   this.container.addChild(this.players);
+}
+
+World.prototype.setChests = function(chests) {
+  var sheet = PIXI.loader.resources["tiles.png"].texture;
+
+  var texture = new PIXI.Texture(sheet.baseTexture);
+  texture.frame = new PIXI.Rectangle(Tile.SIZE * 5, 0, Tile.SIZE, Tile.SIZE);
+
+  for (var i = 0; i < chests.length; i++) {
+    var chest = chests[i];
+    this.idEntities[chest.id] = chest;
+
+    var sprite = new PIXI.Sprite(texture);
+    sprite.x = chest.x;
+    sprite.y = chest.y;
+    sprite.width = chest.width;
+    sprite.height = chest.height;
+
+    chest.sprite = sprite;
+    this.entities.addChild(sprite);
+  }
 }
 
 World.prototype.addPlayer = function(player) {
@@ -48,9 +72,9 @@ World.prototype.renderTiles = function() {
   var sheet = PIXI.loader.resources["tiles.png"].texture;
 
   var textures = [];
-  for (var i = 0; i < sheet.width / TILE_SIZE; i++) {
+  for (var i = 0; i < sheet.width / Tile.SIZE; i++) {
     var texture = new PIXI.Texture(sheet.baseTexture);
-    texture.frame = new PIXI.Rectangle(TILE_SIZE * i, 0, TILE_SIZE, TILE_SIZE);
+    texture.frame = new PIXI.Rectangle(Tile.SIZE * i, 0, Tile.SIZE, Tile.SIZE);
     textures.push(texture);
   }
 
@@ -62,10 +86,10 @@ World.prototype.renderTiles = function() {
       if (t > 0) {
         var texture = textures[t];
         var tile = new PIXI.Sprite(texture);
-        tile.x = i * TILE_SIZE;
-        tile.y = j * TILE_SIZE;
-        tile.width = TILE_SIZE;
-        tile.height = TILE_SIZE;
+        tile.x = i * Tile.SIZE;
+        tile.y = j * Tile.SIZE;
+        tile.width = Tile.SIZE;
+        tile.height = Tile.SIZE;
         this.tiles.addChild(tile);
       }
     }

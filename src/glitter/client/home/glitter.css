@@ -13,6 +13,7 @@ html, body {
 
 .gui {
   pointer-events: none;
+  position: fixed;
 }
 
 .numPlayers {
@@ -100,4 +101,11 @@ html, body {
   border: none;
   border-top: solid 1px rgba(255, 255, 255, .5);
   color: white;
+}
+
+.spacebar {
+  position: fixed;
+  left: 50%;
+  top: calc(50% + 80px);
+  transform: translateX(-50%);
 }

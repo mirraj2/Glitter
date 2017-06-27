@@ -30,6 +30,7 @@ Network.prototype.handleMessage = function(msg) {
     world.removeAllPlayers();
     world.terrain = new Terrain(msg.world.terrain);
     world.renderTiles();
+    world.setChests(msg.world.chests);
     minimap.renderMap();
     window.me = null;
   } else if (command == "addPlayer") {

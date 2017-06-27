@@ -1,4 +1,4 @@
-package glitter.server.gen.terrain;
+package glitter.server.gen.world;
 
 import static ox.util.Functions.map;
 import java.util.Collection;
@@ -10,7 +10,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import glitter.server.arch.GRandom;
 import glitter.server.arch.Ref;
-import glitter.server.gen.terrain.Traversals.TState;
+import glitter.server.gen.world.Traversals.TState;
 import ox.Log;
 
 public class BridgeBuilder {

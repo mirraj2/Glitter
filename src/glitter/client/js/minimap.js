@@ -43,8 +43,8 @@ MiniMap.prototype.onResize = function() {
 
 MiniMap.prototype.update = function() {
   if (window.me) {
-    this.tiles.x = Math.round(this.width / 2 - me.x / TILE_SIZE);
-    this.tiles.y = Math.round(this.height / 2 - me.y / TILE_SIZE);
+    this.tiles.x = Math.round(this.width / 2 - me.x / Tile.SIZE);
+    this.tiles.y = Math.round(this.height / 2 - me.y / Tile.SIZE);
   }
 }
 
@@ -56,7 +56,7 @@ MiniMap.prototype.renderMap = function() {
   var textures = [];
   for (var i = 0; i < 5; i++) {
     var texture = new PIXI.Texture(sheet.baseTexture);
-    texture.frame = new PIXI.Rectangle(TILE_SIZE * i, 0, TILE_SIZE, TILE_SIZE);
+    texture.frame = new PIXI.Rectangle(Tile.SIZE * i, 0, Tile.SIZE, Tile.SIZE);
     textures.push(texture);
   }
 
@@ -67,9 +67,6 @@ MiniMap.prototype.renderMap = function() {
     for (var j = 0; j < col.length; j++) {
       var t = tiles[i][j];
       if (t > 0) {
-        if (t == 5) {
-          t = 1;// show chests as grass
-        }
         var texture = textures[t];
         var tile = new PIXI.Sprite(texture);
         tile.x = i * tileSize;

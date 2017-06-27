@@ -10,6 +10,8 @@ public class HomePage extends Controller {
   @Override
   public void init() {
     route("GET", "/").to("glitter.html").data(data);
+
+    mapFolder("png", "assets");
   }
 
   private final Data data = context -> {

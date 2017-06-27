@@ -7,6 +7,17 @@ function Input() {
 
   // whether the user has pressed any keys since the last update
   this.dirty = false;
+
+  this.interactionEntity = null;
+}
+
+Input.prototype.interact = function() {
+  if (this.interactionEntity) {
+    network.send({
+      command : "interact",
+      entityId : this.interactionEntity.id
+    });
+  }
 }
 
 Input.prototype.update = function(t) {
@@ -42,7 +53,7 @@ Input.prototype.movePlayer = function(player, t) {
   if (player.flying) {
     speed *= 10;
   }
-  var distance = speed * TILE_SIZE * t / 1000;
+  var distance = speed * Tile.SIZE * t / 1000;
 
   var dx = 0, dy = 0;
 
@@ -64,45 +75,86 @@ Input.prototype.movePlayer = function(player, t) {
     dy /= 1.4142135;// divide by sqrt(2)
   }
 
+  var moved = false;
   if (dx != 0) {
-    this.move(player, dx, 0);
+    moved |= this.move(player, dx, 0);
   }
   if (dy != 0) {
-    this.move(player, 0, dy);
+    moved |= this.move(player, 0, dy);
+  }
+
+  if (moved && player == me) {
+    this.findInteraction();
+  }
+}
+
+Input.prototype.findInteraction = function() {
+  // see if we are near a treasure chest
+
+  var chest = null;
+  var self = this;
+  var rect = me.getHitbox(this.rect, 16);
+
+  $.each(world.idEntities, function(key, value) {
+    if (self.intersects(rect, value)) {
+      chest = value;
+      return false;
+    }
+  });
+
+  if (chest != this.interactionEntity) {
+    this.interactionEntity = chest;
+    if (this.interactionEntity) {
+      $(".spacebar").fadeIn(200);
+    } else {
+      $(".spacebar").fadeOut(200);
+    }
   }
 }
 
 Input.prototype.move = function(player, dx, dy) {
   if (!player.flying) {
-    var rect = this.rect;
-    rect.x = player.x + dx + player.hitbox.x;
-    rect.y = player.y + dy + player.hitbox.y;
-    rect.width = player.hitbox.width;
-    rect.height = player.hitbox.height;
-
-    if (this.intersectsBadTerrain(rect)) {
-      return;
+    var rect = player.getHitbox(this.rect);
+    rect.x += dx;
+    rect.y += dy;
+    if (this.isCollision(rect)) {
+      return false;
     }
   }
 
   player.setX(player.x + dx);
   player.setY(player.y + dy);
+
+  return true;
 }
 
-Input.prototype.intersectsBadTerrain = function(rect) {
-  var minI = Math.floor(rect.x / TILE_SIZE);
-  var minJ = Math.floor(rect.y / TILE_SIZE);
-  var maxI = Math.floor((rect.x + rect.width) / TILE_SIZE);
-  var maxJ = Math.floor((rect.y + rect.height) / TILE_SIZE);
+Input.prototype.isCollision = function(rect) {
+  var self = this;
 
-  for (var i = minI; i <= maxI; i++) {
-    for (var j = minJ; j <= maxJ; j++) {
-      if (!world.terrain.isWalkable(i, j)) {
-        return true;
-      }
+  var ret = false;
+  world.terrain.getTilesIntersecting(rect.x, rect.y, rect.width, rect.height, function(tile) {
+    if (!world.terrain.isWalkable(tile.type)) {
+      ret = true;
     }
+  });
+
+  if (!ret) {
+    $.each(world.idEntities, function(key, value) {
+      if (self.intersects(rect, value)) {
+        ret = true;
+        return false;
+      }
+    });
   }
-  return false;
+  return ret;
+}
+
+Input.prototype.intersects = function(rect, entity) {
+  if ((rect.x >= entity.x + entity.width) || (rect.x + rect.width <= entity.x) || (rect.y >= entity.y + entity.height)
+      || (rect.y + rect.height <= entity.y)) {
+    return false;
+  }
+  return true;
 }
 
 Input.prototype.listen = function() {
@@ -110,7 +162,9 @@ Input.prototype.listen = function() {
   var consoleVisible = false;
   $(window).keydown(function(e) {
     e.key = e.key.toLowerCase();
-    if (e.key == "enter") {
+    if (e.key == " ") {
+      self.interact();
+    } else if (e.key == "enter") {
       if (consoleVisible) {
         var text = $(".console input").val().trim();
         $(".console input").val("");

@@ -2,7 +2,6 @@ package glitter.server.model;
 
 import static ox.util.Functions.toSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
@@ -11,15 +10,12 @@ import ox.Json;
 import ox.Log;
 import ox.Rect;
 
-public class Player {
+public class Player extends Entity {
 
-  private static final AtomicLong idCounter = new AtomicLong();
   private static final Set<String> movementKeys = ImmutableSet.of("w", "a", "s", "d");
 
   public final ClientSocket socket;
   public World world;
-
-  public final long id = idCounter.getAndIncrement();
 
   public double x, y, width = 48, height = 64;
 
@@ -101,6 +97,12 @@ public class Player {
     return false;
   }
 
+  private void interact(long entityId) {
+    Log.debug("interact: " + entityId);
+
+    TreasureChest chest = (TreasureChest) world.idEntities.get(entityId);
+  }
+
   private void handleMessage(String msg) {
     Json json = new Json(msg);
     String command = json.get("command");
@@ -115,9 +117,13 @@ public class Player {
           .with("x", x)
           .with("y", y)
           .with("keys", Json.array(keysToTransmit)), this);
+    } else if (command.equals("interact")) {
+      long entityId = json.getLong("entityId");
+      interact(entityId);
     } else if (command.equals("consoleInput")) {
       world.console.handle(this, json.get("text"));
     } else {
+      Log.debug(json);
       Log.error("Player.java: Don't know how to handle command: " + command);
     }
   }

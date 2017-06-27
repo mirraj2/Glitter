@@ -1,4 +1,4 @@
-package glitter.server.gen.terrain;
+package glitter.server.gen.world;
 
 import static ox.util.Utils.propagate;
 import java.util.Map;
@@ -7,9 +7,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Sets;
 import glitter.server.arch.GRandom;
-import glitter.server.gen.terrain.Traversals.TState;
-import glitter.server.gen.terrain.perlin.ContinentsAndIslands;
-import glitter.server.gen.terrain.perlin.NoiseFunction;
+import glitter.server.gen.world.Traversals.TState;
+import glitter.server.gen.world.perlin.ContinentsAndIslands;
+import glitter.server.gen.world.perlin.NoiseFunction;
 import ox.Log;
 
 /**

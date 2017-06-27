@@ -1,14 +1,18 @@
-package glitter.server.gen.terrain;
+package glitter.server.gen.world;
 
 import java.util.List;
 import com.google.common.collect.Lists;
 import glitter.server.arch.GMath;
 import glitter.server.arch.GRandom;
 import glitter.server.model.Terrain;
+import glitter.server.model.Terrain.TileLoc;
 import glitter.server.model.Tile;
+import glitter.server.model.TreasureChest;
+import glitter.server.model.World;
 import ox.Log;
+import ox.Rect;
 
-public class TerrainGen {
+public class WorldGen {
 
   private final GRandom rand = new GRandom();
 
@@ -19,7 +23,7 @@ public class TerrainGen {
   private final TerrainSmoother smoother = new TerrainSmoother(threshold);
   private final BridgeBuilder bridgeBuilder = new BridgeBuilder(rand, threshold);
 
-  private Terrain generate(int minTiles) {
+  private World generate(int minTiles) {
     Log.info("Generating terrain (%d tiles)", minTiles);
 
     Islands islands = islandFinder.findIslands(minTiles);
@@ -29,15 +33,21 @@ public class TerrainGen {
     bridgeBuilder.genBridges(islands);
 
     Tile[][] tiles = createTiles(islands);
+    Terrain terrain = new Terrain(tiles);
+    World ret = new World(terrain);
 
-    genTreasureChests(islands, tiles);
+    for (TreasureChest chest : genTreasureChests(islands, terrain)) {
+      ret.idEntities.put(chest.id, chest);
+    }
 
     Log.debug("Finished generating terrain (%d x %d)", tiles.length, tiles[0].length);
 
-    return new Terrain(tiles);
+    return ret;
   }
 
-  private void genTreasureChests(Islands islands, Tile[][] tiles) {
+  private List<TreasureChest> genTreasureChests(Islands islands, Terrain terrain) {
+    List<TreasureChest> ret = Lists.newArrayList();
+
     for (Island island : islands) {
       // on average, spawn 1 treasure chest for every 200 tiles
       int numChests = GMath.round(island.points.size() / 200 * (1 + rand.gauss() * .10));
@@ -45,24 +55,39 @@ public class TerrainGen {
         numChests = 1;
       }
       Log.debug("island will have %d chests", numChests);
-      List<Point> chestLocations = Lists.newArrayList();
+      List<TreasureChest> islandChests = Lists.newArrayList();
       int minDistance = 20;
       outerloop: while (numChests > 0) {
 
         Point p = rand.random(island.points);
-        // check to see if this chest location is too close to another chest
-        for (Point pp : chestLocations) {
-          if (GMath.distSquared(p, pp) < minDistance * minDistance) {
+        Rect r = new Rect(p.x * Tile.SIZE, p.y * Tile.SIZE, TreasureChest.WIDTH, TreasureChest.HEIGHT);
+        r.x += rand.nextInt(Tile.SIZE) - Tile.SIZE / 2;
+        r.y += rand.nextInt(Tile.SIZE) - Tile.SIZE / 2;
+
+        // first check to see if this chest is not overlapping a bad tile
+        List<TileLoc> unwalkable = terrain.getTilesIntersecting(r, loc -> {
+          return !loc.tile.isWalkable();
+        });
+
+        if (!unwalkable.isEmpty()) {
+          continue outerloop;
+        }
+
+        for (TreasureChest chest : islandChests) {
+          if (GMath.distSquared(chest.x, chest.y, r.x, r.y) < minDistance * minDistance) {
             minDistance = Math.max(minDistance - 1, 0);
             continue outerloop;
           }
         }
 
-        chestLocations.add(p);
-        tiles[p.x][p.y] = Tile.CHEST;
+        TreasureChest chest = new TreasureChest(r.x, r.y);
+        islandChests.add(chest);
+        ret.add(chest);
         numChests--;
       }
     }
+
+    return ret;
   }
 
   private Tile[][] createTiles(Islands islands) {
@@ -89,9 +114,9 @@ public class TerrainGen {
     return ret;
   }
 
-  public static Terrain generateFor(int numPlayers) {
+  public static World generateFor(int numPlayers) {
     // let's give each player about 2000 tiles of space
-    return new TerrainGen().generate(numPlayers * 2000);
+    return new WorldGen().generate(numPlayers * 2000);
   }
 
 }

@@ -1,6 +1,6 @@
 package glitter.server.arch;
 
-import glitter.server.gen.terrain.Point;
+import glitter.server.gen.world.Point;
 
 public class GMath {
 
@@ -12,10 +12,19 @@ public class GMath {
     }
   }
 
+  public static int floor(double d) {
+    return (int) d;
+  }
+
   public static double distSquared(Point a, Point b) {
-    double xDiff = a.x - b.x;
-    double yDiff = a.y - b.y;
+    return distSquared(a.x, a.y, b.x, b.y);
+  }
+
+  public static double distSquared(double x, double y, double x2, double y2) {
+    double xDiff = x - x2;
+    double yDiff = y - y2;
     return xDiff * xDiff + yDiff * yDiff;
   }
+
 
 }
