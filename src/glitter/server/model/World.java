@@ -1,5 +1,6 @@
 package glitter.server.model;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static ox.util.Utils.random;
 import java.util.Collection;
 import java.util.Map;
@@ -64,6 +65,15 @@ public class World {
     sendToAll(Json.object()
         .with("command", "removePlayer")
         .with("id", player.id));
+  }
+
+  public void removeEntity(long entityId) {
+    Entity removed = idEntities.remove(entityId);
+    checkNotNull(removed, "Could not find entity: " + entityId);
+
+    sendToAll(Json.object()
+        .with("command", "removeEntity")
+        .with("id", entityId));
   }
 
   private Json createAddPlayerJson(Player p) {

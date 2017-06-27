@@ -98,9 +98,10 @@ public class Player extends Entity {
   }
 
   private void interact(long entityId) {
-    Log.debug("interact: " + entityId);
-
     TreasureChest chest = (TreasureChest) world.idEntities.get(entityId);
+    chest.open();
+
+    world.removeEntity(entityId);
   }
 
   private void handleMessage(String msg) {

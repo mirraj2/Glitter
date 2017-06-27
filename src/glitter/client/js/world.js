@@ -66,6 +66,15 @@ World.prototype.removeAllPlayers = function() {
   this.players.removeChildren();
 }
 
+World.prototype.removeEntity = function(entityId) {
+  var entity = this.idEntities[entityId];
+  delete this.idEntities[entityId];
+  this.entities.removeChild(entity.sprite);
+  
+  //we may have the spacebar interaction UI up and need to remove it.
+  window.input.findInteraction();
+}
+
 World.prototype.renderTiles = function() {
   this.tiles.removeChildren();
 

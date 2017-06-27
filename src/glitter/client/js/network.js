@@ -20,10 +20,17 @@ Network.prototype.connectToServer = function(ip, port) {
 }
 
 Network.prototype.handleMessage = function(msg) {
-   console.log(msg);
+  console.log(msg);
   var command = msg.command;
-  if (command == "enterWorld") {
-    if($(".countdown").is(":visible")){
+  if (command == "playerState") {
+    var player = world.idPlayers[msg.id];
+    player.setX(msg.x);
+    player.setY(msg.y);
+    player.setKeys(msg.keys);
+  } else if (command == "removeEntity") {
+    world.removeEntity(msg.id);
+  } else if (command == "enterWorld") {
+    if ($(".countdown").is(":visible")) {
       $(".numPlayers label").text("alive");
       $(".countdown").hide();
     }
@@ -40,11 +47,6 @@ Network.prototype.handleMessage = function(msg) {
   } else if (command == "takeControl") {
     window.me = world.idPlayers[msg.id];
     $(".numPlayers").show();
-  } else if (command == "playerState") {
-    var player = world.idPlayers[msg.id];
-    player.setX(msg.x);
-    player.setY(msg.y);
-    player.setKeys(msg.keys);
   } else if (command == "countdown") {
     window.gameStartTime = Date.now() + msg.millisLeft;
     $(".countdown").fadeIn();
