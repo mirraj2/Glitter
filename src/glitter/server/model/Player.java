@@ -1,11 +1,13 @@
 package glitter.server.model;
 
 import static ox.util.Functions.toSet;
+import java.util.List;
 import java.util.Set;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import bowser.websocket.ClientSocket;
+import glitter.server.model.Terrain.TileLoc;
 import ox.Json;
 import ox.Log;
 import ox.Rect;
@@ -16,8 +18,6 @@ public class Player extends Entity {
 
   public final ClientSocket socket;
   public World world;
-
-  public double x, y, width = 48, height = 64;
 
   public double speed = 3;
 
@@ -31,6 +31,8 @@ public class Player extends Entity {
   private final Rect collisionRect = new Rect();
 
   public Player(ClientSocket socket) {
+    super(48, 64);
+
     this.socket = socket;
 
     socket.onMessage(this::handleMessage);
@@ -68,32 +70,32 @@ public class Player extends Entity {
   }
 
   private void move(double dx, double dy) {
-    collisionRect.x = x + dx + hitbox.x;
-    collisionRect.y = y + dy + hitbox.y;
+    collisionRect.x = bounds.x + dx + hitbox.x;
+    collisionRect.y = bounds.y + dy + hitbox.y;
     collisionRect.w = hitbox.w;
     collisionRect.h = hitbox.h;
 
-    if (this.intersectsBadTerrain(collisionRect)) {
+    if (this.isCollision(collisionRect)) {
       return;
     }
 
-    x += dx;
-    y += dy;
+    bounds.x += dx;
+    bounds.y += dy;
   }
 
-  private boolean intersectsBadTerrain(Rect r) {
-    int minI = (int) Math.floor(r.x / Tile.SIZE);
-    int minJ = (int) Math.floor(r.y / Tile.SIZE);
-    int maxI = (int) Math.floor((r.x + r.w) / Tile.SIZE);
-    int maxJ = (int) Math.floor((r.y + r.h) / Tile.SIZE);
+  private boolean isCollision(Rect r) {
+    List<TileLoc> collisions = world.terrain.getTilesIntersecting(r, t -> !world.terrain.isWalkable(t.i, t.j));
 
-    for (int i = minI; i <= maxI; i++) {
-      for (int j = minJ; j <= maxJ; j++) {
-        if (!world.terrain.isWalkable(i, j)) {
-          return true;
-        }
+    if (!collisions.isEmpty()) {
+      return true;
+    }
+
+    for (Entity e : world.idEntities.values()) {
+      if (r.intersects(e.bounds)) {
+        return true;
       }
     }
+
     return false;
   }
 
@@ -108,15 +110,15 @@ public class Player extends Entity {
     Json json = new Json(msg);
     String command = json.get("command");
     if (command.equals("myState")) {
-      x = json.getDouble("x");
-      y = json.getDouble("y");
+      bounds.x = json.getDouble("x");
+      bounds.y = json.getDouble("y");
       keys = toSet(json.getJson("keys").asStringArray(), s -> s.toLowerCase());
       Set<String> keysToTransmit = Sets.intersection(keys, movementKeys);
       world.sendToAll(Json.object()
           .with("command", "playerState")
           .with("id", id)
-          .with("x", x)
-          .with("y", y)
+          .with("x", bounds.x)
+          .with("y", bounds.y)
           .with("keys", Json.array(keysToTransmit)), this);
     } else if (command.equals("interact")) {
       long entityId = json.getLong("entityId");
@@ -154,8 +156,8 @@ public class Player extends Entity {
   }
 
   public void moveToTile(int i, int j) {
-    x = i * Tile.SIZE;
-    y = j * Tile.SIZE + Tile.SIZE - height;
+    bounds.x = i * Tile.SIZE;
+    bounds.y = j * Tile.SIZE + Tile.SIZE - bounds.h;
   }
 
 }

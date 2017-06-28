@@ -138,14 +138,17 @@ Input.prototype.isCollision = function(rect) {
     }
   });
 
-  if (!ret) {
-    $.each(world.idEntities, function(key, value) {
-      if (self.intersects(rect, value)) {
-        ret = true;
-        return false;
-      }
-    });
+  if (ret) {
+    return true;
   }
+
+  $.each(world.idEntities, function(key, value) {
+    if (self.intersects(rect, value)) {
+      ret = true;
+      return false;
+    }
+  });
+
   return ret;
 }
 

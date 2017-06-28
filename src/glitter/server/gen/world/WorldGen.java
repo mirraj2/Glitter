@@ -74,7 +74,7 @@ public class WorldGen {
         }
 
         for (TreasureChest chest : islandChests) {
-          if (GMath.distSquared(chest.x, chest.y, r.x, r.y) < minDistance * minDistance) {
+          if (GMath.distSquared(chest.bounds.x, chest.bounds.y, r.x, r.y) < minDistance * minDistance) {
             minDistance = Math.max(minDistance - 1, 0);
             continue outerloop;
           }

@@ -81,8 +81,8 @@ public class World {
         .with("command", "addPlayer")
         .with("player", Json.object()
             .with("id", p.id)
-            .with("x", p.x)
-            .with("y", p.y));
+            .with("x", p.bounds.x)
+            .with("y", p.bounds.y));
   }
 
   private void spawnInRandomLocation(Player player) {
