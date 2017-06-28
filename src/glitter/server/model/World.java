@@ -6,18 +6,24 @@ import java.util.Collection;
 import java.util.Map;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import glitter.server.arch.GRandom;
+import glitter.server.service.LootMaster;
 import ox.Json;
 import ox.Log;
 
 public class World {
 
+  public final GRandom rand;
   public final Terrain terrain;
+  public final LootMaster lootMaster;
   public Collection<Player> players = Lists.newCopyOnWriteArrayList();
   public final Map<Long, Entity> idEntities = Maps.newConcurrentMap();
   public final AdminConsole console = new AdminConsole(this);
 
-  public World(Terrain terrain) {
+  public World(GRandom rand, Terrain terrain) {
+    this.rand = rand;
     this.terrain = terrain;
+    this.lootMaster = new LootMaster(rand);
   }
 
   public void start() {

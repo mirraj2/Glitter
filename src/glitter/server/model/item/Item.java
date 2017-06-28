@@ -1,0 +1,37 @@
+package glitter.server.model.item;
+
+import glitter.server.model.Entity;
+import glitter.server.model.Tile;
+import ox.Json;
+
+public abstract class Item extends Entity {
+
+  public final String name;
+  public final Rarity rarity;
+  public final String flavorText = "";
+
+  public Item(String name, Rarity rarity) {
+    super(Tile.SIZE, Tile.SIZE);
+
+    this.name = name;
+    this.rarity = rarity;
+  }
+
+  @Override
+  public Json toJson() {
+    return Json.object()
+        .with("name", name)
+        .with("rarity", rarity)
+        .with("flavorText", flavorText);
+  }
+
+  @Override
+  public String toString() {
+    return name;
+  }
+
+  public static enum Rarity {
+    COMMON, RARE, EPIC, LEGENDARY;
+  }
+
+}

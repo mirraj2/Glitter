@@ -23,7 +23,7 @@ public class GRandom extends Random {
 
   public <T> T random(Collection<T> c) {
     if (c.isEmpty()) {
-      return null;
+      throw new RuntimeException("Can't get a random element from an empty collection.");
     }
     return Iterables.get(c, random(c.size()));
   }

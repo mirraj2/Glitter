@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import bowser.websocket.ClientSocket;
 import glitter.server.model.Terrain.TileLoc;
+import glitter.server.model.item.Item;
 import ox.Json;
 import ox.Log;
 import ox.Rect;
@@ -102,6 +103,11 @@ public class Player extends Entity {
   private void interact(long entityId) {
     TreasureChest chest = (TreasureChest) world.idEntities.get(entityId);
     chest.open();
+
+    List<Item> choices = world.lootMaster.generateChoices();
+    send(Json.object()
+        .with("command", "choose")
+        .with("choices", Json.array(choices, Item::toJson)));
 
     world.removeEntity(entityId);
   }
