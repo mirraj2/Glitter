@@ -1,0 +1,70 @@
+.loot-chooser {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  background: #393939;
+  padding: 32px;
+  white-space: nowrap;
+}
+
+.loot-chooser h1 {
+  text-align: center;
+  margin-top: -8px;
+}
+
+.loot {
+  display: inline-block;
+  position: relative;
+  background: black;
+  cursor: pointer;
+  pointer-events: all;
+  margin-right: 24px;
+  min-width: 200px;
+  white-space: normal;
+  border: solid 1px black;
+}
+
+.loot img {
+  width: 256px;
+}
+
+.loot .top {
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, .5);
+  opacity: 0;
+  transition: .3s;
+}
+
+.loot .name {
+  font-size: 22px;
+  display: inline-block;
+}
+
+.loot .mana {
+  color: #446fff;
+  float: right;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+.loot .description {
+  position: absolute;
+  bottom: 0px;
+  padding: 16px;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, .5);
+  opacity: 0;
+  transition: .3s;
+  width: 100%;
+}
+
+.loot:hover .top, .loot:hover .description {
+  opacity: 1;
+}
+

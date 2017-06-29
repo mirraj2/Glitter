@@ -19,10 +19,14 @@ public abstract class Item extends Entity {
 
   @Override
   public Json toJson() {
-    return Json.object()
+    Json ret = Json.object()
+        .with("id", id)
         .with("name", name)
-        .with("rarity", rarity)
-        .with("flavorText", flavorText);
+        .with("rarity", rarity);
+    if (!flavorText.isEmpty()) {
+      ret.with("flavorText", flavorText);
+    }
+    return ret;
   }
 
   @Override

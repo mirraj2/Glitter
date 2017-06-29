@@ -7,8 +7,14 @@ function Input() {
 
   // whether the user has pressed any keys since the last update
   this.dirty = false;
-
   this.interactionEntity = null;
+  this.allowMovement = true;
+}
+
+Input.prototype.haltMovement = function() {
+  this.allowMovement = false;
+  me.keys = {};
+  this.sendMyState();
 }
 
 Input.prototype.interact = function() {
@@ -20,6 +26,20 @@ Input.prototype.interact = function() {
   }
 }
 
+Input.prototype.sendMyState = function() {
+  var keyList = [];
+  Object.keys(me.keys).forEach(function(key) {
+    keyList.push(key);
+  });
+  network.send({
+    command : "myState",
+    keys : keyList,
+    x : me.x,
+    y : me.y
+  });
+  this.dirty = false;
+}
+
 Input.prototype.update = function(t) {
   var self = this;
 
@@ -27,22 +47,14 @@ Input.prototype.update = function(t) {
     return;
   }
 
-  if (this.dirty) {
-    var keyList = [];
-    Object.keys(me.keys).forEach(function(key) {
-      keyList.push(key);
-    });
-    network.send({
-      command : "myState",
-      keys : keyList,
-      x : me.x,
-      y : me.y
-    });
-    this.dirty = false;
+  if (this.dirty && this.allowMovement) {
+    self.sendMyState();
   }
 
   $.each(world.idPlayers, function(id, player) {
-    self.movePlayer(player, t);
+    if (self.allowMovement || player != window.me) {
+      self.movePlayer(player, t);
+    }
   });
 }
 

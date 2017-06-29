@@ -13,6 +13,7 @@ html, body {
 
 .gui {
   pointer-events: none;
+  user-select: none;
   position: fixed;
 }
 
@@ -108,4 +109,8 @@ html, body {
   left: 50%;
   top: calc(50% + 80px);
   transform: translateX(-50%);
+}
+
+.prototype {
+  display: none !important;
 }

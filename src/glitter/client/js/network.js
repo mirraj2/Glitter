@@ -6,6 +6,7 @@ function Network(ip, port) {
   });
 
   this.socket = socket;
+  this.lootChooser = new LootChooser();
 }
 
 Network.prototype.send = function(msg) {
@@ -29,6 +30,8 @@ Network.prototype.handleMessage = function(msg) {
     player.setKeys(msg.keys);
   } else if (command == "removeEntity") {
     world.removeEntity(msg.id);
+  } else if (command == "choose") {
+    network.lootChooser.show(msg.choices);
   } else if (command == "enterWorld") {
     if ($(".countdown").is(":visible")) {
       $(".numPlayers label").text("alive");

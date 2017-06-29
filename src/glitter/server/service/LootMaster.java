@@ -3,10 +3,12 @@ package glitter.server.service;
 import static ox.util.Utils.propagate;
 import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.Map;
 import com.google.common.base.Joiner;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import glitter.server.arch.ClasspathScanner;
 import glitter.server.arch.GRandom;
@@ -18,6 +20,7 @@ import ox.Log;
 public class LootMaster {
 
   private static final Multimap<Rarity, Spell> raritySpells = ArrayListMultimap.create();
+  private static final Map<Class<?>, Constructor<? extends Item>> constructorCache = Maps.newConcurrentMap();
 
   private final GRandom rand;
 
@@ -36,7 +39,6 @@ public class LootMaster {
       nChoices = 2;
     }
 
-
     List<Item> ret = Lists.newArrayListWithCapacity(nChoices);
     for (int i = 0; i < nChoices; i++) {
       ret.add(generateItem(rarity));
@@ -49,10 +51,8 @@ public class LootMaster {
 
   private Item generateItem(Rarity rarity) {
     Spell ret = rand.random(raritySpells.get(rarity));
-    return newInstance(ret.getClass());
+    return newInstance(ret.getClass(), rand);
   }
-
-
 
   private Rarity randomRarity() {
     double d = rand.nextDouble();
@@ -67,10 +67,20 @@ public class LootMaster {
     }
   }
 
-  private static Item newInstance(Class<? extends Item> itemClass) {
+  private static Item newInstance(Class<? extends Item> itemClass, GRandom rand) {
     try {
-      Constructor<? extends Item> c = itemClass.getConstructor();
-      return c.newInstance();
+      Constructor<? extends Item> c = constructorCache.computeIfAbsent(itemClass, i -> {
+        try {
+          return itemClass.getConstructor(GRandom.class);
+        } catch (Exception e) {
+          try {
+            return itemClass.getConstructor();
+          } catch (Exception e2) {
+            throw propagate(e2);
+          }
+        }
+      });
+      return c.newInstance(rand);
     } catch (Exception e) {
       throw propagate(e);
     }
@@ -79,8 +89,13 @@ public class LootMaster {
   static {
     Stopwatch watch = Stopwatch.createStarted();
     int numItems = 0;
+
+    // this one is just used to create the root instances. The random numbers don't actually matter for these b/c these
+    // instances should never be cast or used in a game.
+    GRandom rand = new GRandom(123);
+
     for (Class<? extends Item> c : ClasspathScanner.findSubclasses(Item.class)) {
-      Item item = newInstance(c);
+      Item item = newInstance(c, rand);
       if (item instanceof Spell) {
         raritySpells.put(item.rarity, (Spell) item);
       }

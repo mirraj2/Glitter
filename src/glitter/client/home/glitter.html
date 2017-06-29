@@ -1,7 +1,8 @@
-<head css="glitter.css" js="/lib/jquery.min.js
+<head css="glitter.css loot-chooser.css" js="/lib/jquery.min.js
       https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.3/pixi.min.js
-      /lib/sockets.js
-      /lib/utils.js tile.js terrain.js player.js minimap.js world.js canvas.js camera.js gameloop.js network.js input.js">
+      /lib/sockets.js /lib/utils.js 
+      ui/loot-chooser.js ui/minimap.js
+      tile.js terrain.js player.js world.js canvas.js camera.js gameloop.js network.js input.js">
 
 <import js="glitter.js">
 
@@ -25,6 +26,19 @@
     <img src="/spacebar.png">
   </div>
   
+  <div class="hidden loot-chooser">
+    <h1>Choose your loot</h1>
+  </div>
+  
   <div class="fps">
   </div>
+</div>
+
+<div class="loot prototype">
+  <img src="">
+  <div class="top">
+    <div class="name"></div>
+    <div class="mana"></div>
+  </div>
+  <div class="description"></div>
 </div>

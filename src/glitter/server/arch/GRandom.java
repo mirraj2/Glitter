@@ -21,6 +21,10 @@ public class GRandom extends Random {
     return super.nextGaussian();
   }
 
+  public int gauss(double average, double deviation) {
+    return GMath.round(average + deviation * gauss());
+  }
+
   public <T> T random(Collection<T> c) {
     if (c.isEmpty()) {
       throw new RuntimeException("Can't get a random element from an empty collection.");

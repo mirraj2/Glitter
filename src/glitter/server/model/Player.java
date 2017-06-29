@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Set;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import bowser.websocket.ClientSocket;
 import glitter.server.model.Terrain.TileLoc;
 import glitter.server.model.item.Item;
+import glitter.server.model.item.spell.Spell;
 import ox.Json;
 import ox.Log;
 import ox.Rect;
@@ -26,10 +28,20 @@ public class Player extends Entity {
 
   private Set<String> keys = ImmutableSet.of();
 
+  private final List<Spell> actionBar = Lists.newArrayListWithCapacity(10);
+  private int numSpellSlots = 2;
+
+  private final List<Item> inventory = Lists.newArrayList();
+
   private final Rect hitbox = new Rect(12, 48, 24, 16);
 
   // used for collision detection
   private final Rect collisionRect = new Rect();
+
+  /**
+   * If we are currently looting a chest, this will have the choices this player is choosing between.
+   */
+  private List<Item> lootChoices = null;
 
   public Player(ClientSocket socket) {
     super(48, 64);
@@ -100,14 +112,42 @@ public class Player extends Entity {
     return false;
   }
 
+  private void chooseLoot(long itemId) {
+    synchronized (lootChoices) {
+      for (Item item : lootChoices) {
+        if (item.id == itemId) {
+          loot(item);
+          lootChoices = null;
+          return;
+        }
+      }
+      throw new RuntimeException("Invalid item id: " + itemId);
+    }
+  }
+
+  private void loot(Item item) {
+    Log.info("%s just looted %s", this, item);
+    if (item instanceof Spell) {
+      Spell spell = (Spell) item;
+      if (actionBar.size() < numSpellSlots) {
+        actionBar.add(spell);
+        numSpellSlots++;
+      } else {
+        inventory.add(spell);
+      }
+    } else {
+      throw new RuntimeException("Not Implemented");
+    }
+  }
+
   private void interact(long entityId) {
     TreasureChest chest = (TreasureChest) world.idEntities.get(entityId);
     chest.open();
 
-    List<Item> choices = world.lootMaster.generateChoices();
+    this.lootChoices = world.lootMaster.generateChoices();
     send(Json.object()
         .with("command", "choose")
-        .with("choices", Json.array(choices, Item::toJson)));
+        .with("choices", Json.array(lootChoices, Item::toJson)));
 
     world.removeEntity(entityId);
   }
@@ -129,6 +169,8 @@ public class Player extends Entity {
     } else if (command.equals("interact")) {
       long entityId = json.getLong("entityId");
       interact(entityId);
+    } else if (command.equals("choose")) {
+      chooseLoot(json.getLong("id"));
     } else if (command.equals("consoleInput")) {
       world.console.handle(this, json.get("text"));
     } else {
@@ -164,6 +206,11 @@ public class Player extends Entity {
   public void moveToTile(int i, int j) {
     bounds.x = i * Tile.SIZE;
     bounds.y = j * Tile.SIZE + Tile.SIZE - bounds.h;
+  }
+
+  @Override
+  public String toString() {
+    return "Player " + id;
   }
 
 }

@@ -11,7 +11,7 @@ GameLoop.prototype.start = function() {
 
   function gameLoop() {
     var now = performance.now();
-    if (now == lastTime) {
+    if (now == lastTime || window.noLoop) {
       requestAnimationFrame(gameLoop);
       return;
     }
@@ -34,6 +34,7 @@ GameLoop.prototype.start = function() {
       minimap.update();
       t -= MAX_UPDATE_TIME;
     }
+
     canvas.render();
 
     // update the countdown timer
