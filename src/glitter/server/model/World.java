@@ -97,7 +97,9 @@ public class World {
       int j = random(terrain.height);
       if (terrain.tiles[i][j].isWalkable()) {
         player.moveToTile(i, j);
-        return;
+        if (!player.isCollision(player.getCollisionRect())) {
+          return;
+        }
       }
     }
   }

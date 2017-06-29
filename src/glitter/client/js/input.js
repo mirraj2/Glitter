@@ -206,6 +206,8 @@ Input.prototype.listen = function() {
         $(".console input").focus();
         consoleVisible = true;
       }
+    } else if (e.which >= 48 && e.which < 58) {
+      window.quickbar.select(e.which - 48);
     }
     if (consoleVisible) {
       return;

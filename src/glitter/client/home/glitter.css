@@ -12,7 +12,6 @@ html, body {
 }
 
 .gui {
-  pointer-events: none;
   user-select: none;
   position: fixed;
 }

@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import bowser.websocket.ClientSocket;
+import glitter.server.arch.SwappingQueue;
 import glitter.server.model.Terrain.TileLoc;
 import glitter.server.model.item.Item;
 import glitter.server.model.item.spell.Spell;
@@ -24,7 +25,7 @@ public class Player extends Entity {
 
   public double speed = 3;
 
-  private final Json outboundMessageBuffer = Json.array();
+  private final SwappingQueue<Json> outboundMessageBuffer = new SwappingQueue<>();
 
   private Set<String> keys = ImmutableSet.of();
 
@@ -83,12 +84,11 @@ public class Player extends Entity {
   }
 
   private void move(double dx, double dy) {
-    collisionRect.x = bounds.x + dx + hitbox.x;
-    collisionRect.y = bounds.y + dy + hitbox.y;
-    collisionRect.w = hitbox.w;
-    collisionRect.h = hitbox.h;
+    Rect r = getCollisionRect();
+    r.x += dx;
+    r.y += dy;
 
-    if (this.isCollision(collisionRect)) {
+    if (this.isCollision(r)) {
       return;
     }
 
@@ -96,7 +96,15 @@ public class Player extends Entity {
     bounds.y += dy;
   }
 
-  private boolean isCollision(Rect r) {
+  public Rect getCollisionRect() {
+    collisionRect.x = bounds.x + hitbox.x;
+    collisionRect.y = bounds.y + hitbox.y;
+    collisionRect.w = hitbox.w;
+    collisionRect.h = hitbox.h;
+    return collisionRect;
+  }
+
+  public boolean isCollision(Rect r) {
     List<TileLoc> collisions = world.terrain.getTilesIntersecting(r, t -> !world.terrain.isWalkable(t.i, t.j));
 
     if (!collisions.isEmpty()) {
@@ -191,7 +199,11 @@ public class Player extends Entity {
       return;
     }
     try {
-      socket.send(outboundMessageBuffer);
+      Json array = Json.array();
+      for (Json message : outboundMessageBuffer.swap()) {
+        array.add(message);
+      }
+      socket.send(array);
     } catch (Exception e) {
       if ("Broken pipe".equals(Throwables.getRootCause(e).getMessage())) {
         // ignore
