@@ -1,31 +1,35 @@
 <head css="glitter.css loot-chooser.css player-ui.css quickbar.css" js="/lib/jquery.min.js
       https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.3/pixi.min.js
-      /lib/sockets.js /lib/utils.js 
+      /lib/sockets.js /lib/utils.js
       ui/loot-chooser.js ui/minimap.js ui/quickbar.js
-      tile.js terrain.js player.js world.js canvas.js camera.js gameloop.js network.js input.js">
+      tile.js terrain.js player.js world.js canvas.js gameloop.js network.js input.js bundle.js">
 
-<import js="glitter.js">
+<script>
+  //only two global variables
+  window.websocketIP = "$$(websocketIP)";
+  window.websocketPort = $$(websocketPort);
+</script>
 
 <div class="gui">
   <div class="hidden numPlayers">
     <div class="count">-</div>
     <label>joined</label>
   </div>
-  
+
   <div class="hidden countdown">
     <label>round starts in</label>
     <div class="num">60</div>
   </div>
-  
+
   <div class="hidden console">
     <div class="output"></div>
     <input>
   </div>
-  
+
   <div class="hidden spacebar">
     <img src="/spacebar.png">
   </div>
-  
+
   <div class="player-ui">
     <div class="quickbar">
       <div class="selected slot"></div>
@@ -42,11 +46,11 @@
       </div>
     </div>
   </div>
-  
+
   <div class="hidden loot-chooser">
     <h1>Choose your loot</h1>
   </div>
-  
+
   <div class="fps">
   </div>
 </div>
