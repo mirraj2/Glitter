@@ -10,6 +10,8 @@ function Canvas() {
 
   var width = $("body").width(), height = $("body").height();
 
+  $(document).contextmenu(e=>e.preventDefault());
+  
   function onResize() {
     width = $("body").width();
     height = $("body").height();
