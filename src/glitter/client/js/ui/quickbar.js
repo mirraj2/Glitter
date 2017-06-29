@@ -15,7 +15,11 @@ Quickbar.prototype.select = function(index) {
 }
 
 Quickbar.prototype.selectSlot = function(slot) {
-  $(slot).addClass("selected").siblings().removeClass("selected");
+  slot = $(slot);
+  if (slot.hasClass("disabled")) {
+    return;
+  }
+  slot.addClass("selected").siblings().removeClass("selected");
 }
 
 Quickbar.prototype.add = function(item) {
@@ -35,4 +39,11 @@ Quickbar.prototype.getEmptySlot = function() {
     }
   }
   return null;
+}
+
+Quickbar.prototype.syncHealthAndMana = function() {
+  $(".health .text").text(Math.round(me.health) + " / " + me.maxHealth);
+  $(".mana .text").text(Math.round(me.mana) + " / " + me.maxMana);
+  $(".health .fill").css("width", 100 * me.health / me.maxHealth + "%");
+  $(".mana .fill").css("width", 100 * me.mana / me.maxMana + "%");
 }

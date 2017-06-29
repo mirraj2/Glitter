@@ -25,6 +25,9 @@ public class Player extends Entity {
 
   public double speed = 3;
 
+  public int maxHealth = 100, maxMana = 100;
+  public double health = maxHealth, mana = maxMana;
+
   private final SwappingQueue<Json> outboundMessageBuffer = new SwappingQueue<>();
 
   private Set<String> keys = ImmutableSet.of();
@@ -218,6 +221,18 @@ public class Player extends Entity {
   public void moveToTile(int i, int j) {
     bounds.x = i * Tile.SIZE;
     bounds.y = j * Tile.SIZE + Tile.SIZE - bounds.h;
+  }
+
+  @Override
+  public Json toJson() {
+    return Json.object()
+        .with("id", id)
+        .with("x", bounds.x)
+        .with("y", bounds.y)
+        .with("health", health)
+        .with("mana", mana)
+        .with("maxHealth", maxHealth)
+        .with("maxMana", maxMana);
   }
 
   @Override

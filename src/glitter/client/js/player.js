@@ -2,6 +2,10 @@ function Player(data) {
   this.id = data.id;
   this.x = data.x;
   this.y = data.y;
+  this.health = data.health;
+  this.mana = data.mana;
+  this.maxHealth = data.maxHealth;
+  this.maxMana = data.maxMana;
   this.width = 48;
   this.height = 64;
   this.sprite = null;

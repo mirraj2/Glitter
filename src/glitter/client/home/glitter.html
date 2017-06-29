@@ -1,4 +1,4 @@
-<head css="glitter.css loot-chooser.css quickbar.css" js="/lib/jquery.min.js
+<head css="glitter.css loot-chooser.css player-ui.css quickbar.css" js="/lib/jquery.min.js
       https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.3/pixi.min.js
       /lib/sockets.js /lib/utils.js 
       ui/loot-chooser.js ui/minimap.js ui/quickbar.js
@@ -26,9 +26,21 @@
     <img src="/spacebar.png">
   </div>
   
-  <div class="quickbar">
-    <div class="selected slot"></div>
-    <div class="slot"></div>
+  <div class="player-ui">
+    <div class="quickbar">
+      <div class="selected slot"></div>
+      <div class="slot"></div>
+    </div>
+    <div class="bars">
+      <div class="health">
+        <div class="fill"></div>
+        <span class=text></span>
+      </div>
+      <div class="mana">
+        <div class="fill"></div>
+        <span class=text></span>
+      </div>
+    </div>
   </div>
   
   <div class="hidden loot-chooser">

@@ -50,6 +50,7 @@ Network.prototype.handleMessage = function(msg) {
   } else if (command == "takeControl") {
     window.me = world.idPlayers[msg.id];
     $(".numPlayers").show();
+    quickbar.syncHealthAndMana();
   } else if (command == "countdown") {
     window.gameStartTime = Date.now() + msg.millisLeft;
     $(".countdown").fadeIn();
