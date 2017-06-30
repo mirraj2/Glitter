@@ -3,7 +3,7 @@ function interpolate (from, to, percent) {
   return from + percent * (to - from)
 }
 
-module.exports = function camera (options = {}) {
+module.exports = function camera () {
   let update = function (millis) {
     const w = $(window).width()
     const h = $(window).height()
