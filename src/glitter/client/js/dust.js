@@ -77,7 +77,7 @@ Emitter.prototype.resetParticle = function(particle) {
 }
 
 Emitter.prototype.init = function() {
-  this.container = new PIXI.Container(this.particleCount, {
+  this.container = new PIXI.particles.ParticleContainer(this.particleCount, {
     alpha : true
   });
   this.parent.addChild(this.container);

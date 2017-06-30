@@ -228,3 +228,7 @@ Input.prototype.listen = function() {
     $(this).focus();
   });
 }
+
+Input.prototype.onKeyDown = function() {
+  //TODO
+}
