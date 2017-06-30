@@ -43,8 +43,8 @@ MiniMap.prototype.onResize = function() {
 
 MiniMap.prototype.update = function() {
   if (window.me) {
-    this.tiles.x = Math.round(this.width / 2 - me.x / Tile.SIZE);
-    this.tiles.y = Math.round(this.height / 2 - me.y / Tile.SIZE);
+    this.tiles.x = this.width / 2 - me.x / Tile.SIZE;
+    this.tiles.y = this.height / 2 - me.y / Tile.SIZE;
   }
 }
 
