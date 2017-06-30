@@ -12,8 +12,8 @@ module.exports = function camera (options = {}) {
 
     if (me) {
       // move 10% of the way torwards the character's current position
-      world.container.x = Math.round(interpolate(world.container.x, w / 2 - (me.x + me.width / 2), millis / 2000))
-      world.container.y = Math.round(interpolate(world.container.y, h / 2 - (me.y + me.height / 2), millis / 2000))
+      world.container.x = interpolate(world.container.x, w / 2 - (me.x + me.width / 2), millis / 2000)
+      world.container.y = interpolate(world.container.y, h / 2 - (me.y + me.height / 2), millis / 2000)
     }
   }
 
