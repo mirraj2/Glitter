@@ -1,0 +1,21 @@
+{
+  "name": "glitter-client",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "main": "glitter.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "watch": "watchify js/glitter.js -v -o ../../bin/client/js/bundle.js --debug --verbose"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "watchify": "^3.9.0"
+  },
+  "dependencies": {
+    "ev-pubsub": "^2.2.0"
+  }
+}
