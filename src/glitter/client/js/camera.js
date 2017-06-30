@@ -18,8 +18,8 @@ function scalarLerp(p, n, t) {
 
 
 function pointLerp(p, n, t) {
-  p.x = Math.round(scalarLerp(p.x, n.x, t));
-  p.y = Math.round(scalarLerp(p.y, n.y, t));
+  p.x = scalarLerp(p.x, n.x, t);
+  p.y = scalarLerp(p.y, n.y, t);
 }
 
 

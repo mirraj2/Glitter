@@ -1,6 +1,7 @@
 function Canvas() {
   var renderer = PIXI.autoDetectRenderer($("body").width(), $("body").height(), {
-    antialias : true
+    antialias : true,
+    roundPixels: true
   });
   renderer.autoResize = true;
 
