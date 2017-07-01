@@ -1,31 +1,30 @@
 var Dust = (function() {
   var emitters = [];
-  var buffer = PIXI.RenderTexture.create(800, 600);
-  var bufferSprite = new PIXI.Sprite(buffer);
   return {
     emitters : emitters,
     update : function(millis) {
-      buffer.requiresUpdate = true;
-      for (var i = 0; i < this.emitters.length; i++) {
-        emitters[i].update(millis);
+      for (var i = emitters.length - 1; i >= 0; i--) {
+        var emitter = emitters[i];
+        if (!emitter.update(millis)) {
+          emitter.destroy();
+          emitters.splice(i, 1);
+        }
       }
-    },
-    init : function(container) {
-      container.addChild(bufferSprite);
-    },
-    buffer : buffer
+    }
   };
 })();
 
-function Emitter() {
+function Emitter(parent) {
   this.x = 0;
   this.y = 0;
   this.vx = 0;
   this.vy = 0;
+  this.life = 5000;
   this.particleCount = 100;
-  this.particleLife = 1000;
+  this.particleLife = 500;
   this.scaleAmount = 1;
   this.imageName = "particle.png";
+  this.parent = parent;
   Dust.emitters.push(this);
 }
 
@@ -55,17 +54,15 @@ Emitter.prototype.update = function(millis) {
   if (!this.container) {
     this.init();
   }
-  this.x += this.vx * millis / 1000;
-  this.y += this.vy * millis / 1000;
-  this.tickParticles(millis);
-  this.render();
-}
 
-Emitter.prototype.render = function() {
-  for (var i = 0; i < this.particles.length; i++) {
-    var particle = this.particles[i];
-    canvas.renderer.render(particle, Dust.buffer);
+  this.life -= millis;
+  if (this.life > 0) {
+    this.x += this.vx * millis / 1000;
+    this.y += this.vy * millis / 1000;
+    this.tickParticles(millis);
   }
+
+  return this.life > 0;
 }
 
 Emitter.prototype.tickParticles = function(millis) {
@@ -83,22 +80,30 @@ Emitter.prototype.tickParticles = function(millis) {
 }
 
 Emitter.prototype.resetParticle = function(particle) {
-  particle.x = this.x;
-  particle.y = this.y;
+  particle.x = this.x + this.offsetX;
+  particle.y = this.y + this.offsetY;
   particle.vx = (Math.random() - .5) * 100 / 1000;
   particle.vy = (Math.random() - .5) * 100 / 1000;
   particle.life = .9 * this.particleLife + Math.random() * .2 * this.particleLife;
 }
 
-Emitter.prototype.init = function() {
-  // this.container = new PIXI.Container(this.particleCount * 2, {
-  // alpha : true
-  // });
-  // this.parent.addChild(this.container);
+Emitter.prototype.destroy = function() {
+  this.parent.removeChild(this.container);
+  this.particles = null;
+}
 
+Emitter.prototype.init = function() {
+  this.container = new PIXI.Container(this.particleCount * 2, {
+    alpha : true
+  });
+  this.parent.addChild(this.container);
+
+  var texture = PIXI.Texture.fromImage(this.imageName);
+  this.offsetX = -this.scaleAmount * texture.width / 2;
+  this.offsetY = -this.scaleAmount * texture.height / 2;
   this.particles = new Array(this.particleCount);
   for (var i = 0; i < this.particleCount; i++) {
-    var particle = PIXI.Sprite.fromImage(this.imageName);
+    var particle = new PIXI.Sprite(texture);
 //    particle.blendMode = PIXI.BLEND_MODES.SCREEN;
     particle.scale.x = this.scaleAmount;
     particle.scale.y = this.scaleAmount;
@@ -106,7 +111,7 @@ Emitter.prototype.init = function() {
     this.resetParticle(particle);
     particle.life = Math.random() * this.particleLife;
     this.particles[i] = particle;
-    // this.container.addChild(particle);
+    this.container.addChild(particle);
   }
   this.started = true;
 

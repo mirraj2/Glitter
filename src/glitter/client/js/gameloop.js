@@ -26,6 +26,8 @@ GameLoop.prototype.start = function() {
 
     var currentFPS = 1000 / t;
     fps = Math.round(currentFPS * .1 + fps * .9);
+    
+    t = Math.min(t, 2000);
 
     while (t > 0) {
       var tickTime = Math.min(t, MAX_UPDATE_TIME);

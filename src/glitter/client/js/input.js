@@ -2,9 +2,9 @@
  * Listens for user input.
  */
 
-function Input(canvas) {
+function Input(parent) {
   this.rect = new PIXI.Rectangle();
-  this.spells = new Spells();
+  this.spells = new Spells(parent);
 
   // whether the user has pressed any keys since the last update
   this.dirty = false;

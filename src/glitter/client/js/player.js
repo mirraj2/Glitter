@@ -18,6 +18,14 @@ function Player(data) {
   this.keys = {};
 }
 
+Player.prototype.centerX = function() {
+  return this.x + this.width / 2;
+}
+
+Player.prototype.centerY = function() {
+  return this.y + this.height / 2;
+}
+
 Player.prototype.setX = function(x) {
   this.x = x;
   this.sprite.x = Math.round(x);
