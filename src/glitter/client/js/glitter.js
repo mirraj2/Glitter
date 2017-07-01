@@ -8,10 +8,11 @@ Glitter.prototype.initGame = function() {
   window.canvas = new Canvas();
   window.world = new World();
   window.camera = new Camera();
-  window.input = new Input();
+  window.input = new Input(canvas);
   window.minimap = new MiniMap();
   window.quickbar = new Quickbar();
   
+  Dust.init(canvas.stage);
   input.listen();
 
   var loop = new GameLoop(canvas);

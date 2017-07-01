@@ -15,3 +15,7 @@ Camera.prototype.update = function(millis) {
     world.container.y = this.interpolate(world.container.y, h / 2 - (me.y + me.height / 2), millis / 200);
   }
 }
+
+Camera.prototype.onPlayerSpawned = function() {
+  this.update(200);
+}

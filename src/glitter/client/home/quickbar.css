@@ -11,6 +11,8 @@
   opacity: .5;
   transition: .3s;
   vertical-align: bottom;
+  cursor: pointer;
+  pointer-events: all;
 }
 
 .quickbar .selected.slot {
@@ -21,4 +23,3 @@
   width: 100%;
   height: 100%;
 }
-

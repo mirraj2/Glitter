@@ -8,6 +8,8 @@ function Player(data) {
   this.maxMana = data.maxMana;
   this.width = 48;
   this.height = 64;
+  this.healthRegenPerSecond = 1;
+  this.manaRegenPerSecond = 5;
   this.sprite = null;
   this.hitbox = new PIXI.Rectangle(12, 48, 24, 16);
   this.flying = false;

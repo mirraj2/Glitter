@@ -1,16 +1,23 @@
 var Dust = (function() {
   var emitters = [];
+  var buffer = PIXI.RenderTexture.create(800, 600);
+  var bufferSprite = new PIXI.Sprite(buffer);
   return {
     emitters : emitters,
     update : function(millis) {
+      buffer.requiresUpdate = true;
       for (var i = 0; i < this.emitters.length; i++) {
         emitters[i].update(millis);
       }
-    }
+    },
+    init : function(container) {
+      container.addChild(bufferSprite);
+    },
+    buffer : buffer
   };
 })();
 
-function Emitter(parent) {
+function Emitter() {
   this.x = 0;
   this.y = 0;
   this.vx = 0;
@@ -19,7 +26,6 @@ function Emitter(parent) {
   this.particleLife = 1000;
   this.scaleAmount = 1;
   this.imageName = "particle.png";
-  this.parent = parent;
   Dust.emitters.push(this);
 }
 
@@ -52,6 +58,14 @@ Emitter.prototype.update = function(millis) {
   this.x += this.vx * millis / 1000;
   this.y += this.vy * millis / 1000;
   this.tickParticles(millis);
+  this.render();
+}
+
+Emitter.prototype.render = function() {
+  for (var i = 0; i < this.particles.length; i++) {
+    var particle = this.particles[i];
+    canvas.renderer.render(particle, Dust.buffer);
+  }
 }
 
 Emitter.prototype.tickParticles = function(millis) {
@@ -77,21 +91,22 @@ Emitter.prototype.resetParticle = function(particle) {
 }
 
 Emitter.prototype.init = function() {
-  this.container = new PIXI.particles.ParticleContainer(this.particleCount, {
-    alpha : true
-  });
-  this.parent.addChild(this.container);
+  // this.container = new PIXI.Container(this.particleCount * 2, {
+  // alpha : true
+  // });
+  // this.parent.addChild(this.container);
 
   this.particles = new Array(this.particleCount);
   for (var i = 0; i < this.particleCount; i++) {
     var particle = PIXI.Sprite.fromImage(this.imageName);
+//    particle.blendMode = PIXI.BLEND_MODES.SCREEN;
     particle.scale.x = this.scaleAmount;
     particle.scale.y = this.scaleAmount;
-    // particle.tint = 0xFF0000;
+    particle.tint = 0xf23026;
     this.resetParticle(particle);
     particle.life = Math.random() * this.particleLife;
     this.particles[i] = particle;
-    this.container.addChild(particle);
+    // this.container.addChild(particle);
   }
   this.started = true;
 

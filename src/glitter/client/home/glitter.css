@@ -25,6 +25,7 @@ html, body {
   background: rgba(100, 100, 100, .8);
   border-radius: 8px;
   border: solid thin rgba(255, 255, 255, .1);
+  pointer-events: none;
 }
 
 .numPlayers .count {
@@ -48,6 +49,7 @@ html, body {
   left: 12px;
   top: 12px;
   color: rgba(255, 255, 255, .2);
+  pointer-events: none;
 }
 
 .countdown {
@@ -64,6 +66,7 @@ html, body {
   background: rgba(100, 100, 100, .8);
   border-radius: 2px;
   border: solid thin rgba(255, 255, 255, .1);
+  pointer-events: none;
 }
 
 .countdown .num {

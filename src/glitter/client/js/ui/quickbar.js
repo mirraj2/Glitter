@@ -24,10 +24,14 @@ Quickbar.prototype.selectSlot = function(slot) {
 
 Quickbar.prototype.add = function(item) {
   var slot = this.getEmptySlot();
-  console.log(slot);
   if (slot) {
+    $(slot).data("item", item);
     $("<img>").attr("src", item.iconUrl).appendTo(slot);
   }
+}
+
+Quickbar.prototype.getSelectedItem = function() {
+  return $(".quickbar .selected.slot").data("item");
 }
 
 Quickbar.prototype.getEmptySlot = function() {
@@ -41,9 +45,19 @@ Quickbar.prototype.getEmptySlot = function() {
   return null;
 }
 
-Quickbar.prototype.syncHealthAndMana = function() {
-  $(".health .text").text(Math.round(me.health) + " / " + me.maxHealth);
-  $(".mana .text").text(Math.round(me.mana) + " / " + me.maxMana);
-  $(".health .fill").css("width", 100 * me.health / me.maxHealth + "%");
-  $(".mana .fill").css("width", 100 * me.mana / me.maxMana + "%");
+Quickbar.prototype.update = function(millis) {
+  if (window.me) {
+    me.health = Math.min(me.maxHealth, me.health + me.healthRegenPerSecond * millis / 1000);
+    me.mana = Math.min(me.maxMana, me.mana + me.manaRegenPerSecond * millis / 1000);
+    $(".health .text").text(Math.round(me.health) + " / " + me.maxHealth);
+    $(".mana .text").text(Math.round(me.mana) + " / " + me.maxMana);
+    this.interpBar($(".health .fill"), me.health / me.maxHealth, millis);
+    this.interpBar($(".mana .fill"), me.mana / me.maxMana, millis);
+  }
+}
+
+Quickbar.prototype.interpBar = function(bar, p, millis) {
+  var w = bar.width();
+  var w2 = p * bar.parent().width();
+  bar.css("width", w + (w2 - w) * Math.min(1, millis / 300) + "px");
 }

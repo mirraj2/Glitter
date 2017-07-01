@@ -2,13 +2,15 @@
  * Listens for user input.
  */
 
-function Input() {
+function Input(canvas) {
   this.rect = new PIXI.Rectangle();
+  this.spells = new Spells();
 
   // whether the user has pressed any keys since the last update
   this.dirty = false;
   this.interactionEntity = null;
   this.allowMovement = true;
+  this.consoleVisible = false;
 }
 
 Input.prototype.haltMovement = function() {
@@ -83,8 +85,9 @@ Input.prototype.movePlayer = function(player, t) {
   }
 
   if (dx != 0 && dy != 0) {
-    dx /= 1.4142135;// divide by sqrt(2)
-    dy /= 1.4142135;// divide by sqrt(2)
+    // divide by sqrt(2)
+    dx /= 1.4142135;
+    dy /= 1.4142135;
   }
 
   var moved = false;
@@ -174,49 +177,18 @@ Input.prototype.intersects = function(rect, entity) {
 
 Input.prototype.listen = function() {
   var self = this;
-  var consoleVisible = false;
-  $(window).keydown(function(e) {
-    e.key = e.key.toLowerCase();
-    if (e.key == " ") {
-      self.interact();
-    } else if (e.key == "enter") {
-      if (consoleVisible) {
-        var text = $(".console input").val().trim();
-        $(".console input").val("");
-        if (text) {
-          if (text == "/fly") {
-            me.flying = !me.flying;
-          } else {
-            network.send({
-              command : "consoleInput",
-              text : text
-            });
-          }
-        }
-        $(".console").stop().hide();
-        consoleVisible = false;
-      } else {
-        $(".console").stop().fadeIn();
-        $(".console input").focus();
-        consoleVisible = true;
-      }
-    } else if (e.key == "/") {
-      if (!consoleVisible) {
-        $(".console").stop().fadeIn();
-        $(".console input").focus();
-        consoleVisible = true;
-      }
-    } else if (e.which >= 48 && e.which < 58) {
-      window.quickbar.select(e.which - 48);
-    }
-    if (consoleVisible) {
-      return;
-    }
-    if (window.me && !me.keys[e.key]) {
-      me.keys[e.key] = true;
-      self.dirty = true;
+
+  $("canvas").mousedown(function(e) {
+    var item = window.quickbar.getSelectedItem();
+    if (item) {
+      self.spells.cast(item, e.offsetX, e.offsetY);
     }
   });
+
+  $(window).keydown(function(e) {
+    self.onKeyDown(self, e);
+  });
+
   $(window).keyup(function(e) {
     e.key = e.key.toLowerCase();
     if (window.me) {
@@ -224,11 +196,51 @@ Input.prototype.listen = function() {
       self.dirty = true;
     }
   });
+
   $(".console input").blur(function() {
     $(this).focus();
   });
 }
 
-Input.prototype.onKeyDown = function() {
-  //TODO
+Input.prototype.onKeyDown = function(self, e) {
+  e.key = e.key.toLowerCase();
+  if (e.key == " ") {
+    self.interact();
+  } else if (e.key == "enter") {
+    if (self.consoleVisible) {
+      var text = $(".console input").val().trim();
+      $(".console input").val("");
+      if (text) {
+        if (text == "/fly") {
+          me.flying = !me.flying;
+        } else {
+          network.send({
+            command : "consoleInput",
+            text : text
+          });
+        }
+      }
+      $(".console").stop().hide();
+      self.consoleVisible = false;
+    } else {
+      $(".console").stop().fadeIn();
+      $(".console input").focus();
+      self.consoleVisible = true;
+    }
+  } else if (e.key == "/") {
+    if (!self.consoleVisible) {
+      $(".console").stop().fadeIn();
+      $(".console input").focus();
+      self.consoleVisible = true;
+    }
+  } else if (e.which >= 48 && e.which < 58) {
+    window.quickbar.select(e.which - 48);
+  }
+  if (self.consoleVisible) {
+    return;
+  }
+  if (window.me && !me.keys[e.key]) {
+    me.keys[e.key] = true;
+    self.dirty = true;
+  }
 }
