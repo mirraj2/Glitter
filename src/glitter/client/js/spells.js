@@ -1,6 +1,16 @@
 function Spells(parent) {
   this.container = new PIXI.Container();
+  this.idCounter = 0;
+  this.idProjectiles = {};
   parent.addChild(this.container);
+}
+
+Spells.prototype.castEffects = function(msg) {
+  var ids = msg.entityIds;
+  var projectiles = this.idProjectiles[msg.castId];
+  for (var i = 0; i < ids.length; i++) {
+    projectiles[i].id = ids[i];
+  }
 }
 
 Spells.prototype.cast = function(spell, toX, toY) {
@@ -32,33 +42,29 @@ Spells.prototype.cast = function(spell, toX, toY) {
     dy : dy
   }
 
-  var projectileIds = this[spell.name.toLowerCase()](me, spell, locs, null);
+  var castId = this.idCounter++;
+  var projectiles = this[spell.name.toLowerCase()](me, spell, locs);
+  this.idProjectiles[castId] = projectiles;
 
   network.send({
     command : "cast",
+    castId : castId,
     spellId : spell.id,
-    locs : locs,
-    projectileIds : projectileIds
+    locs : locs
   });
 }
 
 Spells.prototype.onCast = function(json) {
   var spell = json.spell;
   var player = world.idPlayers[json.casterId];
-  this[spell.name.toLowerCase()](player, spell, json.locs, json.projectileIds);
+  this[spell.name.toLowerCase()](player, spell, json.locs);
 }
 
-Spells.prototype.fireball = function(player, spell, locs, projectileIds) {
+Spells.prototype.fireball = function(player, spell, locs) {
   var speed = spell.speed * Tile.SIZE;
 
   var projectile = new Emitter(this.container).numParticles(256).scale(.4).position(locs.fromX, locs.fromY).velocity(
       locs.dx * speed, locs.dy * speed).setLife(spell.range / spell.speed * 1000);
 
-  if (projectileIds) {
-    projectile.id = projectileIds[0];
-  } else {
-    projectile.id = spell.id + "." + spell.idCounter++;
-  }
-
-  return [ projectile.id ];
+  return [ projectile ];
 }

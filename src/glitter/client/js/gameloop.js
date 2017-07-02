@@ -26,17 +26,19 @@ GameLoop.prototype.start = function() {
 
     var currentFPS = 1000 / t;
     fps = Math.round(currentFPS * .1 + fps * .9);
-    
-    t = Math.min(t, 2000);
+
+    // each tick should be no more than MAX_UPDATE_TIME millis
+    // unless the number of ticks would be greater than 10
+    var maxTime = Math.max(MAX_UPDATE_TIME, t / 10);
 
     while (t > 0) {
-      var tickTime = Math.min(t, MAX_UPDATE_TIME);
+      var tickTime = Math.min(t, maxTime);
       input.update(tickTime);
       camera.update(tickTime);
       quickbar.update(tickTime);
       Dust.update(tickTime);
       minimap.update();
-      t -= MAX_UPDATE_TIME;
+      t -= maxTime;
     }
 
     canvas.render();

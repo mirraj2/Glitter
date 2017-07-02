@@ -7,7 +7,7 @@ function Network(ip, port, spells) {
 
   this.socket = socket;
   this.lootChooser = new LootChooser();
-  
+
   this.spells = checkNotNull(spells);
 }
 
@@ -37,6 +37,8 @@ Network.prototype.handleMessage = function(msg) {
     world.removeEntity(msg.id);
   } else if (command == "cast") {
     this.spells.onCast(msg);
+  } else if (command == "castEffects") {
+    this.spells.castEffects(msg);
   } else if (command == "choose") {
     network.lootChooser.show(msg.choices);
   } else if (command == "enterWorld") {

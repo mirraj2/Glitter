@@ -67,7 +67,8 @@ public class Player extends Entity {
     return null;
   }
 
-  public void update(double millis) {
+  @Override
+  public boolean update(double millis) {
     health = Math.min(maxHealth, health + healthRegenPerSecond * millis / 1000.0);
     mana = Math.min(maxMana, mana + manaRegenPerSecond * millis / 1000.0);
 
@@ -99,6 +100,8 @@ public class Player extends Entity {
     if (dy != 0) {
       move(0, dy);
     }
+
+    return false;
   }
 
   private void move(double dx, double dy) {
@@ -175,7 +178,7 @@ public class Player extends Entity {
         .with("command", "choose")
         .with("choices", Json.array(lootChoices, Item::toJson)));
 
-    world.removeEntity(entityId);
+    world.removeEntity(entityId, true);
   }
 
   private void handleMessage(String msg) {

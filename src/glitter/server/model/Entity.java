@@ -12,6 +12,10 @@ public class Entity {
 
   public final Rect bounds;
 
+  public Entity() {
+    this(new Rect());
+  }
+
   public Entity(int w, int h) {
     this(new Rect(0, 0, w, h));
   }
@@ -22,6 +26,13 @@ public class Entity {
 
   public Entity(Rect bounds) {
     this.bounds = bounds;
+  }
+
+  /**
+   * Return false if this entity should be removed.
+   */
+  public boolean update(double millis) {
+    return true;
   }
 
   public Json toJson() {

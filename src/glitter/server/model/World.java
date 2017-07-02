@@ -3,6 +3,7 @@ package glitter.server.model;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static ox.util.Utils.random;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -20,6 +21,8 @@ public class World {
   public final Map<Long, Entity> idEntities = Maps.newConcurrentMap();
   public final AdminConsole console = new AdminConsole(this);
 
+  private final List<Long> entitiesToRemove = Lists.newArrayList();
+
   public World(GRandom rand, Terrain terrain) {
     this.rand = rand;
     this.terrain = terrain;
@@ -34,6 +37,16 @@ public class World {
     for (Player player : players) {
       player.update(millis);
     }
+
+    for (Entity e : idEntities.values()) {
+      if (!e.update(millis)) {
+        entitiesToRemove.add(e.id);
+      }
+    }
+    for (Long id : entitiesToRemove) {
+      removeEntity(id, false);
+    }
+    entitiesToRemove.clear();
 
     for (Player player : players) {
       player.flushMessages();
@@ -73,13 +86,21 @@ public class World {
         .with("id", player.id));
   }
 
-  public void removeEntity(long entityId) {
+  public void addEntities(Collection<? extends Entity> entities) {
+    entities.forEach(e -> {
+      idEntities.put(e.id, e);
+    });
+  }
+
+  public void removeEntity(long entityId, boolean announce) {
     Entity removed = idEntities.remove(entityId);
     checkNotNull(removed, "Could not find entity: " + entityId);
 
-    sendToAll(Json.object()
-        .with("command", "removeEntity")
-        .with("id", entityId));
+    if (announce) {
+      sendToAll(Json.object()
+          .with("command", "removeEntity")
+          .with("id", entityId));
+    }
   }
 
   private Json createAddPlayerJson(Player p) {

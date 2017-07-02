@@ -1,5 +1,8 @@
 package glitter.server.model.item.spell;
 
+import java.util.List;
+import glitter.server.model.Entity;
+import glitter.server.model.Player;
 import glitter.server.model.item.Item;
 import ox.Json;
 
@@ -17,6 +20,8 @@ public abstract class Spell extends Item {
   public Spell(String name, Rarity rarity) {
     super(name, rarity);
   }
+
+  public abstract List<Entity> cast(Player caster, Json locs);
 
   @Override
   public Json toJson() {
