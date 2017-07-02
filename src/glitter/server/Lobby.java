@@ -18,7 +18,7 @@ public class Lobby {
   /**
    * Once this number of players enters the lobby, the countdown timer will begin.
    */
-  private static final int MIN_PLAYERS = 2;
+  private static final int MIN_PLAYERS = 4;
 
   private static final long COUNTDOWN_TIME = TimeUnit.SECONDS.toMillis(60);
 

@@ -8,7 +8,9 @@ Glitter.prototype.initGame = function() {
   window.canvas = new Canvas();
   window.world = new World();
   window.camera = new Camera();
-  window.input = new Input(world.container);
+  
+  var spells = new Spells(world.container);
+  window.input = new Input(spells);
   window.minimap = new MiniMap();
   window.quickbar = new Quickbar();
   
@@ -20,7 +22,7 @@ Glitter.prototype.initGame = function() {
   PIXI.loader.add("tiles.png").add("wizard.png").load(function() {
     console.log("done loading sprites.");
 
-    window.network = new Network("$$(websocketIP)", $$(websocketPort));
+    window.network = new Network("$$(websocketIP)", $$(websocketPort), spells);
   });
 }
 

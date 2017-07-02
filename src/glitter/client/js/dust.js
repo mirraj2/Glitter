@@ -40,6 +40,11 @@ Emitter.prototype.velocity = function(vx, vy) {
   return this;
 }
 
+Emitter.prototype.setLife = function(life) {
+  this.life = life;
+  return this;
+}
+
 Emitter.prototype.scale = function(scale) {
   this.scaleAmount = scale;
   return this;
@@ -104,7 +109,7 @@ Emitter.prototype.init = function() {
   this.particles = new Array(this.particleCount);
   for (var i = 0; i < this.particleCount; i++) {
     var particle = new PIXI.Sprite(texture);
-//    particle.blendMode = PIXI.BLEND_MODES.SCREEN;
+    // particle.blendMode = PIXI.BLEND_MODES.SCREEN;
     particle.scale.x = this.scaleAmount;
     particle.scale.y = this.scaleAmount;
     particle.tint = 0xf23026;

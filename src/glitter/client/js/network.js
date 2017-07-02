@@ -1,4 +1,4 @@
-function Network(ip, port) {
+function Network(ip, port, spells) {
   var socket = this.connectToServer(ip, port);
 
   $(window).on("beforeunload", function() {
@@ -7,6 +7,8 @@ function Network(ip, port) {
 
   this.socket = socket;
   this.lootChooser = new LootChooser();
+  
+  this.spells = checkNotNull(spells);
 }
 
 Network.prototype.send = function(msg) {
@@ -14,8 +16,11 @@ Network.prototype.send = function(msg) {
 }
 
 Network.prototype.connectToServer = function(ip, port) {
+  var self = this;
   var socket = new Socket(ip, port, false);
-  socket.onMessage(this.handleMessage);
+  socket.onMessage(function(msg) {
+    self.handleMessage(msg);
+  });
   socket.open();
   return socket;
 }
@@ -30,6 +35,8 @@ Network.prototype.handleMessage = function(msg) {
     player.setKeys(msg.keys);
   } else if (command == "removeEntity") {
     world.removeEntity(msg.id);
+  } else if (command == "cast") {
+    this.spells.onCast(msg);
   } else if (command == "choose") {
     network.lootChooser.show(msg.choices);
   } else if (command == "enterWorld") {

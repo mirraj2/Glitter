@@ -15,6 +15,7 @@ function LootChooser() {
     $(".loot-chooser").fadeOut();
     window.input.allowMovement = true;
 
+    item.idCounter = 0;
     window.quickbar.add(item);
   });
 }

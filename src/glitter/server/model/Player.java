@@ -12,6 +12,7 @@ import glitter.server.arch.SwappingQueue;
 import glitter.server.model.Terrain.TileLoc;
 import glitter.server.model.item.Item;
 import glitter.server.model.item.spell.Spell;
+import glitter.server.service.Spells;
 import ox.Json;
 import ox.Log;
 import ox.Rect;
@@ -177,6 +178,8 @@ public class Player extends Entity {
           .with("x", bounds.x)
           .with("y", bounds.y)
           .with("keys", Json.array(keysToTransmit)), this);
+    } else if (command.equals("cast")) {
+      Spells.cast(this, json);
     } else if (command.equals("interact")) {
       long entityId = json.getLong("entityId");
       interact(entityId);
