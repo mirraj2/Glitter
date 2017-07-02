@@ -30,9 +30,9 @@ public class World {
     new GameLoop(this::update);
   }
 
-  private void update(double t) {
+  private void update(double millis) {
     for (Player player : players) {
-      player.update(t);
+      player.update(millis);
     }
 
     for (Player player : players) {

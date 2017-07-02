@@ -28,6 +28,7 @@ public class Player extends Entity {
 
   public int maxHealth = 100, maxMana = 100;
   public double health = maxHealth, mana = maxMana;
+  public double healthRegenPerSecond = 1, manaRegenPerSecond = 5;
 
   private final SwappingQueue<Json> outboundMessageBuffer = new SwappingQueue<>();
 
@@ -56,8 +57,21 @@ public class Player extends Entity {
     socket.onMessage(this::handleMessage);
   }
 
-  public void update(double t) {
-    double distance = speed * Tile.SIZE * t / 1000;
+  public Spell getSpell(long id) {
+    for (int i = 0; i < numSpellSlots; i++) {
+      Spell spell = actionBar.get(i);
+      if (spell.id == id) {
+        return spell;
+      }
+    }
+    return null;
+  }
+
+  public void update(double millis) {
+    health = Math.min(maxHealth, health + healthRegenPerSecond * millis / 1000.0);
+    mana = Math.min(maxMana, mana + manaRegenPerSecond * millis / 1000.0);
+
+    double distance = speed * Tile.SIZE * millis / 1000;
 
     double dx = 0, dy = 0;
 
@@ -235,7 +249,9 @@ public class Player extends Entity {
         .with("health", health)
         .with("mana", mana)
         .with("maxHealth", maxHealth)
-        .with("maxMana", maxMana);
+        .with("maxMana", maxMana)
+        .with("healthRegen", healthRegenPerSecond)
+        .with("manaRegen", manaRegenPerSecond);
   }
 
   @Override

@@ -36,7 +36,7 @@ Spells.prototype.cast = function(spell, toX, toY) {
 
   network.send({
     command : "cast",
-    spell : spell,
+    spellId : spell.id,
     locs : locs,
     projectileIds : projectileIds
   });
