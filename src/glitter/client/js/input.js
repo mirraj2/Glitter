@@ -113,7 +113,7 @@ Input.prototype.findInteraction = function() {
   var rect = me.getHitbox(this.rect, 16);
 
   $.each(world.idEntities, function(key, value) {
-    if (self.intersects(rect, value)) {
+    if (value.canInteract && self.intersects(rect, value)) {
       chest = value;
       return false;
     }
@@ -160,7 +160,7 @@ Input.prototype.isCollision = function(rect) {
   }
 
   $.each(world.idEntities, function(key, value) {
-    if (self.intersects(rect, value)) {
+    if (value.blocksWalking && self.intersects(rect, value)) {
       ret = true;
       return false;
     }

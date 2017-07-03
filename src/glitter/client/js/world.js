@@ -20,6 +20,8 @@ World.prototype.setChests = function(chests) {
   texture.frame = new PIXI.Rectangle(Tile.SIZE * 5, 0, Tile.SIZE, Tile.SIZE);
 
   chests.forEach(function(chest) {
+    chest.blocksWalking = true;
+    chest.canInteract = true;
     world.idEntities[chest.id] = chest;
 
     var sprite = new PIXI.Sprite(texture);
