@@ -26,7 +26,7 @@ public class Player extends Entity {
 
   public double speed = 3;
 
-  public int maxHealth = 100, maxMana = 100;
+  public int maxHealth = 10000, maxMana = 10000;
   public double health = maxHealth, mana = maxMana;
   public double healthRegenPerSecond = 1, manaRegenPerSecond = 5;
 
