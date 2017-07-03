@@ -33,12 +33,14 @@ Input.prototype.sendMyState = function() {
   Object.keys(me.keys).forEach(function(key) {
     keyList.push(key);
   });
-  network.send({
-    command : "myState",
-    keys : keyList,
-    x : me.x,
-    y : me.y
-  });
+  if (me.alive) {
+    network.send({
+      command : "myState",
+      keys : keyList,
+      x : me.x,
+      y : me.y
+    });
+  }
   this.dirty = false;
 }
 
@@ -54,7 +56,7 @@ Input.prototype.update = function(t) {
   }
 
   $.each(world.idPlayers, function(id, player) {
-    if (self.allowMovement || player != window.me) {
+    if (player.alive && (self.allowMovement || player != window.me)) {
       self.movePlayer(player, t);
     }
   });
@@ -179,6 +181,9 @@ Input.prototype.listen = function() {
   var self = this;
 
   $("canvas").mousedown(function(e) {
+    if (!me.alive) {
+      return;
+    }
     var item = window.quickbar.getSelectedItem();
     if (item) {
       self.spells.cast(item, e.offsetX, e.offsetY);

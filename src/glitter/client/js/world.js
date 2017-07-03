@@ -19,19 +19,20 @@ World.prototype.setChests = function(chests) {
   var texture = new PIXI.Texture(sheet.baseTexture);
   texture.frame = new PIXI.Rectangle(Tile.SIZE * 5, 0, Tile.SIZE, Tile.SIZE);
 
-  for (var i = 0; i < chests.length; i++) {
-    var chest = chests[i];
-    this.idEntities[chest.id] = chest;
+  chests.forEach(function(chest) {
+    world.idEntities[chest.id] = chest;
 
     var sprite = new PIXI.Sprite(texture);
     sprite.x = chest.x;
     sprite.y = chest.y;
     sprite.width = chest.width;
     sprite.height = chest.height;
+    world.entities.addChild(sprite);
 
-    chest.sprite = sprite;
-    this.entities.addChild(sprite);
-  }
+    chest.destroy = function() {
+      world.entities.removeChild(sprite);
+    };
+  });
 }
 
 World.prototype.addPlayer = function(player) {
@@ -68,10 +69,16 @@ World.prototype.removeAllPlayers = function() {
 
 World.prototype.removeEntity = function(entityId) {
   var entity = this.idEntities[entityId];
+
+  if (entity == null) {
+    return;
+  }
+
   delete this.idEntities[entityId];
-  this.entities.removeChild(entity.sprite);
-  
-  //we may have the spacebar interaction UI up and need to remove it.
+
+  entity.destroy();
+
+  // we may have the spacebar interaction UI up and need to remove it.
   window.input.findInteraction();
 }
 

@@ -6,7 +6,8 @@ var Dust = (function() {
       for (var i = emitters.length - 1; i >= 0; i--) {
         var emitter = emitters[i];
         if (!emitter.update(millis)) {
-          emitter.destroy();
+          emitter.parent.removeChild(this.container);
+          emitter.particles = null;
           emitters.splice(i, 1);
         }
       }
@@ -61,27 +62,32 @@ Emitter.prototype.update = function(millis) {
   }
 
   this.life -= millis;
-  if (this.life > 0) {
-    this.x += this.vx * millis / 1000;
-    this.y += this.vy * millis / 1000;
-    this.tickParticles(millis);
-  }
+  this.x += this.vx * millis / 1000;
+  this.y += this.vy * millis / 1000;
 
-  return this.life > 0;
+  return this.tickParticles(millis);
 }
 
 Emitter.prototype.tickParticles = function(millis) {
+  var ret = false;
   for (var i = 0; i < this.particles.length; i++) {
     var particle = this.particles[i];
     particle.life -= millis;
     if (particle.life <= 0) {
-      this.resetParticle(particle);
+      if (this.life > 0) {
+        this.resetParticle(particle);
+        ret = true;
+      } else {
+        particle.alpha = 0;
+      }
     } else {
+      ret = true;
       particle.alpha = Math.max(particle.life / this.particleLife, 0);
       particle.x += particle.vx * millis;
       particle.y += particle.vy * millis;
     }
   }
+  return ret;
 }
 
 Emitter.prototype.resetParticle = function(particle) {
@@ -93,8 +99,7 @@ Emitter.prototype.resetParticle = function(particle) {
 }
 
 Emitter.prototype.destroy = function() {
-  this.parent.removeChild(this.container);
-  this.particles = null;
+  this.life = 0;
 }
 
 Emitter.prototype.init = function() {

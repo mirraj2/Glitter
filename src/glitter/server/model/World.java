@@ -44,7 +44,7 @@ public class World {
       }
     }
     for (Long id : entitiesToRemove) {
-      removeEntity(id, false);
+      removeEntity(id);
     }
     entitiesToRemove.clear();
 
@@ -92,15 +92,13 @@ public class World {
     });
   }
 
-  public void removeEntity(long entityId, boolean announce) {
+  public void removeEntity(long entityId) {
     Entity removed = idEntities.remove(entityId);
     checkNotNull(removed, "Could not find entity: " + entityId);
 
-    if (announce) {
-      sendToAll(Json.object()
-          .with("command", "removeEntity")
-          .with("id", entityId));
-    }
+    sendToAll(Json.object()
+        .with("command", "removeEntity")
+        .with("id", entityId));
   }
 
   private Json createAddPlayerJson(Player p) {

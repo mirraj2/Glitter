@@ -8,9 +8,9 @@ function Spells(parent) {
 Spells.prototype.castEffects = function(msg) {
   var ids = msg.entityIds;
   var projectiles = this.idProjectiles[msg.castId];
-  for (var i = 0; i < ids.length; i++) {
-    projectiles[i].id = ids[i];
-  }
+  delete this.idProjectiles[msg.castId];
+
+  this.assignIds(projectiles, ids);
 }
 
 Spells.prototype.cast = function(spell, toX, toY) {
@@ -57,7 +57,18 @@ Spells.prototype.cast = function(spell, toX, toY) {
 Spells.prototype.onCast = function(json) {
   var spell = json.spell;
   var player = world.idPlayers[json.casterId];
-  this[spell.name.toLowerCase()](player, spell, json.locs);
+  var projectiles = this[spell.name.toLowerCase()](player, spell, json.locs);
+
+  this.assignIds(projectiles, json.entityIds);
+}
+
+Spells.prototype.assignIds = function(entities, ids) {
+  for (var i = 0; i < entities.length; i++) {
+    var id = ids[i];
+    var e = entities[i];
+    e.id = id;
+    world.idEntities[id] = e;
+  }
 }
 
 Spells.prototype.fireball = function(player, spell, locs) {

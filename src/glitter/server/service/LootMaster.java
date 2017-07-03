@@ -80,7 +80,11 @@ public class LootMaster {
           }
         }
       });
-      return c.newInstance(rand);
+      if (c.getParameterCount() == 0) {
+        return c.newInstance();
+      } else {
+        return c.newInstance(rand);
+      }
     } catch (Exception e) {
       throw propagate(e);
     }

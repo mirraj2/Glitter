@@ -39,6 +39,13 @@ Network.prototype.handleMessage = function(msg) {
     this.spells.onCast(msg);
   } else if (command == "castEffects") {
     this.spells.castEffects(msg);
+  } else if (command == "onHit") {
+    var player = world.idPlayers[msg.targetId];
+    player.health -= msg.damage;
+    if (msg.fatal) {
+      player.health = 0;
+      player.alive = false;
+    }
   } else if (command == "choose") {
     network.lootChooser.show(msg.choices);
   } else if (command == "enterWorld") {

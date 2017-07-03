@@ -1,7 +1,6 @@
 package glitter.server.service;
 
 import static com.google.common.base.Preconditions.checkState;
-import static ox.util.Functions.map;
 import java.util.List;
 import glitter.server.model.Entity;
 import glitter.server.model.Player;
@@ -17,11 +16,13 @@ public class Spells {
     p.mana -= spell.manaCost;
 
     List<Entity> entities = spell.cast(p, json.getJson("locs"));
+    Json entityIds = Json.array(entities, e -> e.id);
+
     if (!entities.isEmpty()) {
       p.send(Json.object()
           .with("command", "castEffects")
           .with("castId", json.getLong("castId"))
-          .with("entityIds", map(entities, e -> e.id)));
+          .with("entityIds", entityIds));
     }
 
     p.world.addEntities(entities);
@@ -30,6 +31,7 @@ public class Spells {
         .remove("castId")
         .with("spell", spell.toJson());
     json.with("casterId", p.id);
+    json.with("entityIds", entityIds);
     p.world.sendToAll(json, p);
   }
 

@@ -49,6 +49,8 @@ public class Player extends Entity {
    */
   private List<Item> lootChoices = null;
 
+  public boolean alive = true;
+
   public Player(ClientSocket socket) {
     super(48, 64);
 
@@ -178,12 +180,18 @@ public class Player extends Entity {
         .with("command", "choose")
         .with("choices", Json.array(lootChoices, Item::toJson)));
 
-    world.removeEntity(entityId, true);
+    world.removeEntity(entityId);
   }
 
   private void handleMessage(String msg) {
     Json json = new Json(msg);
     String command = json.get("command");
+
+    if (!alive) {
+      Log.debug(json);
+      throw new RuntimeException("Can't do that when you're dead!");
+    }
+
     if (command.equals("myState")) {
       bounds.x = json.getDouble("x");
       bounds.y = json.getDouble("y");
