@@ -26,8 +26,14 @@ Network.prototype.connectToServer = function(ip, port) {
 }
 
 Network.prototype.handleMessage = function(msg) {
-  console.log(msg);
   var command = msg.command;
+  if (command == "ping") {
+    msg.command = "pong";
+    network.send(msg);
+    return;
+  }
+
+  console.log(msg);
   if (command == "playerState") {
     var player = world.idPlayers[msg.id];
     player.setX(msg.x);

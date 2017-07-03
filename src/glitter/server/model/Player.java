@@ -192,7 +192,12 @@ public class Player extends Entity {
       throw new RuntimeException("Can't do that when you're dead!");
     }
 
-    if (command.equals("myState")) {
+    if (command.equals("pong")) {
+      long t1 = json.getLong("time");
+      long t2 = System.nanoTime();
+      double millis = (t2 - t1) / 1_000_000.0;
+      Log.debug("ping is " + millis + " ms");
+    } else if (command.equals("myState")) {
       bounds.x = json.getDouble("x");
       bounds.y = json.getDouble("y");
       keys = toSet(json.getJson("keys").asStringArray(), s -> s.toLowerCase());
