@@ -6,7 +6,10 @@ var Dust = (function() {
       for (var i = emitters.length - 1; i >= 0; i--) {
         var emitter = emitters[i];
         if (!emitter.update(millis)) {
-          emitter.parent.removeChild(this.container);
+          emitter.parent.removeChild(emitter.container);
+          emitter.container.destroy({
+            children : true
+          });
           emitter.particles = null;
           emitters.splice(i, 1);
         }
