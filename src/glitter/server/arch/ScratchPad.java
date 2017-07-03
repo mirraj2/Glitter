@@ -5,7 +5,13 @@ import ox.Log;
 
 public class ScratchPad {
 
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) {
+    long a = 1905394054042262L;
+    long b = 1905394389258187L;
+    // 1905394054042262 - 1905394389258187
+  }
+
+  public static void perf(String[] args) throws Exception {
     int n = 100000000;
     double d = 0;
     for (int trial = 0; trial < 10; trial++) {
