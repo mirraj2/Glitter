@@ -35,6 +35,10 @@ public class Entity {
     return true;
   }
 
+  public boolean blocksWalking() {
+    return false;
+  }
+
   public Json toJson() {
     return Json.object()
         .with("id", id)

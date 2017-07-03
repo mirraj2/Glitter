@@ -20,4 +20,9 @@ public class TreasureChest extends Entity {
     checkState(looted.compareAndSet(false, true), "This chest was already looted!");
   }
 
+  @Override
+  public boolean blocksWalking() {
+    return true;
+  }
+
 }

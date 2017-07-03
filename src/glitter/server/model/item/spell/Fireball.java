@@ -36,6 +36,8 @@ public class Fireball extends Spell {
     Projectile p = new Projectile(caster.world, locs.getDouble("fromX"), locs.getDouble("fromY"), 12)
         .velocity(locs.getDouble("dx") * speed, locs.getDouble("dy") * speed).life(this.range / this.speed * 1000);
 
+    p.update(caster.latency);
+
     p.onHit(hit -> {
       if (hit != caster) {
         double damage = minDamage + Math.random() * (maxDamage - minDamage);

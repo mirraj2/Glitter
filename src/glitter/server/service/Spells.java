@@ -32,7 +32,12 @@ public class Spells {
         .with("spell", spell.toJson());
     json.with("casterId", p.id);
     json.with("entityIds", entityIds);
-    p.world.sendToAll(json, p);
+    for (Player player : p.world.players) {
+      if (player != p) {
+        player.send(json.copy()
+            .with("latency", p.latency + player.latency));
+      }
+    }
   }
 
 }

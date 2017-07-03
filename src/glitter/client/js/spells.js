@@ -13,6 +13,9 @@ Spells.prototype.castEffects = function(msg) {
   this.assignIds(projectiles, ids);
 }
 
+/**
+ * Called when we cast a spell.
+ */
 Spells.prototype.cast = function(spell, toX, toY) {
   if (me.mana < spell.manaCost) {
     return;
@@ -54,10 +57,22 @@ Spells.prototype.cast = function(spell, toX, toY) {
   });
 }
 
+/**
+ * Called when another player casts a spell.
+ */
 Spells.prototype.onCast = function(json) {
   var spell = json.spell;
   var player = world.idPlayers[json.casterId];
   var projectiles = this[spell.name.toLowerCase()](player, spell, json.locs);
+
+  console.log("Applying " + json.latency + "ms of latency compensation.");
+  while (json.latency > 0) {
+    var millis = Math.min(json.latency, 30);
+    json.latency -= millis;
+    for (var i = 0; i < projectiles.length; i++) {
+      projectiles[i].update(millis);
+    }
+  }
 
   this.assignIds(projectiles, json.entityIds);
 }

@@ -3,6 +3,7 @@ package glitter.server.model;
 import static ox.util.Functions.toSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -50,6 +51,9 @@ public class Player extends Entity {
   private List<Item> lootChoices = null;
 
   public boolean alive = true;
+
+  private long lastPingRequestTime = 0;
+  public double latency = 0;
 
   public Player(ClientSocket socket) {
     super(48, 64);
@@ -135,7 +139,7 @@ public class Player extends Entity {
     }
 
     for (Entity e : world.idEntities.values()) {
-      if (r.intersects(e.bounds)) {
+      if (e.blocksWalking() && r.intersects(e.bounds)) {
         return true;
       }
     }
@@ -195,8 +199,8 @@ public class Player extends Entity {
     if (command.equals("pong")) {
       long t1 = json.getLong("time");
       long t2 = System.nanoTime();
-      double millis = (t2 - t1) / 1_000_000.0;
-      Log.debug("ping is " + millis + " ms");
+      double newLatency = (t2 - t1) / 2.0 / 1_000_000.0;
+      latency = latency * .7 + newLatency * .3;
     } else if (command.equals("myState")) {
       bounds.x = json.getDouble("x");
       bounds.y = json.getDouble("y");
@@ -231,11 +235,23 @@ public class Player extends Entity {
   }
 
   public void flushMessages() {
-    if (outboundMessageBuffer.isEmpty()) {
+    long now = System.nanoTime();
+    int millisToWait = outboundMessageBuffer.isEmpty() ? 500 : 250;
+    Json ping = null;
+    if (now - lastPingRequestTime > TimeUnit.MILLISECONDS.toNanos(millisToWait)) {
+      ping = Json.object()
+          .with("command", "ping")
+          .with("time", now);
+      lastPingRequestTime = now;
+    }
+    if (ping == null && outboundMessageBuffer.isEmpty()) {
       return;
     }
     try {
       Json array = Json.array();
+      if (ping != null) {
+        array.add(ping);
+      }
       for (Json message : outboundMessageBuffer.swap()) {
         array.add(message);
       }

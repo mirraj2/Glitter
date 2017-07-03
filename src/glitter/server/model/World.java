@@ -5,14 +5,12 @@ import static ox.util.Utils.random;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import glitter.server.arch.GRandom;
 import glitter.server.service.LootMaster;
 import ox.Json;
 import ox.Log;
-import ox.Threads;
 
 public class World {
 
@@ -34,13 +32,13 @@ public class World {
   public void start() {
     new GameLoop(this::update);
 
-    Threads.every(1, TimeUnit.SECONDS).run(() -> {
-      for (Player player : players) {
-        player.socket.send(Json.object()
-            .with("command", "ping")
-            .with("time", System.nanoTime()));
-      }
-    });
+    // Threads.every(1, TimeUnit.SECONDS).run(() -> {
+    // for (Player player : players) {
+    // player.socket.send(Json.object()
+    // .with("command", "ping")
+    // .with("time", System.nanoTime()));
+    // }
+    // });
   }
 
   private void update(double millis) {
