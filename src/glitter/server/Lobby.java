@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import com.google.common.collect.ImmutableList;
 import bowser.websocket.ClientSocket;
+import glitter.server.arch.GRandom;
 import glitter.server.arch.SwappingQueue;
-import glitter.server.gen.world.WorldGen;
 import glitter.server.model.Match;
 import glitter.server.model.Player;
+import glitter.server.model.Terrain;
+import glitter.server.model.Tile;
 import glitter.server.model.World;
 import ox.Json;
 import ox.Log;
@@ -18,7 +20,7 @@ public class Lobby {
   /**
    * Once this number of players enters the lobby, the countdown timer will begin.
    */
-  private static final int MIN_PLAYERS = 4;
+  private static final int MIN_PLAYERS = 2;
 
   private static final long COUNTDOWN_TIME = TimeUnit.SECONDS.toMillis(60);
 
@@ -75,28 +77,35 @@ public class Lobby {
   }
 
   private World createLobbyWorld() {
-    World world = WorldGen.generateFor(2);
-    world.players = new SwappingQueue<Player>();
+    // World world = WorldGen.generateFor(2);
+    // world.players = new SwappingQueue<Player>();
+    // return world;
+    Terrain t = new Terrain(18, 10);
+    for (int i = 0; i < t.width; i++) {
+      for (int j = 0; j < t.height; j++) {
+        if (i == 0 || j == 0 || i >= t.width - 1 || j >= t.height - 1) {
+          t.tiles[i][j] = Tile.VOID;
+        } else {
+          t.tiles[i][j] = Tile.GRASS;
+        }
+      }
+    }
+    for (int i = 4; i <= 5; i++) {
+      for (int j = 3; j <= 5; j++) {
+        t.tiles[i][j] = Tile.WATER;
+      }
+    }
+    for (int i = 4; i <= 7; i++) {
+      for (int j = 6; j <= 6; j++) {
+        t.tiles[i][j] = Tile.WATER;
+      }
+    }
+    t.tiles[6][5] = Tile.WATER;
+    t.tiles[4][6] = Tile.GRASS;
+
+    World world = new World(new GRandom(), t);
+    world.players = new SwappingQueue<>();
     return world;
-    // Terrain ret = new Terrain(16, 8);
-    // for (int i = 0; i < ret.width; i++) {
-    // for (int j = 0; j < ret.height; j++) {
-    // ret.tiles[i][j] = Tile.GRASS;
-    // }
-    // }
-    // for (int i = 3; i <= 4; i++) {
-    // for (int j = 2; j <= 4; j++) {
-    // ret.tiles[i][j] = Tile.WATER;
-    // }
-    // }
-    // for (int i = 3; i <= 6; i++) {
-    // for (int j = 5; j <= 5; j++) {
-    // ret.tiles[i][j] = Tile.WATER;
-    // }
-    // }
-    // ret.tiles[5][4] = Tile.WATER;
-    // ret.tiles[3][5] = Tile.GRASS;
-    // return ret;
   }
 
   private Lobby() {
