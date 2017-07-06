@@ -3,6 +3,23 @@ function Quickbar() {
   $(".quickbar").on("click", ".slot", function() {
     self.selectSlot(this);
   });
+
+  $(".quickbar").on("dragstart", ".slot", function(e) {
+    self.sourceSlot = $(this);
+  });
+
+  $(".quickbar").on("dragover", ".slot", function(e) {
+    if ($(this).find("img").length) {
+      return;
+    }
+    e.preventDefault();
+  });
+  $(".quickbar").on("drop", ".slot", function(e) {
+    e.preventDefault();
+    self.sourceSlot.find("img").appendTo(e.target);
+    $(e.target).data("item", self.sourceSlot.data("item"));
+    self.sourceSlot.data("item", null);
+  });
 }
 
 Quickbar.prototype.select = function(index) {
@@ -26,7 +43,7 @@ Quickbar.prototype.add = function(item) {
   var slot = this.getEmptySlot();
   if (slot) {
     $(slot).data("item", item);
-    $("<img>").attr("src", item.iconUrl).appendTo(slot);
+    $("<img>").attr("src", item.iconUrl).attr("draggable", "true").appendTo(slot);
   }
 }
 
