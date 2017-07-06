@@ -11,6 +11,7 @@ function Input(spells) {
   this.interactionEntity = null;
   this.allowMovement = true;
   this.consoleVisible = false;
+  this.inventoryVisible = false;
 }
 
 Input.prototype.haltMovement = function() {
@@ -244,6 +245,19 @@ Input.prototype.onKeyDown = function(self, e) {
     }
   } else if (e.which >= 48 && e.which < 58) {
     window.quickbar.select(e.which - 48);
+  } else if (e.key == 'i' || e.key == 'tab' || e.key == 'p') {
+    e.preventDefault();
+    if (self.inventoryVisible) {
+      $(".inventory").stop().fadeOut();
+    } else {
+      $(".inventory").stop().fadeIn();
+    }
+    self.inventoryVisible = !self.inventoryVisible;
+  } else if (e.key == 'escape') {
+    if (self.inventoryVisible) {
+      $(".inventory").stop().fadeOut();
+      self.inventoryVisible = false;
+    }
   }
   if (self.consoleVisible) {
     return;

@@ -47,8 +47,8 @@ public class Lobby {
     Match.start(players);
   }
 
-  public void startGameIn3Seconds() {
-    final int millis = 3000;
+  public void startGameIn(int seconds) {
+    final int millis = seconds * 1000;
     nextGameStartTime = System.currentTimeMillis() + millis;
     world.sendToAll(Json.object()
         .with("command", "countdown")

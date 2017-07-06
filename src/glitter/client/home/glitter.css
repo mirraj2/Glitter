@@ -5,6 +5,7 @@ html, body {
   height: 100%;
   overflow: hidden;
   background: black;
+  cursor: url('/cursor.png'), auto;
 }
 
 .hidden {
@@ -148,7 +149,6 @@ html, body {
   border: solid 1px black;
   padding: 16px;
   outline: none;
-  cursor: pointer;
   color: white;
   font-size: 32px;
   transition: .3s;

@@ -18,7 +18,7 @@ public class AdminConsole {
     String command = m.get(0);
 
     if (command.equals("/start")) {
-      Lobby.get().startGameIn3Seconds();
+      Lobby.get().startGameIn(1);
       output(from, "Game starting in 3 seconds...");
     } else {
       output(from, "Unrecognized command: " + command);

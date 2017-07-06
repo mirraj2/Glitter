@@ -1,0 +1,68 @@
+.inventory {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border: solid 2px gray;
+  background: linear-gradient(#ffe1b1, #b3d2a9);
+  border-radius: 4px;
+  text-align: center;
+}
+
+.inventory .equipped {
+  position: relative;
+  padding: 24px;
+}
+
+.inventory .col {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 24px;
+}
+
+.inventory .equipped [slot] {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 12px;
+}
+
+.inventory [slot].empty {
+  padding: 4px;
+  border: dashed 2px #9b9b9b;
+  opacity: .3;
+  filter: gray;
+  -webkit-filter: grayscale(100%);
+}
+
+.inventory [slot] img {
+  width: 100%;
+  height: 100%;
+}
+
+.inventory [slot=bag] {
+  position: absolute;
+  bottom: 4px;
+  left: 18px;
+  border: solid 2px white;
+}
+
+.inventory hr {
+  border: none;
+  height: 3px;
+  background: gray;
+  margin: 0px;
+}
+
+.inventory .bag {
+  padding: 18px;
+  width: 428px;
+  text-align: left;
+}
+
+.inventory .bag .slot {
+  width: 64px;
+  height: 64px;
+  display: inline-block;
+  border: dashed 2px gray;
+  opacity: .3;
+}
