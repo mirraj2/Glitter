@@ -30,7 +30,7 @@ public class Projectile extends Entity {
 
     boolean finished = false;
 
-    for (Player p : world.players) {
+    for (Player p : world.getAlivePlayers()) {
       if (p.alive && intersects(p.bounds)) {
         finished |= onHit.test(p);
       }

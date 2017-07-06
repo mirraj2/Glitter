@@ -5,6 +5,7 @@ import static ox.util.Utils.random;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import glitter.server.arch.GRandom;
@@ -29,7 +30,13 @@ public class World {
     this.lootMaster = new LootMaster(rand);
   }
 
+  public Iterable<Player> getAlivePlayers() {
+    return Iterables.filter(this.players, p -> p.alive);
+  }
+
   public void start() {
+    this.sendToAll(Json.object()
+        .with("command", "start"));
     new GameLoop(this::update);
 
     // Threads.every(1, TimeUnit.SECONDS).run(() -> {

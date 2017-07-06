@@ -27,7 +27,7 @@ public class Player extends Entity {
 
   public double speed = 3;
 
-  public int maxHealth = 10000, maxMana = 10000;
+  public int maxHealth = 100, maxMana = 100;
   public double health = maxHealth, mana = maxMana;
   public double healthRegenPerSecond = 1, manaRegenPerSecond = 5;
 
@@ -191,17 +191,20 @@ public class Player extends Entity {
     Json json = new Json(msg);
     String command = json.get("command");
 
-    if (!alive) {
-      Log.debug(json);
-      throw new RuntimeException("Can't do that when you're dead!");
-    }
-
     if (command.equals("pong")) {
       long t1 = json.getLong("time");
       long t2 = System.nanoTime();
       double newLatency = (t2 - t1) / 2.0 / 1_000_000.0;
       latency = latency * .7 + newLatency * .3;
-    } else if (command.equals("myState")) {
+      return;
+    }
+
+    if (!alive) {
+      Log.debug(json);
+      throw new RuntimeException("Can't do that when you're dead!");
+    }
+
+    if (command.equals("myState")) {
       bounds.x = json.getDouble("x");
       bounds.y = json.getDouble("y");
       keys = toSet(json.getJson("keys").asStringArray(), s -> s.toLowerCase());

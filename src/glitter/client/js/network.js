@@ -51,6 +51,18 @@ Network.prototype.handleMessage = function(msg) {
     if (msg.fatal) {
       player.health = 0;
       player.alive = false;
+      world.removePlayer(player.id);
+
+      var numPlayersLeft = Object.keys(world.idPlayers).length;
+      if (player == me) {
+        $(".summary h1").text("Better luck next time!");
+        $(".summary .rank").text("#" + (numPlayersLeft + 1));
+        $(".summary").fadeIn();
+      } else if (numPlayersLeft == 1 && me.alive) {
+        $(".summary h1").text("Perfect Victory");
+        $(".summary .rank").text("#1");
+        $(".summary").fadeIn();
+      }
     }
   } else if (command == "choose") {
     network.lootChooser.show(msg.choices);
@@ -78,6 +90,8 @@ Network.prototype.handleMessage = function(msg) {
     $(".countdown").fadeIn();
   } else if (command == "consoleOutput") {
     $("<div>").text(msg.text).appendTo(".console .output");
+  } else if (command == "start") {
+    $(".summary .totalPlayers").text(" / " + Object.keys(world.idPlayers).length);
   } else {
     console.log("Unknown command: " + command);
     console.log(msg);

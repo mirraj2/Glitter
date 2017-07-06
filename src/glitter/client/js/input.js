@@ -205,6 +205,10 @@ Input.prototype.listen = function() {
   $(".console input").blur(function() {
     $(this).focus();
   });
+
+  $(".summary button").click(function() {
+    window.location.reload();
+  });
 }
 
 Input.prototype.onKeyDown = function(self, e) {
