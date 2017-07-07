@@ -1,0 +1,46 @@
+[
+  {
+    name: "Apprentice's Fire Armor",
+    part: "chest",
+    rarity: "COMMON",
+    image: "/armor/fire-chest.png",
+    flavor: "So you want to play with fire...",
+    stats: {
+      health: 25,
+      fire: 30
+    }
+  },
+  {
+    name: "Apprentice's Ice Armor",
+    part: "chest",
+    rarity: "COMMON",
+    image: "/armor/ice-chest.png",
+    flavor: "I see you have a frosty heart",
+    stats: {
+      health: 25,
+      ice: 30
+    }
+  },
+  {
+    name: "Apprentice's Holy Armor",
+    part: "chest",
+    rarity: "COMMON",
+    image: "/armor/holy-chest.png",
+    flavor: "Righteousness will prevail!",
+    stats: {
+      health: 25,
+      holy: 30
+    }
+  },
+  {
+    name: "Apprentice's Unholy Armor",
+    part: "chest",
+    rarity: "COMMON",
+    image: "/armor/unholy-chest.png",
+    flavor: "You do not know the power of the dark side",
+    stats: {
+      health: 25,
+      unholy: 30
+    }
+  }
+]

@@ -5,22 +5,26 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Map;
 import com.google.common.base.Joiner;
-import com.google.common.base.Stopwatch;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import glitter.server.arch.ClasspathScanner;
+import com.google.common.collect.Multimaps;
 import glitter.server.arch.GRandom;
 import glitter.server.model.item.Item;
 import glitter.server.model.item.Item.Rarity;
+import glitter.server.model.item.armor.Armor;
+import glitter.server.model.item.spell.Fireball;
 import glitter.server.model.item.spell.Spell;
+import ox.IO;
+import ox.Json;
 import ox.Log;
 
 public class LootMaster {
 
-  private static final Multimap<Rarity, Spell> raritySpells = ArrayListMultimap.create();
   private static final Map<Class<?>, Constructor<? extends Item>> constructorCache = Maps.newConcurrentMap();
+
+  private static final Multimap<Rarity, Spell> raritySpells;
+  private static final Multimap<Rarity, Armor> rarityArmors;
 
   private final GRandom rand;
 
@@ -40,8 +44,11 @@ public class LootMaster {
     }
 
     List<Item> ret = Lists.newArrayListWithCapacity(nChoices);
-    for (int i = 0; i < nChoices; i++) {
-      ret.add(generateItem(rarity));
+    while (ret.size() < nChoices) {
+      Item item = generateItem(rarity);
+      if (!ret.contains(item)) {
+        ret.add(item);
+      }
     }
 
     Log.info("Generated %d %s items :: %s", nChoices, rarity, Joiner.on(", ").join(ret));
@@ -50,8 +57,13 @@ public class LootMaster {
   }
 
   private Item generateItem(Rarity rarity) {
-    Spell ret = rand.random(raritySpells.get(rarity));
-    return newInstance(ret.getClass(), rand);
+    if (rand.nextBoolean()) {
+      Spell ret = rand.random(raritySpells.get(rarity));
+      return newInstance(ret.getClass(), rand);
+    } else {
+      Armor ret = rand.random(rarityArmors.get(rarity));
+      return ret.copy();
+    }
   }
 
   private Rarity randomRarity() {
@@ -91,21 +103,15 @@ public class LootMaster {
   }
 
   static {
-    Stopwatch watch = Stopwatch.createStarted();
-    int numItems = 0;
+    List<Spell> spells = Lists.newArrayList(new Fireball());
+    List<Armor> armors = Lists.newArrayList();
 
-    // this one is just used to create the root instances. The random numbers don't actually matter for these b/c these
-    // instances should never be cast or used in a game.
-    GRandom rand = new GRandom(123);
-
-    for (Class<? extends Item> c : ClasspathScanner.findSubclasses(Item.class)) {
-      Item item = newInstance(c, rand);
-      if (item instanceof Spell) {
-        raritySpells.put(item.rarity, (Spell) item);
-      }
-      numItems++;
+    for (Json j : IO.from(Armor.class, "armor.json").toJson().asJsonArray()) {
+      armors.add(new Armor(j));
     }
-    Log.debug("Loaded %d items. (%s)", numItems, watch);
+
+    raritySpells = Multimaps.index(spells, s -> s.rarity);
+    rarityArmors = Multimaps.index(armors, a -> a.rarity);
   }
 
 }

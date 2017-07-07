@@ -41,7 +41,7 @@
 }
 
 .loot .name {
-  font-size: 22px;
+  font-size: 20px;
   display: inline-block;
 }
 
@@ -63,7 +63,26 @@
   width: 100%;
 }
 
+.loot .description .stat {
+  margin-bottom: 4px;
+}
+
+.loot .fire.stat {
+  color: #EC585C;
+}
+
+.loot .ice.stat {
+  color: #6FC4FB;
+}
+
+.loot .holy.stat {
+  color: #FFF931;
+}
+
+.loot .unholy.stat {
+  color: #E28DFF;
+}
+
 .loot:hover .top, .loot:hover .description {
   opacity: 1;
 }
-

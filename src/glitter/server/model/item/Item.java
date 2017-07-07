@@ -8,7 +8,7 @@ public abstract class Item extends Entity {
 
   public final String name;
   public final Rarity rarity;
-  public final String flavorText = "";
+  public String flavorText = "";
 
   public Item(String name, Rarity rarity) {
     super(Tile.SIZE, Tile.SIZE);
@@ -32,6 +32,15 @@ public abstract class Item extends Entity {
   @Override
   public String toString() {
     return name;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof Item)) {
+      return false;
+    }
+    Item that = (Item) obj;
+    return this.name.equals(that.name);
   }
 
   public static enum Rarity {

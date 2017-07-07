@@ -26,10 +26,29 @@ LootChooser.prototype.show = function(choices) {
     var choice = choices[i];
     var loot = $(".loot.prototype").clone().removeClass("prototype").appendTo(chooser);
     loot.data("item", choice);
-    loot.find("img").attr("src", choice.iconUrl);
+    loot.find("img").attr("src", choice.imageUrl);
     loot.find(".name").text(choice.name);
-    loot.find(".mana").text(choice.manaCost + " mana");
-    loot.find(".description").text(choice.description);
+
+    if (choice.type == "spell") {
+      loot.find(".mana").text(choice.manaCost + " mana");
+      loot.find(".description").text(choice.description);
+    } else if (choice.type == "armor") {
+      var description = loot.find(".description");
+      choice.stats.forEach(function(e) {
+        e.stat = e.stat.toLowerCase();
+        var text, school;
+        if (e.stat == "health") {
+          text = "+" + e.value + " Health";
+        } else if (e.stat == "fire" || e.stat == "ice" || e.stat == "holy" || e.stat == "unholy") {
+          school = e.stat;
+          text = e.value + "% increased " + e.stat + " damage";
+        } else {
+          text = "+" + e.value + " " + e.stat;
+        }
+        var div = $("<div>").addClass("stat").text(text).appendTo(description);
+        div.addClass(school);
+      });
+    }
   }
   chooser.fadeIn();
 
@@ -37,4 +56,3 @@ LootChooser.prototype.show = function(choices) {
 
   window.input.haltMovement();
 }
-

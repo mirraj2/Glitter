@@ -31,7 +31,7 @@ public abstract class Spell extends Item {
         .with("castTimeSeconds", castTimeSeconds)
         .with("cooldownSeconds", cooldownSeconds)
         .with("description", description)
-        .with("iconUrl", "/spells/" + name.toLowerCase() + ".png");
+        .with("imageUrl", "/spells/" + name.toLowerCase() + ".png");
   }
 
 }

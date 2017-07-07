@@ -5,7 +5,7 @@ function Inventory(quickbar) {
 Inventory.prototype.add = function(item) {
   var slot = this.quickbar.getEmptySlot();
   if (slot) {
-    $("<img>").attr("src", item.iconUrl).attr("draggable", "true").data("item", item).appendTo(slot);
+    $("<img>").attr("src", item.imageUrl).attr("draggable", "true").data("item", item).appendTo(slot);
     $(slot).removeClass("empty");
   }
 }
@@ -53,6 +53,9 @@ $(function() {
 
     var from = self.sourceSlot;
     var to = $(e.target);
+    if (!to.hasClass("slot")) {
+      to = to.parents(".slot");
+    }
 
     var imgA = from.find("img");
     var imgB = to.find("img");
