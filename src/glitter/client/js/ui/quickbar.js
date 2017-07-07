@@ -1,24 +1,8 @@
 function Quickbar() {
   var self = this;
+
   $(".quickbar").on("click", ".slot", function() {
     self.selectSlot(this);
-  });
-
-  $(".quickbar").on("dragstart", ".slot", function(e) {
-    self.sourceSlot = $(this);
-  });
-
-  $(".quickbar").on("dragover", ".slot", function(e) {
-    if ($(this).find("img").length) {
-      return;
-    }
-    e.preventDefault();
-  });
-  $(".quickbar").on("drop", ".slot", function(e) {
-    e.preventDefault();
-    self.sourceSlot.find("img").appendTo(e.target);
-    $(e.target).data("item", self.sourceSlot.data("item"));
-    self.sourceSlot.data("item", null);
   });
 }
 
@@ -39,27 +23,16 @@ Quickbar.prototype.selectSlot = function(slot) {
   slot.addClass("selected").siblings().removeClass("selected");
 }
 
-Quickbar.prototype.add = function(item) {
-  var slot = this.getEmptySlot();
-  if (slot) {
-    $(slot).data("item", item);
-    $("<img>").attr("src", item.iconUrl).attr("draggable", "true").appendTo(slot);
-  }
-}
-
 Quickbar.prototype.getSelectedItem = function() {
-  return $(".quickbar .selected.slot").data("item");
+  return $(".quickbar .selected.slot img").data("item");
 }
 
 Quickbar.prototype.getEmptySlot = function() {
-  var slots = $(".quickbar .slot");
-  for (var i = 0; i < slots.length; i++) {
-    var slot = $(slots[i]);
-    if (slot.find("img").length == 0) {
-      return slots[i];
-    }
+  var slots = $(".quickbar .empty.slot");
+  if (slots.length == 0) {
+    return null;
   }
-  return null;
+  return slots[0];
 }
 
 Quickbar.prototype.update = function(millis) {

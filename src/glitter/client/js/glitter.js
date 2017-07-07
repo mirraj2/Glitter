@@ -13,6 +13,7 @@ Glitter.prototype.initGame = function() {
   window.input = new Input(spells);
   window.minimap = new MiniMap();
   window.quickbar = new Quickbar();
+  window.inventory = new Inventory(quickbar);
   
   input.listen();
 

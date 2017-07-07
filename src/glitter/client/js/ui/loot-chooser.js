@@ -15,7 +15,7 @@ function LootChooser() {
     $(".loot-chooser").fadeOut();
     window.input.allowMovement = true;
 
-    window.quickbar.add(item);
+    window.inventory.add(item);
   });
 }
 

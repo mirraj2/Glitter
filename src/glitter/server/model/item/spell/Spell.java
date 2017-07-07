@@ -26,6 +26,7 @@ public abstract class Spell extends Item {
   @Override
   public Json toJson() {
     return super.toJson()
+        .with("type", "spell")
         .with("manaCost", manaCost)
         .with("castTimeSeconds", castTimeSeconds)
         .with("cooldownSeconds", cooldownSeconds)
