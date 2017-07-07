@@ -28,6 +28,15 @@
   background-repeat: no-repeat;
 }
 
+.gui .slot {
+  transition: .3s;
+  width: 64px;
+  height: 64px;
+  border: solid 2px white;
+  vertical-align: top;
+  box-sizing: border-box;
+}
+
 .gui .empty.slot {
   border: dashed 2px #9b9b9b;
   opacity: .3;
@@ -35,12 +44,9 @@
   -webkit-filter: grayscale(100%);
 }
 
-.gui .slot {
-  transition: .3s;
-  width: 64px;
-  height: 64px;
-  border: solid 2px white;
-  box-sizing: border-box;
+.gui .slot.drop-target {
+  border-color: black;
+  border-width: 3px;
 }
 
 .gui .slot img {
@@ -63,7 +69,7 @@
 
 .inventory .bag {
   padding: 18px;
-  width: 428px;
+  width: 452px;
   text-align: left;
 }
 
