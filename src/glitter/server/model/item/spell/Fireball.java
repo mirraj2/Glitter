@@ -4,6 +4,7 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 import glitter.server.model.Entity;
 import glitter.server.model.Player;
+import glitter.server.model.Player.Stat;
 import glitter.server.model.Projectile;
 import glitter.server.model.Tile;
 import ox.Json;
@@ -41,6 +42,8 @@ public class Fireball extends Spell {
     p.onHit(hit -> {
       if (hit != caster) {
         double damage = minDamage + Math.random() * (maxDamage - minDamage);
+        damage *= 1 + caster.stats.get(Stat.FIRE) / 100;
+
         hit.health = Math.max(0, hit.health - damage);
         Log.info("%s did %s damage to %s with %s", caster, damage, hit, this);
         if (hit.health == 0) {

@@ -39,7 +39,7 @@ public class Player extends Entity {
 
   public double speed = 3;
 
-  private final Map<Stat, Double> stats = Maps.newConcurrentMap();
+  public final Map<Stat, Double> stats = Maps.newConcurrentMap();
 
   public double health, mana;
   public double healthRegenPerSecond = 1, manaRegenPerSecond = 5;
