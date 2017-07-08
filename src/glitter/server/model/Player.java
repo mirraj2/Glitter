@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -17,11 +18,12 @@ import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 import bowser.websocket.ClientSocket;
 import glitter.server.arch.SwappingQueue;
-import glitter.server.model.Terrain.TileLoc;
+import glitter.server.gen.world.Point;
+import glitter.server.logic.PlayerMovement;
+import glitter.server.logic.Spells;
 import glitter.server.model.item.Item;
 import glitter.server.model.item.armor.Armor;
 import glitter.server.model.item.spell.Spell;
-import glitter.server.service.Spells;
 import ox.Json;
 import ox.Log;
 import ox.Rect;
@@ -46,7 +48,7 @@ public class Player extends Entity {
 
   private final SwappingQueue<Json> outboundMessageBuffer = new SwappingQueue<>();
 
-  private Set<String> keys = ImmutableSet.of();
+  public Set<String> keys = ImmutableSet.of();
 
   private final Multimap<Armor.Part, Armor> armorMap = Multimaps.synchronizedMultimap(ArrayListMultimap.create());
 
@@ -70,6 +72,8 @@ public class Player extends Entity {
   private long lastPingRequestTime = 0;
   public double latency = 0;
 
+  public final PlayerMovement movement = new PlayerMovement(this);
+
   public Player(ClientSocket socket) {
     super(48, 64);
 
@@ -87,6 +91,55 @@ public class Player extends Entity {
     socket.onMessage(this::handleMessage);
   }
 
+  /**
+   * Called when this player has died. We will explode all of our items around us for other players to loot.
+   */
+  public void onDeath() {
+    Json loot = Json.array();
+    Json itemExplosion = Json.object()
+        .with("command", "itemExplosion")
+        .with("centerX", bounds.centerX())
+        .with("centerY", bounds.centerY())
+        .with("loot", loot);
+
+    int radius = 3;
+    Point p = new Point();
+    for (Item item : getAllItems()) {
+      p.x = (int) bounds.centerX();
+      p.y = (int) bounds.centerY();
+
+      // choose a random direction
+      double angle = world.rand.nextDouble() * Math.PI * 2;
+      double power = world.rand.gauss(radius, 1);
+      traceProjectile(p, Math.cos(angle), Math.sin(angle), power * Tile.SIZE);
+
+      loot.add(Json.object()
+          .with("x", p.x)
+          .with("y", p.y)
+          .with("item", item.toJson()));
+    }
+
+    world.sendToAll(itemExplosion);
+  }
+
+  private void traceProjectile(Point p, double dx, double dy, double maxDistance) {
+    double tickLength = Tile.SIZE / 2;
+
+    for (double t = 0; t <= maxDistance; t += tickLength) {
+      p.x += dx * tickLength;
+      p.y += dy * tickLength;
+      if (!world.terrain.isWalkable(p.x / Tile.SIZE, p.y / Tile.SIZE)) {
+        p.x -= dx * tickLength;
+        p.y -= dy * tickLength;
+        return;
+      }
+    }
+  }
+
+  private Iterable<Item> getAllItems() {
+    return Iterables.concat(actionBar, armorMap.values(), inventory);
+  }
+
   public Spell getSpell(long id) {
     for (int i = 0; i < numSpellSlots; i++) {
       Spell spell = actionBar.get(i);
@@ -99,52 +152,7 @@ public class Player extends Entity {
 
   @Override
   public boolean update(double millis) {
-    health = Math.min(getMaxHealth(), health + healthRegenPerSecond * millis / 1000.0);
-    mana = Math.min(getMaxMana(), mana + manaRegenPerSecond * millis / 1000.0);
-
-    double distance = speed * Tile.SIZE * millis / 1000;
-
-    double dx = 0, dy = 0;
-
-    if (keys.contains("w")) {
-      dy -= distance;
-    }
-    if (keys.contains("a")) {
-      dx -= distance;
-    }
-    if (keys.contains("s")) {
-      dy += distance;
-    }
-    if (keys.contains("d")) {
-      dx += distance;
-    }
-
-    if (dx != 0 && dy != 0) {
-      dx /= 1.4142135; // divide by sqrt(2)
-      dy /= 1.4142135; // divide by sqrt(2)
-    }
-
-    if (dx != 0) {
-      move(dx, 0);
-    }
-    if (dy != 0) {
-      move(0, dy);
-    }
-
-    return false;
-  }
-
-  private void move(double dx, double dy) {
-    Rect r = getCollisionRect();
-    r.x += dx;
-    r.y += dy;
-
-    if (this.isCollision(r)) {
-      return;
-    }
-
-    bounds.x += dx;
-    bounds.y += dy;
+    return movement.update(millis);
   }
 
   public Rect getCollisionRect() {
@@ -153,22 +161,6 @@ public class Player extends Entity {
     collisionRect.w = hitbox.w;
     collisionRect.h = hitbox.h;
     return collisionRect;
-  }
-
-  public boolean isCollision(Rect r) {
-    List<TileLoc> collisions = world.terrain.getTilesIntersecting(r, t -> !world.terrain.isWalkable(t.i, t.j));
-
-    if (!collisions.isEmpty()) {
-      return true;
-    }
-
-    for (Entity e : world.idEntities.values()) {
-      if (e.blocksWalking() && r.intersects(e.bounds)) {
-        return true;
-      }
-    }
-
-    return false;
   }
 
   private void chooseLoot(long itemId) {
@@ -382,10 +374,10 @@ public class Player extends Entity {
       for (Json message : outboundMessageBuffer.swap()) {
         array.add(message);
       }
-      int n = ping == null ? array.size() : array.size() - 1;
-      if (n > 0) {
-        Log.debug("sending %d outbound messages", n);
-      }
+      // int n = ping == null ? array.size() : array.size() - 1;
+      // if (n > 0) {
+      // Log.debug("sending: " + array.prettyPrint());
+      // }
       socket.send(array);
     } catch (Exception e) {
       if ("Broken pipe".equals(Throwables.getRootCause(e).getMessage())) {
@@ -403,11 +395,11 @@ public class Player extends Entity {
     bounds.y = j * Tile.SIZE + Tile.SIZE - bounds.h;
   }
 
-  private double getMaxHealth() {
+  public double getMaxHealth() {
     return stats.get(Stat.HEALTH);
   }
 
-  private double getMaxMana() {
+  public double getMaxMana() {
     return stats.get(Stat.MANA);
   }
 

@@ -34,7 +34,6 @@ Spells.prototype.cast = function(spell, toX, toY) {
   dy *= normalizationVal;
 
   console.log("Casting " + spell.name);
-  console.log(spell);
 
   var locs = {
     fromX : fromX,

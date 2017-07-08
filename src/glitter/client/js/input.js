@@ -12,6 +12,12 @@ function Input(spells) {
   this.allowMovement = true;
   this.consoleVisible = false;
   this.inventoryVisible = false;
+
+  this.listen();
+
+  this.buf = {};
+
+  glitter.register(this);
 }
 
 Input.prototype.haltMovement = function() {
@@ -171,8 +177,9 @@ Input.prototype.isCollision = function(rect) {
 }
 
 Input.prototype.intersects = function(rect, entity) {
-  if ((rect.x >= entity.x + entity.width) || (rect.x + rect.width <= entity.x) || (rect.y >= entity.y + entity.height)
-      || (rect.y + rect.height <= entity.y)) {
+  var buf = entity.getHitBox(this.buf);
+  if ((rect.x >= buf.x + buf.width) || (rect.x + rect.width <= buf.x) || (rect.y >= buf.y + buf.height)
+      || (rect.y + rect.height <= buf.y)) {
     return false;
   }
   return true;
@@ -180,6 +187,19 @@ Input.prototype.intersects = function(rect, entity) {
 
 Input.prototype.listen = function() {
   var self = this;
+
+  var cursor = $(".cursor");
+
+  document.onmousemove = function(e) {
+    cursor.css("transform", "translate(" + e.clientX + "px," + e.clientY + "px)");
+  }
+
+  // $(document).mouseenter(function() {
+  // cursor.show();
+  // });
+  // $(document).mouseleave(function() {
+  // cursor.hide();
+  // });
 
   $("canvas").mousedown(function(e) {
     if (!me.alive) {

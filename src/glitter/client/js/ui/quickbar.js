@@ -4,6 +4,8 @@ function Quickbar() {
   $(".quickbar").on("click", ".slot", function() {
     self.selectSlot(this);
   });
+  
+  glitter.register(this);
 }
 
 Quickbar.prototype.select = function(index) {

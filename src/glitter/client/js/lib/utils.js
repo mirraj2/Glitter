@@ -4,3 +4,8 @@ function checkNotNull(arg) {
   }
   return arg;
 }
+
+function interpolate(from, to, percent) {
+  percent = Math.min(percent, 1)
+  return from + percent * (to - from)
+}

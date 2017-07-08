@@ -1,6 +1,8 @@
 function GameLoop(canvas) {
   checkNotNull(canvas);
   this.canvas = canvas;
+
+  this.start();
 }
 
 GameLoop.prototype.start = function() {
@@ -33,11 +35,13 @@ GameLoop.prototype.start = function() {
 
     while (t > 0) {
       var tickTime = Math.min(t, maxTime);
-      input.update(tickTime);
-      camera.update(tickTime);
-      quickbar.update(tickTime);
-      Dust.update(tickTime);
-      minimap.update();
+      for (var i = glitter.callbacks.length - 1; i >= 0; i--) {
+        var callback = glitter.callbacks[i];
+        if (callback.update(tickTime)) {
+          //we should unregister this callback
+          glitter.callbacks.splice(i, 1);
+        }
+      }
       t -= maxTime;
     }
 

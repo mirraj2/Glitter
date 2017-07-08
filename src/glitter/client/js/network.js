@@ -1,6 +1,6 @@
 function Network(ip, port, spells) {
   var socket = this.connectToServer(ip, port);
-
+  
   $(window).on("beforeunload", function() {
     socket.close();
   });
@@ -66,10 +66,12 @@ Network.prototype.handleMessage = function(msg) {
     }
   } else if (command == "choose") {
     network.lootChooser.show(msg.choices);
-  } else if(command == "stats"){
+  } else if (command == "stats") {
     me.acceptStats(msg);
+  } else if (command == "itemExplosion") {
+    new ItemExplosion(msg);
   } else if (command == "enterWorld") {
-    if ($(".countdown").is(":visible")) {
+    if ($(".countdown").is(":visible")) { //TODO have the server say whether we are entering the real world or the lobby
       $(".numPlayers label").text("alive");
       $(".countdown").hide();
     }

@@ -2,6 +2,7 @@ function MiniMap() {
   var self = this;
 
   this.container = new PIXI.Container();
+  this.container.displayGroup = new PIXI.DisplayGroup(10);
   this.tiles = new PIXI.Container();
   this.width = 170;
   this.height = 170;
@@ -34,6 +35,8 @@ function MiniMap() {
     self.onResize();
   });
   self.onResize();
+
+  glitter.register(this);
 }
 
 MiniMap.prototype.onResize = function() {

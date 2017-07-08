@@ -1,4 +1,4 @@
-package glitter.server.service;
+package glitter.server.logic;
 
 import static ox.util.Utils.propagate;
 import java.lang.reflect.Constructor;

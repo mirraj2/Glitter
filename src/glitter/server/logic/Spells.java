@@ -1,4 +1,4 @@
-package glitter.server.service;
+package glitter.server.logic;
 
 import static com.google.common.base.Preconditions.checkState;
 import java.util.List;

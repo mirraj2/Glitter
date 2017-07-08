@@ -47,8 +47,8 @@ public class Fireball extends Spell {
         hit.health = Math.max(0, hit.health - damage);
         Log.info("%s did %s damage to %s with %s", caster, damage, hit, this);
         if (hit.health == 0) {
-          hit.alive = false;
           Log.info("FATAL HIT!");
+          hit.alive = false;
         }
         caster.world.sendToAll(Json.object()
             .with("command", "onHit")
@@ -57,6 +57,9 @@ public class Fireball extends Spell {
             .with("targetId", hit.id)
             .with("damage", damage)
             .with("fatal", !hit.alive));
+        if (!hit.alive) {
+          hit.onDeath();
+        }
         return true;
       }
       return false;

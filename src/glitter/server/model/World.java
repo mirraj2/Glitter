@@ -9,7 +9,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import glitter.server.arch.GRandom;
-import glitter.server.service.LootMaster;
+import glitter.server.logic.LootMaster;
 import ox.Json;
 import ox.Log;
 
@@ -128,7 +128,7 @@ public class World {
       int j = random(terrain.height);
       if (terrain.tiles[i][j].isWalkable()) {
         player.moveToTile(i, j);
-        if (!player.isCollision(player.getCollisionRect())) {
+        if (!player.movement.isCollision(player.getCollisionRect())) {
           return;
         }
       }

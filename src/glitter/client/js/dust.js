@@ -1,6 +1,7 @@
 var Dust = (function() {
   var emitters = [];
   return {
+    displayGroup : new PIXI.DisplayGroup(1),
     emitters : emitters,
     update : function(millis) {
       for (var i = emitters.length - 1; i >= 0; i--) {
@@ -109,6 +110,7 @@ Emitter.prototype.init = function() {
   this.container = new PIXI.Container(this.particleCount * 2, {
     alpha : true
   });
+  this.container.displayGroup = Dust.displayGroup;
   this.parent.addChild(this.container);
 
   var texture = PIXI.Texture.fromImage(this.imageName);

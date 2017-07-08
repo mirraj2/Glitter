@@ -21,8 +21,12 @@ public class GRandom extends Random {
     return super.nextGaussian();
   }
 
-  public int gauss(double average, double deviation) {
+  public int gaussInt(double average, double deviation) {
     return GMath.round(average + deviation * gauss());
+  }
+
+  public double gauss(double average, double deviation) {
+    return average + deviation * gauss();
   }
 
   public <T> T random(Collection<T> c) {
