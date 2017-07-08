@@ -100,5 +100,17 @@ Inventory.prototype.init = function() {
     from.toggleClass("empty", imgB.length == 0);
 
     self.sourceSlot = null;
+
+    var aInBag = from.parents(".bag").length > 0;
+    var bInBag = to.parents(".bag").length > 0;
+    if (aInBag ^ bInBag) {
+      var itemA = imgA.data("item");
+      var itemB = imgB.data("item");
+      network.send({
+        command : "swap",
+        itemA : itemA ? itemA.id : null,
+        itemB : itemB ? itemB.id : null
+      });
+    }
   });
 }

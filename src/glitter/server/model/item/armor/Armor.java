@@ -4,6 +4,7 @@ import static java.lang.Double.parseDouble;
 import static ox.util.Utils.parseEnum;
 import java.util.Map;
 import com.google.common.collect.Maps;
+import glitter.server.model.Player.Stat;
 import glitter.server.model.item.Item;
 import ox.Json;
 
@@ -55,10 +56,6 @@ public class Armor extends Item {
 
   public static enum Part {
     BAG, CHEST, FEET, HEAD, LEGS, NECK, RING, STAFF;
-  }
-
-  public static enum Stat {
-    HEALTH, MANA, FIRE, ICE, HOLY, UNHOLY;
   }
 
 }

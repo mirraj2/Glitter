@@ -66,6 +66,8 @@ Network.prototype.handleMessage = function(msg) {
     }
   } else if (command == "choose") {
     network.lootChooser.show(msg.choices);
+  } else if(command == "stats"){
+    me.acceptStats(msg);
   } else if (command == "enterWorld") {
     if ($(".countdown").is(":visible")) {
       $(".numPlayers label").text("alive");

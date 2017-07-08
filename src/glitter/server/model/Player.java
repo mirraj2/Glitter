@@ -1,17 +1,25 @@
 package glitter.server.model;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 import static ox.util.Functions.toSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import com.google.common.base.Throwables;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 import bowser.websocket.ClientSocket;
 import glitter.server.arch.SwappingQueue;
 import glitter.server.model.Terrain.TileLoc;
 import glitter.server.model.item.Item;
+import glitter.server.model.item.armor.Armor;
 import glitter.server.model.item.spell.Spell;
 import glitter.server.service.Spells;
 import ox.Json;
@@ -20,20 +28,27 @@ import ox.Rect;
 
 public class Player extends Entity {
 
+  private static final double BASE_HEALTH = 100, BASE_MANA = 100;
+
   private static final Set<String> movementKeys = ImmutableSet.of("w", "a", "s", "d");
+
+  private final Map<Long, Item> idItemHash = Maps.newConcurrentMap();
 
   public final ClientSocket socket;
   public World world;
 
   public double speed = 3;
 
-  public int maxHealth = 100, maxMana = 100;
-  public double health = maxHealth, mana = maxMana;
+  private final Map<Stat, Double> stats = Maps.newConcurrentMap();
+
+  public double health, mana;
   public double healthRegenPerSecond = 1, manaRegenPerSecond = 5;
 
   private final SwappingQueue<Json> outboundMessageBuffer = new SwappingQueue<>();
 
   private Set<String> keys = ImmutableSet.of();
+
+  private final Multimap<Armor.Part, Armor> armorMap = Multimaps.synchronizedMultimap(ArrayListMultimap.create());
 
   private final List<Spell> actionBar = Lists.newArrayListWithCapacity(10);
   private int numSpellSlots = 2;
@@ -58,6 +73,15 @@ public class Player extends Entity {
   public Player(ClientSocket socket) {
     super(48, 64);
 
+    for (Stat stat : Stat.values()) {
+      this.stats.put(stat, 0d);
+    }
+
+    this.stats.put(Stat.HEALTH, BASE_HEALTH);
+    this.stats.put(Stat.MANA, BASE_MANA);
+    this.health = BASE_HEALTH;
+    this.mana = BASE_MANA;
+
     this.socket = socket;
 
     socket.onMessage(this::handleMessage);
@@ -75,8 +99,8 @@ public class Player extends Entity {
 
   @Override
   public boolean update(double millis) {
-    health = Math.min(maxHealth, health + healthRegenPerSecond * millis / 1000.0);
-    mana = Math.min(maxMana, mana + manaRegenPerSecond * millis / 1000.0);
+    health = Math.min(getMaxHealth(), health + healthRegenPerSecond * millis / 1000.0);
+    mana = Math.min(getMaxMana(), mana + manaRegenPerSecond * millis / 1000.0);
 
     double distance = speed * Tile.SIZE * millis / 1000;
 
@@ -162,16 +186,114 @@ public class Player extends Entity {
 
   private void loot(Item item) {
     Log.info("%s just looted %s", this, item);
+
+    idItemHash.put(item.id, item);
+
+    inventory.add(item);
+    autoEquip(item);
+  }
+
+  private void autoEquip(Item item) {
+    if (item instanceof Spell) {
+      if (actionBar.size() < numSpellSlots) {
+        actionBar.add((Spell) item);
+        inventory.remove(item);
+      }
+    } else if (item instanceof Armor) {
+      Armor armor = (Armor) item;
+      int numEquipped = armorMap.get(armor.part).size();
+      int maxEquipped = armor.part == Armor.Part.RING ? 2 : 1;
+      if (numEquipped < maxEquipped) {
+        equip(armor);
+        broadcastStats();
+      }
+    }
+  }
+
+  private void equip(Armor armor) {
+    checkState(inventory.remove(armor));
+
+    armorMap.put(armor.part, armor);
+
+    double pHealth = this.health / this.getMaxHealth();
+    double pMana = this.mana / this.getMaxMana();
+
+    // add stats from the armor we're putting on
+    armor.stats.forEach((k, v) -> {
+      this.stats.compute(k, (stat, value) -> {
+        return value + v;
+      });
+    });
+
+    // adjust our current health and mana to be the same percentage as they were before
+    this.health = this.getMaxHealth() * pHealth;
+    this.mana = this.getMaxMana() * pMana;
+  }
+
+  private void unequip(Armor armor) {
+    checkState(armorMap.remove(armor.part, armor));
+    inventory.add(armor);
+
+    double pHealth = this.health / this.getMaxHealth();
+    double pMana = this.mana / this.getMaxMana();
+
+    // remove stats from the armor we're taking off.
+    armor.stats.forEach((k, v) -> {
+      this.stats.compute(k, (stat, value) -> {
+        return value - v;
+      });
+    });
+
+    // adjust our current health and mana to be the same percentage as they were before
+    this.health = this.getMaxHealth() * pHealth;
+    this.mana = this.getMaxMana() * pMana;
+  }
+
+  private void broadcastStats() {
+    send(Json.object()
+        .with("command", "stats")
+        .with("health", health)
+        .with("mana", mana)
+        .with("maxHealth", getMaxHealth())
+        .with("maxMana", getMaxMana()));
+  }
+
+  private void swapItems(Long itemAId, Long itemBId) {
+    checkNotNull(itemAId);
+
+    Item item = idItemHash.get(itemAId);
     if (item instanceof Spell) {
       Spell spell = (Spell) item;
-      if (actionBar.size() < numSpellSlots) {
-        actionBar.add(spell);
-        numSpellSlots++;
-      } else {
+
+      if (actionBar.remove(spell)) {
         inventory.add(spell);
+        if (itemBId != null) {
+          Spell toEquip = (Spell) idItemHash.get(itemBId);
+          actionBar.add(toEquip);
+          checkState(inventory.remove(idItemHash.get(itemBId)));
+        }
+      } else {
+        actionBar.add(spell);
+        if (itemBId != null) {
+          Spell toUnequip = (Spell) idItemHash.get(itemBId);
+          checkState(actionBar.remove(toUnequip));
+          inventory.add(toUnequip);
+        }
       }
     } else {
-      throw new RuntimeException("Not Implemented");
+      Armor armor = (Armor) item;
+      if (armorMap.containsEntry(armor.part, armor)) {
+        unequip(armor);
+        if (itemBId != null) {
+          equip((Armor) idItemHash.get(itemBId));
+        }
+      } else {
+        equip(armor);
+        if (itemBId != null) {
+          unequip((Armor) idItemHash.get(itemBId));
+        }
+      }
+      broadcastStats();
     }
   }
 
@@ -222,6 +344,8 @@ public class Player extends Entity {
       interact(entityId);
     } else if (command.equals("choose")) {
       chooseLoot(json.getLong("id"));
+    } else if (command.equals("swap")) {
+      swapItems(json.getLong("itemA"), json.getLong("itemB"));
     } else if (command.equals("consoleInput")) {
       world.console.handle(this, json.get("text"));
     } else {
@@ -258,6 +382,10 @@ public class Player extends Entity {
       for (Json message : outboundMessageBuffer.swap()) {
         array.add(message);
       }
+      int n = ping == null ? array.size() : array.size() - 1;
+      if (n > 0) {
+        Log.debug("sending %d outbound messages", n);
+      }
       socket.send(array);
     } catch (Exception e) {
       if ("Broken pipe".equals(Throwables.getRootCause(e).getMessage())) {
@@ -275,6 +403,14 @@ public class Player extends Entity {
     bounds.y = j * Tile.SIZE + Tile.SIZE - bounds.h;
   }
 
+  private double getMaxHealth() {
+    return stats.get(Stat.HEALTH);
+  }
+
+  private double getMaxMana() {
+    return stats.get(Stat.MANA);
+  }
+
   @Override
   public Json toJson() {
     return Json.object()
@@ -283,8 +419,8 @@ public class Player extends Entity {
         .with("y", bounds.y)
         .with("health", health)
         .with("mana", mana)
-        .with("maxHealth", maxHealth)
-        .with("maxMana", maxMana)
+        .with("maxHealth", getMaxHealth())
+        .with("maxMana", getMaxMana())
         .with("healthRegen", healthRegenPerSecond)
         .with("manaRegen", manaRegenPerSecond);
   }
@@ -292,6 +428,10 @@ public class Player extends Entity {
   @Override
   public String toString() {
     return "Player " + id;
+  }
+
+  public static enum Stat {
+    HEALTH, MANA, FIRE, ICE, HOLY, UNHOLY;
   }
 
 }

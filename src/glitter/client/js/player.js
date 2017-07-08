@@ -54,3 +54,10 @@ Player.prototype.getHitbox = function(rect, buffer) {
   rect.height = this.hitbox.height + buffer * 2;
   return rect;
 }
+
+Player.prototype.acceptStats = function(stats) {
+  this.health = stats.health;
+  this.mana = stats.mana;
+  this.maxHealth = stats.maxHealth;
+  this.maxMana = stats.maxMana;
+}
