@@ -113,21 +113,21 @@ Input.prototype.movePlayer = function(player, t) {
 }
 
 Input.prototype.findInteraction = function() {
-  // see if we are near a treasure chest
+  // see if we are near something we can interact with
 
-  var chest = null;
+  var interactionEntity = null;
   var self = this;
   var rect = me.getHitbox(this.rect, 16);
 
-  $.each(world.idEntities, function(key, value) {
-    if (value.canInteract && self.intersects(rect, value)) {
-      chest = value;
+  $.each(world.idEntities, function(key, entity) {
+    if (entity.canInteract && self.intersects(rect, entity)) {
+      interactionEntity = entity;
       return false;
     }
   });
 
-  if (chest != this.interactionEntity) {
-    this.interactionEntity = chest;
+  if (interactionEntity != this.interactionEntity) {
+    this.interactionEntity = interactionEntity;
     if (this.interactionEntity) {
       $(".spacebar").fadeIn(200);
     } else {
@@ -177,11 +177,14 @@ Input.prototype.isCollision = function(rect) {
 }
 
 Input.prototype.intersects = function(rect, entity) {
-  var buf = entity.getHitBox(this.buf);
+  var buf = this.buf;
+  entity.getHitBox(buf);
+
   if ((rect.x >= buf.x + buf.width) || (rect.x + rect.width <= buf.x) || (rect.y >= buf.y + buf.height)
       || (rect.y + rect.height <= buf.y)) {
     return false;
   }
+
   return true;
 }
 
@@ -193,13 +196,6 @@ Input.prototype.listen = function() {
   document.onmousemove = function(e) {
     cursor.css("transform", "translate(" + e.clientX + "px," + e.clientY + "px)");
   }
-
-  // $(document).mouseenter(function() {
-  // cursor.show();
-  // });
-  // $(document).mouseleave(function() {
-  // cursor.hide();
-  // });
 
   $("canvas").mousedown(function(e) {
     if (!me.alive) {

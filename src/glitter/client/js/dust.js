@@ -110,6 +110,7 @@ Emitter.prototype.init = function() {
   this.container = new PIXI.Container(this.particleCount * 2, {
     alpha : true
   });
+  this.container.displayFlag = PIXI.DISPLAY_FLAG.MANUAL_CONTAINER;
   this.container.displayGroup = Dust.displayGroup;
   this.parent.addChild(this.container);
 

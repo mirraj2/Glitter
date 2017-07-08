@@ -32,9 +32,8 @@ World.prototype.setChests = function(chests) {
     chest.blocksWalking = true;
     chest.canInteract = true;
     chest.type = "chest";
-    world.idEntities[chest.id] = chest;
 
-    var sprite = new PIXI.Sprite(texture);
+    var sprite = chest.sprite = new PIXI.Sprite(texture);
     sprite.displayGroup = self.entityDisplayGroup;
     sprite.x = chest.x;
     sprite.y = chest.y;
@@ -45,17 +44,14 @@ World.prototype.setChests = function(chests) {
       buf.y = sprite.y + sprite.height / 2;
       buf.width = sprite.width;
       buf.height = sprite.height / 2;
-      return buf;
     };
-    world.entities.addChild(sprite);
 
-    chest.destroy = function() {
-      world.entities.removeChild(sprite);
-    };
+    self.addEntity(chest);
   });
 }
 
 World.prototype.addPlayer = function(player) {
+  checkNotNull(player.id);
   this.idPlayers[player.id] = player;
 
   var texture = PIXI.loader.resources["wizard.png"].texture;
@@ -88,6 +84,12 @@ World.prototype.removeAllPlayers = function() {
   this.players.removeChildren();
 }
 
+World.prototype.addEntity = function(entity) {
+  checkNotNull(entity.id);
+  this.idEntities[entity.id] = entity;
+  this.entities.addChild(entity.sprite);
+}
+
 World.prototype.removeEntity = function(entityId) {
   var entity = this.idEntities[entityId];
 
@@ -97,7 +99,13 @@ World.prototype.removeEntity = function(entityId) {
 
   delete this.idEntities[entityId];
 
-  entity.destroy();
+  if (entity.sprite) {
+    world.entities.removeChild(entity.sprite);
+  }
+
+  if (entity.destroy) {
+    entity.destroy();
+  }
 
   // we may have the spacebar interaction UI up and need to remove it.
   window.input.findInteraction();

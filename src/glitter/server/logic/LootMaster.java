@@ -56,7 +56,7 @@ public class LootMaster {
     return ret;
   }
 
-  private Item generateItem(Rarity rarity) {
+  public Item generateItem(Rarity rarity) {
     if (rand.nextBoolean()) {
       Spell ret = rand.random(raritySpells.get(rarity));
       return newInstance(ret.getClass(), rand);

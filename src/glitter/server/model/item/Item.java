@@ -1,6 +1,7 @@
 package glitter.server.model.item;
 
 import glitter.server.model.Entity;
+import glitter.server.model.Player;
 import glitter.server.model.Tile;
 import ox.Json;
 
@@ -9,6 +10,11 @@ public abstract class Item extends Entity {
   public final String name;
   public final Rarity rarity;
   public String flavorText = "";
+
+  /**
+   * The player who currently has this item.
+   */
+  public Player owner = null;
 
   public Item(String name, Rarity rarity) {
     super(Tile.SIZE, Tile.SIZE);

@@ -48,7 +48,7 @@ public class PlayerMovement {
       move(0, dy);
     }
 
-    return false;
+    return true;
   }
 
   private void move(double dx, double dy) {

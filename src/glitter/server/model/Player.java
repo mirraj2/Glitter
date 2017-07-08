@@ -34,8 +34,6 @@ public class Player extends Entity {
 
   private static final Set<String> movementKeys = ImmutableSet.of("w", "a", "s", "d");
 
-  private final Map<Long, Item> idItemHash = Maps.newConcurrentMap();
-
   public final ClientSocket socket;
   public World world;
 
@@ -105,6 +103,8 @@ public class Player extends Entity {
     int radius = 3;
     Point p = new Point();
     for (Item item : getAllItems()) {
+      item.owner = null;
+
       p.x = (int) bounds.centerX();
       p.y = (int) bounds.centerY();
 
@@ -112,11 +112,14 @@ public class Player extends Entity {
       double angle = world.rand.nextDouble() * Math.PI * 2;
       double power = world.rand.gauss(radius, 1);
       traceProjectile(p, Math.cos(angle), Math.sin(angle), power * Tile.SIZE);
+      item.bounds.location(p.x, p.y);
 
       loot.add(Json.object()
           .with("x", p.x)
           .with("y", p.y)
           .with("item", item.toJson()));
+
+      world.addEntity(item);
     }
 
     world.sendToAll(itemExplosion);
@@ -176,10 +179,17 @@ public class Player extends Entity {
     }
   }
 
+  public void gift(Item item) {
+    send(Json.object()
+        .with("command", "receiveItem")
+        .with("item", item.toJson()));
+    loot(item);
+  }
+
   private void loot(Item item) {
     Log.info("%s just looted %s", this, item);
 
-    idItemHash.put(item.id, item);
+    item.owner = this;
 
     inventory.add(item);
     autoEquip(item);
@@ -253,21 +263,21 @@ public class Player extends Entity {
   private void swapItems(Long itemAId, Long itemBId) {
     checkNotNull(itemAId);
 
-    Item item = idItemHash.get(itemAId);
+    Item item = world.getEntity(itemAId);
     if (item instanceof Spell) {
       Spell spell = (Spell) item;
 
       if (actionBar.remove(spell)) {
         inventory.add(spell);
         if (itemBId != null) {
-          Spell toEquip = (Spell) idItemHash.get(itemBId);
+          Spell toEquip = world.getEntity(itemBId);
           actionBar.add(toEquip);
-          checkState(inventory.remove(idItemHash.get(itemBId)));
+          checkState(inventory.remove(toEquip));
         }
       } else {
         actionBar.add(spell);
         if (itemBId != null) {
-          Spell toUnequip = (Spell) idItemHash.get(itemBId);
+          Spell toUnequip = world.getEntity(itemBId);
           checkState(actionBar.remove(toUnequip));
           inventory.add(toUnequip);
         }
@@ -277,12 +287,12 @@ public class Player extends Entity {
       if (armorMap.containsEntry(armor.part, armor)) {
         unequip(armor);
         if (itemBId != null) {
-          equip((Armor) idItemHash.get(itemBId));
+          equip((Armor) world.getEntity(itemBId));
         }
       } else {
         equip(armor);
         if (itemBId != null) {
-          unequip((Armor) idItemHash.get(itemBId));
+          unequip((Armor) world.getEntity(itemBId));
         }
       }
       broadcastStats();
@@ -290,17 +300,35 @@ public class Player extends Entity {
   }
 
   private void interact(long entityId) {
-    TreasureChest chest = (TreasureChest) world.idEntities.get(entityId);
-    chest.open();
+    Entity entity = world.idEntities.get(entityId);
 
-    this.lootChoices = world.lootMaster.generateChoices();
-    send(Json.object()
-        .with("command", "choose")
-        .with("choices", Json.array(lootChoices, Item::toJson)));
+    if (entity instanceof TreasureChest) {
+      TreasureChest chest = (TreasureChest) world.idEntities.get(entityId);
+      chest.open();
 
-    world.removeEntity(entityId);
+      this.lootChoices = world.lootMaster.generateChoices();
+      send(Json.object()
+          .with("command", "choose")
+          .with("choices", Json.array(lootChoices, Item::toJson)));
+
+      world.removeEntity(entityId);
+    } else if (entity instanceof Item) {
+      Item item = (Item) entity;
+      checkState(item.owner == null, "This item was already picked up!");
+      send(Json.object()
+          .with("command", "receiveItem")
+          .with("item", item.toJson()));
+      this.loot(item);
+      world.removeEntity(item.id);
+    } else {
+      throw new RuntimeException("Don't know how to interact with " + entity);
+    }
   }
 
+  /**
+   * TODO these messages are handled whenever they are received, but there is some code here that we might want to run
+   * synchronized or on a per-tick basis.
+   */
   private void handleMessage(String msg) {
     Json json = new Json(msg);
     String command = json.get("command");
@@ -372,12 +400,12 @@ public class Player extends Entity {
         array.add(ping);
       }
       for (Json message : outboundMessageBuffer.swap()) {
+        String command = message.get("command");
+        if (!command.equals("ping") && !command.equals("playerState")) {
+          Log.debug(command);
+        }
         array.add(message);
       }
-      // int n = ping == null ? array.size() : array.size() - 1;
-      // if (n > 0) {
-      // Log.debug("sending: " + array.prettyPrint());
-      // }
       socket.send(array);
     } catch (Exception e) {
       if ("Broken pipe".equals(Throwables.getRootCause(e).getMessage())) {

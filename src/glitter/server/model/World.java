@@ -10,10 +10,15 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import glitter.server.arch.GRandom;
 import glitter.server.logic.LootMaster;
+import glitter.server.model.item.Item;
+import glitter.server.model.item.Item.Rarity;
+import ox.Config;
 import ox.Json;
 import ox.Log;
 
 public class World {
+
+  private static final Config config = Config.load("glitter");
 
   public final GRandom rand;
   public final Terrain terrain;
@@ -37,22 +42,20 @@ public class World {
   public void start() {
     this.sendToAll(Json.object()
         .with("command", "start"));
-    new GameLoop(this::update);
 
-    // Threads.every(1, TimeUnit.SECONDS).run(() -> {
-    // for (Player player : players) {
-    // player.socket.send(Json.object()
-    // .with("command", "ping")
-    // .with("time", System.nanoTime()));
-    // }
-    // });
+    if (config.getBoolean("startWithLoot", false)) {
+      for (Player player : getAlivePlayers()) {
+        for (int i = 0; i < 8; i++) {
+          Item item = lootMaster.generateItem(Rarity.COMMON);
+          player.gift(item);
+        }
+      }
+    }
+
+    new GameLoop(this::update);
   }
 
   private void update(double millis) {
-    for (Player player : players) {
-      player.update(millis);
-    }
-
     for (Entity e : idEntities.values()) {
       if (!e.update(millis)) {
         entitiesToRemove.add(e.id);
@@ -70,6 +73,8 @@ public class World {
 
   public void addPlayer(Player player) {
     players.add(player);
+    idEntities.put(player.id, player);
+
     player.world = this;
     spawnInRandomLocation(player);
 
@@ -95,16 +100,19 @@ public class World {
   public void removePlayer(Player player) {
     Log.debug("player disconnected. (%d players in world)", players.size());
     players.remove(player);
+    idEntities.remove(player.id);
 
     sendToAll(Json.object()
         .with("command", "removePlayer")
         .with("id", player.id));
   }
 
+  public void addEntity(Entity entity) {
+    idEntities.put(entity.id, entity);
+  }
+
   public void addEntities(Collection<? extends Entity> entities) {
-    entities.forEach(e -> {
-      idEntities.put(e.id, e);
-    });
+    entities.forEach(this::addEntity);
   }
 
   public void removeEntity(long entityId) {
@@ -147,10 +155,15 @@ public class World {
     }
   }
 
+  @SuppressWarnings("unchecked")
+  public <T extends Entity> T getEntity(long id) {
+    return (T) idEntities.get(id);
+  }
+
   public Json toJson() {
     return Json.object()
         .with("terrain", terrain.toJson())
-        .with("chests", Json.array(idEntities.values(), Entity::toJson));
+        .with("chests", Json.array(Iterables.filter(idEntities.values(), TreasureChest.class), Entity::toJson));
   }
 
 }
