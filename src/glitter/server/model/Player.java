@@ -156,7 +156,7 @@ public class Player extends Entity {
         return spell;
       }
     }
-    return null;
+    throw new RuntimeException("Could not find spell of id: " + id);
   }
 
   @Override

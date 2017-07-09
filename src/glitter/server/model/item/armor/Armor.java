@@ -10,7 +10,7 @@ import ox.Json;
 
 public class Armor extends Item {
 
-  private Json originalJson;
+  public final Json originalJson;
 
   public final Part part;
   public final String imageUrl;
@@ -48,10 +48,6 @@ public class Armor extends Item {
     });
     ret.with("stats", statsJson);
     return ret;
-  }
-
-  public Armor copy() {
-    return new Armor(originalJson);
   }
 
   public static enum Part {

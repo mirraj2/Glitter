@@ -62,7 +62,7 @@ public class LootMaster {
       return newInstance(ret.getClass(), rand);
     } else {
       Armor ret = rand.random(rarityArmors.get(rarity));
-      return ret.copy();
+      return new Armor(ret.originalJson);
     }
   }
 

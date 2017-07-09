@@ -40,15 +40,6 @@ public abstract class Item extends Entity {
     return name;
   }
 
-  @Override
-  public boolean equals(Object obj) {
-    if (!(obj instanceof Item)) {
-      return false;
-    }
-    Item that = (Item) obj;
-    return this.name.equals(that.name);
-  }
-
   public static enum Rarity {
     COMMON, RARE, EPIC, LEGENDARY;
   }
