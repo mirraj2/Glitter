@@ -261,7 +261,7 @@ Input.prototype.onKeyDown = function(self, e) {
     }
   } else if (e.which >= 48 && e.which < 58) {
     window.quickbar.select(e.which - 48);
-  } else if (e.key == 'i' || e.key == 'tab' || e.key == 'p') {
+  } else if (e.key == 'i' || e.key == 'tab') {
     e.preventDefault();
     if (self.inventoryVisible) {
       $(".inventory").stop().fadeOut();

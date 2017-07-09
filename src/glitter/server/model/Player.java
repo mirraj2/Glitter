@@ -48,6 +48,11 @@ public class Player extends Entity {
 
   public Set<String> keys = ImmutableSet.of();
 
+  /**
+   * This map is used internally to lookup items that this player is holding.
+   */
+  private final Map<Long, Item> idItemMap = Maps.newConcurrentMap();
+
   private final Multimap<Armor.Part, Armor> armorMap = Multimaps.synchronizedMultimap(ArrayListMultimap.create());
 
   private final List<Spell> actionBar = Lists.newArrayListWithCapacity(10);
@@ -123,6 +128,7 @@ public class Player extends Entity {
     }
 
     world.sendToAll(itemExplosion);
+    this.idItemMap.clear();
   }
 
   private void traceProjectile(Point p, double dx, double dy, double maxDistance) {
@@ -190,6 +196,7 @@ public class Player extends Entity {
     Log.info("%s just looted %s", this, item);
 
     item.owner = this;
+    this.idItemMap.put(item.id, item);
 
     inventory.add(item);
     autoEquip(item);
@@ -263,21 +270,23 @@ public class Player extends Entity {
   private void swapItems(Long itemAId, Long itemBId) {
     checkNotNull(itemAId);
 
-    Item item = world.getEntity(itemAId);
+    Item item = idItemMap.get(itemAId);
+    checkNotNull(item, "Could not find item with id: " + itemAId);
+
     if (item instanceof Spell) {
       Spell spell = (Spell) item;
 
       if (actionBar.remove(spell)) {
         inventory.add(spell);
         if (itemBId != null) {
-          Spell toEquip = world.getEntity(itemBId);
+          Spell toEquip = (Spell) idItemMap.get(itemBId);
           actionBar.add(toEquip);
           checkState(inventory.remove(toEquip));
         }
       } else {
         actionBar.add(spell);
         if (itemBId != null) {
-          Spell toUnequip = world.getEntity(itemBId);
+          Spell toUnequip = (Spell) idItemMap.get(itemBId);
           checkState(actionBar.remove(toUnequip));
           inventory.add(toUnequip);
         }
@@ -287,12 +296,12 @@ public class Player extends Entity {
       if (armorMap.containsEntry(armor.part, armor)) {
         unequip(armor);
         if (itemBId != null) {
-          equip((Armor) world.getEntity(itemBId));
+          equip((Armor) idItemMap.get(itemBId));
         }
       } else {
         equip(armor);
         if (itemBId != null) {
-          unequip((Armor) world.getEntity(itemBId));
+          unequip((Armor) idItemMap.get(itemBId));
         }
       }
       broadcastStats();
@@ -413,8 +422,6 @@ public class Player extends Entity {
       } else {
         e.printStackTrace();
       }
-    } finally {
-      outboundMessageBuffer.clear();
     }
   }
 

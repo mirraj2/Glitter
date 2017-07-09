@@ -15,7 +15,7 @@ Inventory.prototype.add = function(item) {
     }
   } else if (item.type == "armor") {
     // see if we can equip this armor
-    var armorSlot = $(".inventory .empty.slot[part=" + item.part.toLowerCase() + "]");
+    var armorSlot = $(".inventory .empty.slot[part=" + item.part.toLowerCase() + "]:first");
     if (armorSlot.length) {
       armorSlot.append(img).removeClass("empty");
       return;
@@ -25,6 +25,29 @@ Inventory.prototype.add = function(item) {
   var bagSlot = $(".inventory .bag .empty.slot:first");
   if (bagSlot.length) {
     bagSlot.append(img).removeClass("empty");
+  }
+}
+
+Inventory.prototype.equip = function(img) {
+  var item = img.data("item");
+  var from = img.parents(".slot");
+
+  if (item.type == "spell") {
+    // see if we can place the spell right into the quickbar
+    var to = this.quickbar.getEmptySlot();
+    if (to) {
+      this.swap(from, $(to));
+    }
+  } else if (item.type == "armor") {
+    // first try to find an empty slot
+    var to = $(".inventory .empty.slot[part=" + item.part.toLowerCase() + "]:first");
+
+    // just find a non-empty armor slot for this part
+    if (to.length == 0) {
+      to = $(".inventory .slot[part=" + item.part.toLowerCase() + "]:first");
+    }
+
+    this.swap(from, to);
   }
 }
 
@@ -45,6 +68,15 @@ Inventory.prototype.canGoInSlot = function(item, slot) {
 Inventory.prototype.init = function() {
   var self = this;
 
+  $(".inventory .bag").on("mousedown", ".slot", function(e) {
+    if (e.button == 2) {
+      var img = $(this).find("img");
+      if (img.length) {
+        self.equip(img);
+      }
+    }
+  });
+
   $(".gui .slot").each(function() {
     $(this).addClass("empty");
     var part = $(this).attr("part");
@@ -63,8 +95,9 @@ Inventory.prototype.init = function() {
     });
   });
 
-  $(".gui").on("dragend", ".slot", function() {
+  $(".gui").on("dragend", ".slot", function(e) {
     $(".slot.drop-target").removeClass("drop-target");
+    $(".cursor").css("transform", "translate(" + e.clientX + "px," + e.clientY + "px)");
   });
 
   $(".gui").on("dragover", ".slot", function(e) {
@@ -90,27 +123,34 @@ Inventory.prototype.init = function() {
       to = to.parents(".slot");
     }
 
-    var imgA = from.find("img");
-    var imgB = to.find("img");
-
-    from.append(imgB);
-    to.append(imgA);
-
-    to.toggleClass("empty", imgA.length == 0);
-    from.toggleClass("empty", imgB.length == 0);
-
-    self.sourceSlot = null;
-
-    var aInBag = from.parents(".bag").length > 0;
-    var bInBag = to.parents(".bag").length > 0;
-    if (aInBag ^ bInBag) {
-      var itemA = imgA.data("item");
-      var itemB = imgB.data("item");
-      network.send({
-        command : "swap",
-        itemA : itemA ? itemA.id : null,
-        itemB : itemB ? itemB.id : null
-      });
-    }
+    self.swap(from, to);
   });
+}
+
+/**
+ * Swaps the contents of two inventory slots. Also notifies the server of any changes.
+ */
+Inventory.prototype.swap = function(from, to) {
+  var imgA = from.find("img");
+  var imgB = to.find("img");
+
+  from.append(imgB);
+  to.append(imgA);
+
+  to.toggleClass("empty", imgA.length == 0);
+  from.toggleClass("empty", imgB.length == 0);
+
+  self.sourceSlot = null;
+
+  var aInBag = from.parents(".bag").length > 0;
+  var bInBag = to.parents(".bag").length > 0;
+  if (aInBag ^ bInBag) {
+    var itemA = imgA.data("item");
+    var itemB = imgB.data("item");
+    network.send({
+      command : "swap",
+      itemA : itemA ? itemA.id : null,
+      itemB : itemB ? itemB.id : null
+    });
+  }
 }
