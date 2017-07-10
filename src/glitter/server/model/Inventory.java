@@ -2,6 +2,7 @@ package glitter.server.model;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static ox.util.Utils.last;
 import java.util.List;
 import java.util.Map;
 import com.google.common.collect.ArrayListMultimap;
@@ -31,6 +32,7 @@ public class Inventory {
   private int numSpellSlots = 2;
 
   private final List<Item> inventory = Lists.newArrayList();
+  private int numBagSlots = 6;
 
   public Inventory(Player player) {
     this.player = player;
@@ -54,6 +56,30 @@ public class Inventory {
 
     inventory.add(item);
     autoEquip(item);
+
+    if (inventory.size() > numBagSlots) {
+      Log.info("Inventory too full! Dropping item.");
+      dropItem(last(inventory).id);
+    }
+  }
+
+  public boolean hasSpaceFor(Item item) {
+    if (inventory.size() < numBagSlots) {
+      return true;
+    }
+    if (item instanceof Spell) {
+      if (actionBar.size() < numSpellSlots) {
+        return true;
+      }
+    } else if (item instanceof Armor) {
+      Armor armor = (Armor) item;
+      int numEquipped = armorMap.get(armor.part).size();
+      int maxEquipped = armor.part == Armor.Part.RING ? 2 : 1;
+      if (numEquipped < maxEquipped) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private void autoEquip(Item item) {
@@ -115,6 +141,14 @@ public class Inventory {
   public void dropItem(long itemId) {
     Item item = idItemMap.remove(itemId);
     checkNotNull(item);
+
+    if (!inventory.remove(item)) {
+      if (item instanceof Spell) {
+        checkState(actionBar.remove(item));
+      } else if (item instanceof Armor) {
+        checkState(armorMap.remove(((Armor) item).part, item));
+      }
+    }
 
     item.owner = null;
     item.bounds.centerOn(player.bounds.centerX(), player.bounds.centerY());

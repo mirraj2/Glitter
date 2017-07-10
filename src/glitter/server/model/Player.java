@@ -184,12 +184,23 @@ public class Player extends Entity {
       world.removeEntity(entityId);
     } else if (entity instanceof Item) {
       Item item = (Item) entity;
-      checkState(item.owner == null, "This item was already picked up!");
+
+      if (!inventory.hasSpaceFor(item)) {
+        send(Json.object()
+            .with("command", "error")
+            .with("text", "You don't have any more space in your inventory."));
+        return;
+      }
+
+      synchronized (item) {
+        checkState(item.owner == null, "This item was already picked up!");
+        item.owner = this;
+      }
       send(Json.object()
           .with("command", "receiveItem")
           .with("item", item.toJson()));
-      inventory.loot(item);
       world.removeEntity(item.id);
+      inventory.loot(item);
     } else {
       throw new RuntimeException("Don't know how to interact with " + entity);
     }

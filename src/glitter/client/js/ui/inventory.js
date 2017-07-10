@@ -25,6 +25,8 @@ Inventory.prototype.add = function(item) {
   var bagSlot = $(".inventory .bag .empty.slot:first");
   if (bagSlot.length) {
     bagSlot.append(img).removeClass("empty");
+  } else {
+    console.log("Not enough space!");
   }
 }
 

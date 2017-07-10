@@ -165,3 +165,16 @@ html, body {
   pointer-events: none;
   transform: translate(-100px, -100px);
 }
+
+.gui .error {
+  position: fixed;
+  width: 100%;
+  left: 0px;
+  top: 25%;
+  text-align: center;
+  transform: translateY(-50%);
+  font-size: 32px;
+  color: #ff7272;
+  background: rgba(50, 50, 50, .8);
+  padding: 16px;
+}

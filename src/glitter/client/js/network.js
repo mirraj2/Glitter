@@ -99,6 +99,14 @@ Network.prototype.handleMessage = function(msg) {
     $(".countdown").fadeIn();
   } else if (command == "consoleOutput") {
     $("<div>").text(msg.text).appendTo(".console .output");
+  } else if (command == "error") {
+    clearTimeout(window.errorRemover);
+    $(".error").text(msg.text).fadeIn();
+    window.errorRemover = setTimeout(function() {
+      $(".error").fadeOut(function() {
+        $(this).text("");
+      });
+    }, 3000);
   } else if (command == "start") {
     $(".summary .totalPlayers").text(" / " + Object.keys(world.idPlayers).length);
   } else {
