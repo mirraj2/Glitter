@@ -75,8 +75,7 @@ Network.prototype.handleMessage = function(msg) {
   } else if (command == "itemDropped") {
     window.createEntityForItem(msg.item, msg.x, msg.y);
   } else if (command == "enterWorld") {
-    // TODO have the server say whether we are entering the real world or the lobby
-    if ($(".countdown").is(":visible")) {
+    if ($(".countdown").finish().is(":visible")) {
       $(".numPlayers label").text("alive");
       $(".countdown").hide();
     }
@@ -95,8 +94,12 @@ Network.prototype.handleMessage = function(msg) {
     $(".numPlayers").show();
     window.camera.onPlayerSpawned();
   } else if (command == "countdown") {
-    window.gameStartTime = Date.now() + msg.millisLeft;
-    $(".countdown").fadeIn();
+    if (msg.millisLeft == -1) {
+      $(".countdown").fadeOut();
+    } else {
+      window.gameStartTime = Date.now() + msg.millisLeft;
+      $(".countdown").fadeIn();
+    }
   } else if (command == "consoleOutput") {
     $("<div>").text(msg.text).appendTo(".console .output");
   } else if (command == "error") {

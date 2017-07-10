@@ -29,6 +29,7 @@ public class World {
 
   private final List<Long> entitiesToRemove = Lists.newArrayList();
 
+
   public World(GRandom rand, Terrain terrain) {
     this.rand = rand;
     this.terrain = terrain;

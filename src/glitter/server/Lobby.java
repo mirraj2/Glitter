@@ -39,6 +39,15 @@ public class Lobby {
       return;
     }
 
+    if (world.players.size() < MIN_PLAYERS) {
+      Log.info("Player(s) left before the countdown completed.");
+      nextGameStartTime = null;
+      world.sendToAll(Json.object()
+          .with("command", "countdown")
+          .with("millisLeft", -1));
+      return;
+    }
+
     Log.info("Starting a new game!");
 
     List<Player> players = ImmutableList.copyOf(((SwappingQueue<Player>) world.players).swap());

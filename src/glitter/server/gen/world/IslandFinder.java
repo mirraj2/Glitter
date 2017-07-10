@@ -1,5 +1,6 @@
 package glitter.server.gen.world;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static ox.util.Utils.propagate;
 import java.util.Map;
 import java.util.Set;
@@ -29,8 +30,8 @@ public class IslandFinder {
   public Islands findIslands(int minTiles) {
     NoiseFunction noiseFunction = new ContinentsAndIslands();
 
-    Islands islands;
-    while (true) {
+    Islands islands = null;
+    for (int i = 0; i < 1000; i++) {
       try {
         islands = findIslands(minTiles, noiseFunction);
         break;
@@ -42,6 +43,9 @@ public class IslandFinder {
         throw propagate(e);
       }
     }
+
+    checkNotNull(islands, "After 1000 iterations, all the islands found were too big. minTiles = " + minTiles);
+
     return islands;
   }
 
