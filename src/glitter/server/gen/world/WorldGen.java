@@ -4,13 +4,13 @@ import java.util.List;
 import com.google.common.collect.Lists;
 import glitter.server.arch.GMath;
 import glitter.server.arch.GRandom;
+import glitter.server.arch.Rect;
 import glitter.server.model.Terrain;
 import glitter.server.model.Terrain.TileLoc;
 import glitter.server.model.Tile;
 import glitter.server.model.TreasureChest;
 import glitter.server.model.World;
 import ox.Log;
-import ox.Rect;
 
 public class WorldGen {
 

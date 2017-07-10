@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import bowser.websocket.ClientSocket;
+import glitter.server.arch.Rect;
 import glitter.server.arch.SwappingQueue;
 import glitter.server.gen.world.Point;
 import glitter.server.logic.PlayerMovement;
@@ -18,7 +19,6 @@ import glitter.server.logic.Spells;
 import glitter.server.model.item.Item;
 import ox.Json;
 import ox.Log;
-import ox.Rect;
 
 public class Player extends Entity {
 

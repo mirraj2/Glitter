@@ -1,7 +1,7 @@
 package glitter.server.gen.world;
 
 import java.util.Set;
-import ox.Rect;
+import glitter.server.arch.Rect;
 
 public class Island {
 

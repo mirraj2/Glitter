@@ -3,8 +3,8 @@ package glitter.server.gen.world;
 import java.util.Iterator;
 import java.util.List;
 import com.google.common.collect.ImmutableList;
+import glitter.server.arch.Rect;
 import ox.Log;
-import ox.Rect;
 
 public class TerrainSmoother {
 

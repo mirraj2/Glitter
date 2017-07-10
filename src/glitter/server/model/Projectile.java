@@ -1,7 +1,7 @@
 package glitter.server.model;
 
 import java.util.function.Predicate;
-import ox.Rect;
+import glitter.server.arch.Rect;
 
 public class Projectile extends Entity {
 
