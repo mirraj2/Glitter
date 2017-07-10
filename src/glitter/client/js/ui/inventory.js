@@ -52,6 +52,10 @@ Inventory.prototype.equip = function(img) {
 }
 
 Inventory.prototype.canGoInSlot = function(item, slot) {
+  if (item == null) {
+    return true;
+  }
+
   if (item.type == "spell") {
     return !slot.hasClass("armor");
   } else if (item.type == "armor") {
@@ -85,46 +89,44 @@ Inventory.prototype.init = function() {
     }
   });
 
-  $(".gui").on("dragstart", ".slot", function(e) {
-    self.sourceSlot = $(this);
+  DND.listen(".gui", ".slot:not(.empty)", function(slot) {
+    self.sourceSlot = slot;
 
     $(".gui .slot").each(function() {
       if (this != self.sourceSlot[0] && self.canGoInSlot(self.sourceSlot.find("img").data("item"), $(this))) {
         $(this).addClass("drop-target");
       }
     });
+  }, function(target) {
+    self.onDrop(target);
   });
+}
 
-  $(".gui").on("dragend", ".slot", function(e) {
-    $(".slot.drop-target").removeClass("drop-target");
-    $(".cursor").css("transform", "translate(" + e.clientX + "px," + e.clientY + "px)");
-  });
-
-  $(".gui").on("dragover", ".slot", function(e) {
-    var to = $(e.target);
-    if (!to.hasClass("slot")) {
-      to = to.parents(".slot");
-    }
-    var from = self.sourceSlot;
+Inventory.prototype.onDrop = function(target) {
+  var to = target.closest(".slot");
+  if (to.length) {
+    var from = this.sourceSlot;
     if (from && from[0] != to[0]) {
       // make sure this item can go into this slot
-      if (self.canGoInSlot(from.find("img").data("item"), to)) {
-        e.preventDefault();
+      if (this.canGoInSlot(from.find("img").data("item"), to) && this.canGoInSlot(to.find("img").data("item"), from)) {
+        this.swap(from, to);
       }
     }
-  });
-
-  $(".gui").on("drop", ".slot", function(e) {
-    e.preventDefault();
-
-    var from = self.sourceSlot;
-    var to = $(e.target);
-    if (!to.hasClass("slot")) {
-      to = to.parents(".slot");
+  } else {
+    // they didn't drop it on a slot.
+    if (target.is("canvas")) {
+      var slot = this.sourceSlot;
+      var img = slot.find("img");
+      slot.addClass("empty");
+      network.send({
+        command : "drop",
+        id : img.data("item").id
+      });
+      img.remove();
     }
+  }
 
-    self.swap(from, to);
-  });
+  $(".slot.drop-target").removeClass("drop-target");
 }
 
 /**

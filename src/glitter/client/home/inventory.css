@@ -40,13 +40,17 @@
 .gui .empty.slot {
   border: dashed 2px #9b9b9b;
   opacity: .3;
-  filter: gray;
+  filter: grayscale(100%);
   -webkit-filter: grayscale(100%);
 }
 
 .gui .slot.drop-target {
-  border-color: black;
+  border-color: #88ff00;
+}
+
+.gui .empty.slot.drop-target {
   border-width: 3px;
+  border-color: black;
 }
 
 .gui .slot img {

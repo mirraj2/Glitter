@@ -1,6 +1,5 @@
 package glitter.server.model;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static ox.util.Functions.toSet;
 import java.util.List;
@@ -8,13 +7,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import com.google.common.base.Throwables;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 import bowser.websocket.ClientSocket;
 import glitter.server.arch.SwappingQueue;
@@ -22,8 +16,6 @@ import glitter.server.gen.world.Point;
 import glitter.server.logic.PlayerMovement;
 import glitter.server.logic.Spells;
 import glitter.server.model.item.Item;
-import glitter.server.model.item.armor.Armor;
-import glitter.server.model.item.spell.Spell;
 import ox.Json;
 import ox.Log;
 import ox.Rect;
@@ -48,17 +40,7 @@ public class Player extends Entity {
 
   public Set<String> keys = ImmutableSet.of();
 
-  /**
-   * This map is used internally to lookup items that this player is holding.
-   */
-  private final Map<Long, Item> idItemMap = Maps.newConcurrentMap();
-
-  private final Multimap<Armor.Part, Armor> armorMap = Multimaps.synchronizedMultimap(ArrayListMultimap.create());
-
-  private final List<Spell> actionBar = Lists.newArrayListWithCapacity(10);
-  private int numSpellSlots = 2;
-
-  private final List<Item> inventory = Lists.newArrayList();
+  public final Inventory inventory = new Inventory(this);
 
   private final Rect hitbox = new Rect(12, 48, 24, 16);
 
@@ -107,7 +89,7 @@ public class Player extends Entity {
 
     int radius = 3;
     Point p = new Point();
-    for (Item item : getAllItems()) {
+    for (Item item : inventory.getAllItems()) {
       item.owner = null;
 
       p.x = (int) bounds.centerX();
@@ -128,7 +110,7 @@ public class Player extends Entity {
     }
 
     world.sendToAll(itemExplosion);
-    this.idItemMap.clear();
+    inventory.idItemMap.clear();
   }
 
   private void traceProjectile(Point p, double dx, double dy, double maxDistance) {
@@ -143,20 +125,6 @@ public class Player extends Entity {
         return;
       }
     }
-  }
-
-  private Iterable<Item> getAllItems() {
-    return Iterables.concat(actionBar, armorMap.values(), inventory);
-  }
-
-  public Spell getSpell(long id) {
-    for (int i = 0; i < numSpellSlots; i++) {
-      Spell spell = actionBar.get(i);
-      if (spell.id == id) {
-        return spell;
-      }
-    }
-    throw new RuntimeException("Could not find spell of id: " + id);
   }
 
   @Override
@@ -176,7 +144,7 @@ public class Player extends Entity {
     synchronized (lootChoices) {
       for (Item item : lootChoices) {
         if (item.id == itemId) {
-          loot(item);
+          inventory.loot(item);
           lootChoices = null;
           return;
         }
@@ -189,123 +157,16 @@ public class Player extends Entity {
     send(Json.object()
         .with("command", "receiveItem")
         .with("item", item.toJson()));
-    loot(item);
+    inventory.loot(item);
   }
 
-  private void loot(Item item) {
-    Log.info("%s just looted %s", this, item);
-
-    item.owner = this;
-    this.idItemMap.put(item.id, item);
-
-    inventory.add(item);
-    autoEquip(item);
-  }
-
-  private void autoEquip(Item item) {
-    if (item instanceof Spell) {
-      if (actionBar.size() < numSpellSlots) {
-        actionBar.add((Spell) item);
-        inventory.remove(item);
-      }
-    } else if (item instanceof Armor) {
-      Armor armor = (Armor) item;
-      int numEquipped = armorMap.get(armor.part).size();
-      int maxEquipped = armor.part == Armor.Part.RING ? 2 : 1;
-      if (numEquipped < maxEquipped) {
-        equip(armor);
-        broadcastStats();
-      }
-    }
-  }
-
-  private void equip(Armor armor) {
-    checkState(inventory.remove(armor));
-
-    armorMap.put(armor.part, armor);
-
-    double pHealth = this.health / this.getMaxHealth();
-    double pMana = this.mana / this.getMaxMana();
-
-    // add stats from the armor we're putting on
-    armor.stats.forEach((k, v) -> {
-      this.stats.compute(k, (stat, value) -> {
-        return value + v;
-      });
-    });
-
-    // adjust our current health and mana to be the same percentage as they were before
-    this.health = this.getMaxHealth() * pHealth;
-    this.mana = this.getMaxMana() * pMana;
-  }
-
-  private void unequip(Armor armor) {
-    checkState(armorMap.remove(armor.part, armor));
-    inventory.add(armor);
-
-    double pHealth = this.health / this.getMaxHealth();
-    double pMana = this.mana / this.getMaxMana();
-
-    // remove stats from the armor we're taking off.
-    armor.stats.forEach((k, v) -> {
-      this.stats.compute(k, (stat, value) -> {
-        return value - v;
-      });
-    });
-
-    // adjust our current health and mana to be the same percentage as they were before
-    this.health = this.getMaxHealth() * pHealth;
-    this.mana = this.getMaxMana() * pMana;
-  }
-
-  private void broadcastStats() {
+  public void broadcastStats() {
     send(Json.object()
         .with("command", "stats")
         .with("health", health)
         .with("mana", mana)
         .with("maxHealth", getMaxHealth())
         .with("maxMana", getMaxMana()));
-  }
-
-  private void swapItems(Long itemAId, Long itemBId) {
-    checkNotNull(itemAId);
-
-    Item item = idItemMap.get(itemAId);
-    checkNotNull(item, "Could not find item with id: " + itemAId);
-
-    if (item instanceof Spell) {
-      Spell spell = (Spell) item;
-
-      if (actionBar.remove(spell)) {
-        inventory.add(spell);
-        if (itemBId != null) {
-          Spell toEquip = (Spell) idItemMap.get(itemBId);
-          actionBar.add(toEquip);
-          checkState(inventory.remove(toEquip));
-        }
-      } else {
-        actionBar.add(spell);
-        if (itemBId != null) {
-          Spell toUnequip = (Spell) idItemMap.get(itemBId);
-          checkState(actionBar.remove(toUnequip));
-          inventory.add(toUnequip);
-        }
-      }
-    } else {
-      Armor armor = (Armor) item;
-      if (armorMap.containsEntry(armor.part, armor)) {
-        unequip(armor);
-        if (itemBId != null) {
-          equip((Armor) idItemMap.get(itemBId));
-        }
-      } else {
-        equip(armor);
-        if (itemBId != null) {
-          unequip((Armor) idItemMap.get(itemBId));
-        }
-      }
-      broadcastStats();
-    }
   }
 
   private void interact(long entityId) {
@@ -327,7 +188,7 @@ public class Player extends Entity {
       send(Json.object()
           .with("command", "receiveItem")
           .with("item", item.toJson()));
-      this.loot(item);
+      inventory.loot(item);
       world.removeEntity(item.id);
     } else {
       throw new RuntimeException("Don't know how to interact with " + entity);
@@ -374,7 +235,9 @@ public class Player extends Entity {
     } else if (command.equals("choose")) {
       chooseLoot(json.getLong("id"));
     } else if (command.equals("swap")) {
-      swapItems(json.getLong("itemA"), json.getLong("itemB"));
+      inventory.swapItems(json.getLong("itemA"), json.getLong("itemB"));
+    } else if (command.equals("drop")) {
+      inventory.dropItem(json.getLong("id"));
     } else if (command.equals("consoleInput")) {
       world.console.handle(this, json.get("text"));
     } else {
@@ -409,10 +272,10 @@ public class Player extends Entity {
         array.add(ping);
       }
       for (Json message : outboundMessageBuffer.swap()) {
-        String command = message.get("command");
-        if (!command.equals("ping") && !command.equals("playerState")) {
-          Log.debug(command);
-        }
+        // String command = message.get("command");
+        // if (!command.equals("ping") && !command.equals("playerState")) {
+        // Log.debug(command);
+        // }
         array.add(message);
       }
       socket.send(array);

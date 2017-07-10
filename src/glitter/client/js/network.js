@@ -72,6 +72,8 @@ Network.prototype.handleMessage = function(msg) {
     me.acceptStats(msg);
   } else if (command == "itemExplosion") {
     new ItemExplosion(msg);
+  } else if (command == "itemDropped") {
+    window.createEntityForItem(msg.item, msg.x, msg.y);
   } else if (command == "enterWorld") {
     // TODO have the server say whether we are entering the real world or the lobby
     if ($(".countdown").is(":visible")) {

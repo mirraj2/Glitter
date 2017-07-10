@@ -10,7 +10,7 @@ import ox.Json;
 public class Spells {
 
   public static void cast(Player p, Json json) {
-    Spell spell = p.getSpell(json.getLong("spellId"));
+    Spell spell = p.inventory.getSpellInActionBar(json.getLong("spellId"));
 
     checkState(p.mana >= spell.manaCost, "Not enough mana! %s vs %s", p.mana, spell.manaCost);
     p.mana -= spell.manaCost;

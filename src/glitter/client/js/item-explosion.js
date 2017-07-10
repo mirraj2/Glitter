@@ -1,29 +1,11 @@
 function ItemExplosion(msg) {
   this.loot = msg.loot;
 
-  var texture = PIXI.Texture.fromImage("/loot.png");
-
   this.loot.forEach(function(bag) {
-    bag.id = bag.item.id;
-    bag.type = "loot";
-    bag.canInteract = true;
-
-    var size = bag.size = Tile.SIZE;
-    var sprite = bag.sprite = new PIXI.Sprite(texture);
-    sprite.displayGroup = world.entityDisplayGroup;
-    sprite.width = size;
-    sprite.height = size;
-    sprite.x = msg.centerX - size / 2;
-    sprite.y = msg.centerY - size / 2;
-
-    bag.getHitBox = function(buf) {
-      buf.x = sprite.x;
-      buf.y = sprite.y;
-      buf.width = sprite.width;
-      buf.height = sprite.height;
-    }
-
-    world.addEntity(bag);
+    var entity = createEntityForItem(bag.item, msg.centerX, msg.centerY);
+    bag.sprite = entity.sprite;
+    bag.toX = bag.x - entity.sprite.width / 2;
+    bag.toY = bag.y - entity.sprite.height / 2;
   });
 
   this.animationTime = 3000;
@@ -31,11 +13,43 @@ function ItemExplosion(msg) {
   glitter.register(this);
 }
 
+/**
+ * Adds a loot bag containing an item. Returns the entity.
+ */
+window.createEntityForItem = function(item, x, y) {
+  var texture = PIXI.Texture.fromImage("/loot.png");
+
+  var entity = {
+    id : item.id,
+    type : "loot",
+    canInteract : true
+  };
+
+  var size = Tile.SIZE;
+  var sprite = entity.sprite = new PIXI.Sprite(texture);
+  sprite.displayGroup = world.entityDisplayGroup;
+  sprite.width = size;
+  sprite.height = size;
+  sprite.x = x - size / 2;
+  sprite.y = y - size / 2;
+
+  entity.getHitBox = function(buf) {
+    buf.x = sprite.x;
+    buf.y = sprite.y;
+    buf.width = sprite.width;
+    buf.height = sprite.height;
+  }
+
+  world.addEntity(entity);
+
+  return entity;
+};
+
 ItemExplosion.prototype.update = function(millis) {
   this.animationTime -= millis;
   this.loot.forEach(function(bag) {
-    bag.sprite.x = interpolate(bag.sprite.x, bag.x - bag.size / 2, millis / 200);
-    bag.sprite.y = interpolate(bag.sprite.y, bag.y - bag.size / 2, millis / 200);
+    bag.sprite.x = interpolate(bag.sprite.x, bag.toX, millis / 200);
+    bag.sprite.y = interpolate(bag.sprite.y, bag.toY, millis / 200);
   });
   return this.animationTime <= 0;
 }
