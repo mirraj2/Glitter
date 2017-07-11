@@ -69,5 +69,16 @@
       health: 25,
       unholy: 30
     }
+  },
+  {
+    name: "Glowing Staff",
+    part: "staff",
+    rarity: "COMMON",
+    image: "/armor/staff.png",
+    flavor: "A little creature seems to be living inside of the orb.",
+    stats: {
+      mana: 35,
+      manaRegen: 2
+    }
   }
 ]

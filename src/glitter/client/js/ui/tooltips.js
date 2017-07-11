@@ -59,6 +59,8 @@ Tooltips.prototype.renderTooltip = function(slot, tooltip) {
       } else if (stat == "fire" || stat == "ice" || stat == "holy" || stat == "unholy") {
         school = stat;
         text = e.value + "% increased " + stat + " damage";
+      } else if (stat == "mana_regen") {
+        text = "+" + e.value + " mana regeneration";
       } else {
         text = "+" + e.value + " " + stat;
       }

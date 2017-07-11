@@ -22,8 +22,6 @@ import ox.Log;
 
 public class Player extends Entity {
 
-  private static final double BASE_HEALTH = 100, BASE_MANA = 100;
-
   private static final Set<String> movementKeys = ImmutableSet.of("w", "a", "s", "d");
 
   public final ClientSocket socket;
@@ -34,7 +32,6 @@ public class Player extends Entity {
   public final Map<Stat, Double> stats = Maps.newConcurrentMap();
 
   public double health, mana;
-  public double healthRegenPerSecond = 1, manaRegenPerSecond = 5;
 
   private final SwappingQueue<Json> outboundMessageBuffer = new SwappingQueue<>();
 
@@ -66,10 +63,13 @@ public class Player extends Entity {
       this.stats.put(stat, 0d);
     }
 
-    this.stats.put(Stat.HEALTH, BASE_HEALTH);
-    this.stats.put(Stat.MANA, BASE_MANA);
-    this.health = BASE_HEALTH;
-    this.mana = BASE_MANA;
+    this.stats.put(Stat.HEALTH, 100.0);
+    this.stats.put(Stat.MANA, 100.0);
+    this.stats.put(Stat.HEALTH_REGEN, 1.0);
+    this.stats.put(Stat.MANA_REGEN, 5.0);
+
+    this.health = getMaxHealth();
+    this.mana = getMaxMana();
 
     this.socket = socket;
 
@@ -129,8 +129,8 @@ public class Player extends Entity {
 
   @Override
   public boolean update(double millis) {
-    health = Math.min(getMaxHealth(), health + healthRegenPerSecond * millis / 1000.0);
-    mana = Math.min(getMaxMana(), mana + manaRegenPerSecond * millis / 1000.0);
+    health = Math.min(getMaxHealth(), health + stats.get(Stat.HEALTH_REGEN) * millis / 1000.0);
+    mana = Math.min(getMaxMana(), mana + stats.get(Stat.MANA_REGEN) * millis / 1000.0);
 
     return movement.update(millis);
   }
@@ -169,7 +169,9 @@ public class Player extends Entity {
         .with("health", health)
         .with("mana", mana)
         .with("maxHealth", getMaxHealth())
-        .with("maxMana", getMaxMana()));
+        .with("maxMana", getMaxMana())
+        .with("healthRegen", stats.get(Stat.HEALTH_REGEN))
+        .with("manaRegen", stats.get(Stat.MANA_REGEN)));
   }
 
   private void interact(long entityId) {
@@ -325,8 +327,8 @@ public class Player extends Entity {
         .with("mana", mana)
         .with("maxHealth", getMaxHealth())
         .with("maxMana", getMaxMana())
-        .with("healthRegen", healthRegenPerSecond)
-        .with("manaRegen", manaRegenPerSecond);
+        .with("healthRegen", stats.get(Stat.HEALTH_REGEN))
+        .with("manaRegen", stats.get(Stat.MANA_REGEN));
   }
 
   @Override
@@ -335,7 +337,7 @@ public class Player extends Entity {
   }
 
   public static enum Stat {
-    HEALTH, MANA, SLOTS, FIRE, ICE, HOLY, UNHOLY;
+    HEALTH, MANA, SLOTS, HEALTH_REGEN, MANA_REGEN, FIRE, ICE, HOLY, UNHOLY;
   }
 
 }

@@ -46,7 +46,7 @@ public class World {
 
     if (config.getBoolean("startWithLoot", false)) {
       for (Player player : getAlivePlayers()) {
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 12; i++) {
           Item item = lootMaster.generateItem(Rarity.COMMON);
           player.gift(item);
         }

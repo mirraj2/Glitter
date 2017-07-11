@@ -60,4 +60,6 @@ Player.prototype.acceptStats = function(stats) {
   this.mana = stats.mana;
   this.maxHealth = stats.maxHealth;
   this.maxMana = stats.maxMana;
+  this.healthRegenPerSecond = stats.healthRegen;
+  this.manaRegenPerSecond = stats.manaRegen;
 }
