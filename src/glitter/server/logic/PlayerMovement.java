@@ -16,9 +16,6 @@ public class PlayerMovement {
   }
 
   public boolean update(double millis) {
-    p.health = Math.min(p.getMaxHealth(), p.health + p.healthRegenPerSecond * millis / 1000.0);
-    p.mana = Math.min(p.getMaxMana(), p.mana + p.manaRegenPerSecond * millis / 1000.0);
-
     double distance = p.speed * Tile.SIZE * millis / 1000;
 
     double dx = 0, dy = 0;

@@ -56,6 +56,10 @@ public class Lobby {
     Log.info("Starting a new game!");
 
     List<Player> players = ImmutableList.copyOf(((SwappingQueue<Player>) world.players).swap());
+    for (Player player : players) {
+      world.idEntities.remove(player.id);
+    }
+
     nextGameStartTime = null;
 
     Match.start(players);

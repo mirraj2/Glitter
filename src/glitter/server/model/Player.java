@@ -129,6 +129,9 @@ public class Player extends Entity {
 
   @Override
   public boolean update(double millis) {
+    health = Math.min(getMaxHealth(), health + healthRegenPerSecond * millis / 1000.0);
+    mana = Math.min(getMaxMana(), mana + manaRegenPerSecond * millis / 1000.0);
+
     return movement.update(millis);
   }
 
