@@ -121,5 +121,89 @@
     stats: {
       health: 12
     }
+  },
+  {
+    name: "Fiery Amulet",
+    part: "neck",
+    rarity: "RARE",
+    image: "/armor/fire-amulet.png",
+    stats: {
+      fire: 20,
+      mana: 28
+    }
+  },
+  {
+    name: "Frozen Amulet",
+    part: "neck",
+    rarity: "RARE",
+    image: "/armor/ice-amulet.png",
+    stats: {
+      ice: 20,
+      mana: 28
+    }
+  },
+  {
+    name: "Amulet of Light",
+    part: "neck",
+    rarity: "RARE",
+    image: "/armor/holy-amulet.png",
+    stats: {
+      holy: 20,
+      mana: 28
+    }
+  },
+  {
+    name: "Amulet of Night",
+    part: "neck",
+    rarity: "RARE",
+    image: "/armor/unholy-amulet.png",
+    stats: {
+      unholy: 20,
+      mana: 28
+    }
+  },
+  {
+    name: "Ring of Fire",
+    part: "ring",
+    rarity: "RARE",
+    image: "/armor/fire-ring.png",
+    stats: {
+      fire: 15,
+      mana: 20,
+      movement: 2
+    }
+  },
+  {
+    name: "Band of Ice",
+    part: "ring",
+    rarity: "RARE",
+    image: "/armor/ice-ring.png",
+    stats: {
+      ice: 15,
+      mana: 20,
+      manaRegen: 1
+    }
+  },
+  {
+    name: "Blessed Ring",
+    part: "ring",
+    rarity: "RARE",
+    image: "/armor/holy-ring.png",
+    stats: {
+      holy: 15,
+      health: 20,
+      luck: 1
+    }
+  },
+  {
+    name: "Ring of Shadows",
+    part: "ring",
+    rarity: "RARE",
+    image: "/armor/unholy-ring.png",
+    stats: {
+      unholy: 15,
+      mana: 20,
+      luck: 1
+    }
   }
 ]
