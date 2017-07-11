@@ -55,12 +55,14 @@ Tooltips.prototype.renderTooltip = function(slot, tooltip) {
       var stat = e.stat.toLowerCase();
       var text, school;
       if (stat == "health") {
-        text = "+" + e.value + " Health";
+        text = "+ " + e.value + " Health";
       } else if (stat == "fire" || stat == "ice" || stat == "holy" || stat == "unholy") {
         school = stat;
-        text = e.value + "% increased " + stat + " damage";
+        text = "+ " + e.value + "% " + stat + " damage";
       } else if (stat == "mana_regen") {
-        text = "+" + e.value + " mana regeneration";
+        text = "+ " + e.value + " mana regeneration";
+      } else if (stat == "movement") {
+        text = "+ " + e.value + "% movement speed";
       } else {
         text = "+" + e.value + " " + stat;
       }

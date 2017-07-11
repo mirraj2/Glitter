@@ -27,8 +27,6 @@ public class Player extends Entity {
   public final ClientSocket socket;
   public World world;
 
-  public double speed = 3;
-
   public final Map<Stat, Double> stats = Maps.newConcurrentMap();
 
   public double health, mana;
@@ -67,6 +65,7 @@ public class Player extends Entity {
     this.stats.put(Stat.MANA, 100.0);
     this.stats.put(Stat.HEALTH_REGEN, 1.0);
     this.stats.put(Stat.MANA_REGEN, 5.0);
+    this.stats.put(Stat.MOVEMENT, 0.0);
 
     this.health = getMaxHealth();
     this.mana = getMaxMana();
@@ -166,12 +165,7 @@ public class Player extends Entity {
   public void broadcastStats() {
     send(Json.object()
         .with("command", "stats")
-        .with("health", health)
-        .with("mana", mana)
-        .with("maxHealth", getMaxHealth())
-        .with("maxMana", getMaxMana())
-        .with("healthRegen", stats.get(Stat.HEALTH_REGEN))
-        .with("manaRegen", stats.get(Stat.MANA_REGEN)));
+        .with("stats", getStats()));
   }
 
   private void interact(long entityId) {
@@ -317,18 +311,31 @@ public class Player extends Entity {
     return stats.get(Stat.MANA);
   }
 
+  /**
+   * In tiles per second.
+   */
+  public double getMovementSpeed() {
+    return 6.0 * (1 + stats.get(Stat.MOVEMENT) / 100.0);
+  }
+
   @Override
   public Json toJson() {
     return Json.object()
         .with("id", id)
         .with("x", bounds.x)
         .with("y", bounds.y)
+        .with("stats", getStats());
+  }
+
+  private Json getStats() {
+    return Json.object()
         .with("health", health)
         .with("mana", mana)
         .with("maxHealth", getMaxHealth())
         .with("maxMana", getMaxMana())
         .with("healthRegen", stats.get(Stat.HEALTH_REGEN))
-        .with("manaRegen", stats.get(Stat.MANA_REGEN));
+        .with("manaRegen", stats.get(Stat.MANA_REGEN))
+        .with("speed", getMovementSpeed());
   }
 
   @Override
@@ -337,7 +344,7 @@ public class Player extends Entity {
   }
 
   public static enum Stat {
-    HEALTH, MANA, SLOTS, HEALTH_REGEN, MANA_REGEN, FIRE, ICE, HOLY, UNHOLY;
+    HEALTH, MANA, SLOTS, HEALTH_REGEN, MANA_REGEN, MOVEMENT, FIRE, ICE, HOLY, UNHOLY;
   }
 
 }

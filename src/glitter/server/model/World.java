@@ -3,6 +3,7 @@ package glitter.server.model;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static ox.util.Utils.random;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import com.google.common.collect.Iterables;
@@ -11,7 +12,6 @@ import com.google.common.collect.Maps;
 import glitter.server.arch.GRandom;
 import glitter.server.logic.LootMaster;
 import glitter.server.model.item.Item;
-import glitter.server.model.item.Item.Rarity;
 import ox.Config;
 import ox.Json;
 import ox.Log;
@@ -29,7 +29,6 @@ public class World {
 
   private final List<Long> entitiesToRemove = Lists.newArrayList();
 
-
   public World(GRandom rand, Terrain terrain) {
     this.rand = rand;
     this.terrain = terrain;
@@ -46,9 +45,10 @@ public class World {
 
     if (config.getBoolean("startWithLoot", false)) {
       for (Player player : getAlivePlayers()) {
-        for (int i = 0; i < 12; i++) {
-          Item item = lootMaster.generateItem(Rarity.COMMON);
-          player.gift(item);
+        for (int i = 0; i < 50; i++) {
+          List<Item> items = lootMaster.generateChoices();
+          Collections.sort(items, (a, b) -> b.rarity.compareTo(a.rarity));
+          player.gift(items.get(0));
         }
       }
     }

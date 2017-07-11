@@ -72,7 +72,7 @@ Input.prototype.update = function(t) {
 Input.prototype.movePlayer = function(player, t) {
   var keys = player.keys;
 
-  var speed = 6;
+  var speed = player.speed;
   if (player.flying) {
     speed *= 10;
   }

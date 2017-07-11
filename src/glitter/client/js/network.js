@@ -69,7 +69,7 @@ Network.prototype.handleMessage = function(msg) {
   } else if (command == "receiveItem") {
     window.inventory.add(msg.item);
   } else if (command == "stats") {
-    me.acceptStats(msg);
+    me.acceptStats(msg.stats);
   } else if (command == "itemExplosion") {
     new ItemExplosion(msg);
   } else if (command == "itemDropped") {

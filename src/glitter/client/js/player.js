@@ -2,12 +2,9 @@ function Player(data) {
   this.id = data.id;
   this.x = data.x;
   this.y = data.y;
-  this.health = data.health;
-  this.mana = data.mana;
-  this.maxHealth = data.maxHealth;
-  this.maxMana = data.maxMana;
-  this.healthRegenPerSecond = data.healthRegen;
-  this.manaRegenPerSecond = data.manaRegen;
+  
+  this.acceptStats(data.stats);
+  
   this.width = 48;
   this.height = 64;
   this.sprite = null;
@@ -62,4 +59,5 @@ Player.prototype.acceptStats = function(stats) {
   this.maxMana = stats.maxMana;
   this.healthRegenPerSecond = stats.healthRegen;
   this.manaRegenPerSecond = stats.manaRegen;
+  this.speed = stats.speed;
 }

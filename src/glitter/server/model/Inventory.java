@@ -78,7 +78,7 @@ public class Inventory {
     autoEquip(item);
 
     if (bagSlots.size() > numBagSlots) {
-      Log.info("Inventory too full! Dropping item.");
+      Log.info("Inventory too full! Dropping " + item);
       dropItem(last(bagSlots).id);
     }
   }

@@ -74,11 +74,22 @@
     name: "Glowing Staff",
     part: "staff",
     rarity: "COMMON",
-    image: "/armor/staff.png",
+    image: "/armor/purple-staff.png",
     flavor: "A little creature seems to be living inside of the orb.",
     stats: {
       mana: 35,
       manaRegen: 2
+    }
+  },
+  {
+    name: "Dirty Boots",
+    part: "feet",
+    rarity: "COMMON",
+    image: "/armor/brown-boots.png",
+    flavor: "Better than barefoot...",
+    stats: {
+      health: 10,
+      movement: 7
     }
   }
 ]

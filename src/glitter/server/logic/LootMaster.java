@@ -33,34 +33,31 @@ public class LootMaster {
   }
 
   public List<Item> generateChoices() {
-    Rarity rarity = randomRarity();
-    rarity = Rarity.COMMON; // right now we only have common items
+    int numChoices = 3;
 
-    int nChoices = 1;
-    if (rarity == Rarity.COMMON) {
-      nChoices = 3;
-    } else if (rarity == Rarity.RARE) {
-      nChoices = 2;
-    }
-
-    List<Item> ret = Lists.newArrayListWithCapacity(nChoices);
-    while (ret.size() < nChoices) {
+    List<Item> ret = Lists.newArrayListWithCapacity(numChoices);
+    while (ret.size() < numChoices) {
+      Rarity rarity = randomRarity();
       Item item = generateItem(rarity);
       if (!ret.contains(item)) {
         ret.add(item);
       }
     }
 
-    Log.info("Generated %d %s items :: %s", nChoices, rarity, Joiner.on(", ").join(ret));
+    Log.info("Generated %d items :: %s", numChoices, Joiner.on(", ").join(ret));
 
     return ret;
   }
 
   public Item generateItem(Rarity rarity) {
     if (rand.nextBoolean()) {
+      rarity = Rarity.COMMON; // right now we only have common spells.
       Spell ret = rand.random(raritySpells.get(rarity));
       return newInstance(ret.getClass(), rand);
     } else {
+      if (rarity == Rarity.LEGENDARY) {
+        rarity = Rarity.EPIC; // right now we don't have any legendary armor.
+      }
       Armor ret = rand.random(rarityArmors.get(rarity));
       return new Armor(ret.originalJson);
     }
