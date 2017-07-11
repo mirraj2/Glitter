@@ -178,3 +178,8 @@ html, body {
   background: rgba(50, 50, 50, .8);
   padding: 16px;
 }
+
+.notransition {
+  transition: none !important;
+}
+

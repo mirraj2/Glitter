@@ -32,6 +32,11 @@ public class Lobby {
   private Long nextGameStartTime;
 
   /**
+   * Set to true if an admin forced a game to start.
+   */
+  private boolean forceStart = false;
+
+  /**
    * Checks to see if we should spawn off a new game.
    */
   private synchronized void checkStart() {
@@ -39,7 +44,7 @@ public class Lobby {
       return;
     }
 
-    if (world.players.size() < MIN_PLAYERS) {
+    if (world.players.size() < MIN_PLAYERS && !forceStart) {
       Log.info("Player(s) left before the countdown completed.");
       nextGameStartTime = null;
       world.sendToAll(Json.object()
@@ -54,10 +59,13 @@ public class Lobby {
     nextGameStartTime = null;
 
     Match.start(players);
+
+    forceStart = false;
   }
 
   public void startGameIn(int seconds) {
     final int millis = seconds * 1000;
+    forceStart = true;
     nextGameStartTime = System.currentTimeMillis() + millis;
     world.sendToAll(Json.object()
         .with("command", "countdown")

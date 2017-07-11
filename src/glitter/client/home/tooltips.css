@@ -1,0 +1,58 @@
+/* .loot-chooser {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  background: #393939;
+  padding: 32px;
+  white-space: nowrap;
+}*/
+
+.tooltip {
+  position: fixed;
+  background: rgba(50, 50, 50, .8);
+  pointer-events: none;
+  opacity: 0;
+  color: white;
+  padding: 8px;
+  border: solid 1px white;
+  transition: .4s;
+}
+
+.tooltip .name {
+  font-size: 20px;
+  margin-bottom: 8px;
+  display: inline-block;
+}
+
+.tooltip .mana {
+  color: #446fff;
+  float: right;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+.tooltip .stat {
+  margin-bottom: 4px;
+}
+
+.tooltip .fire.stat {
+  color: #EC585C;
+}
+
+.tooltip .ice.stat {
+  color: #6FC4FB;
+}
+
+.tooltip .holy.stat {
+  color: #FFF931;
+}
+
+.tooltip .unholy.stat {
+  color: #E28DFF;
+}
+
+.tooltip:hover .top, .tooltip:hover .description {
+  opacity: 1;
+}

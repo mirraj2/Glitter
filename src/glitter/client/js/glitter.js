@@ -12,6 +12,7 @@ Glitter.prototype.initGame = function() {
   window.canvas = new Canvas();
   window.world = new World();
   window.camera = new Camera();
+  window.tooltips = new Tooltips();
 
   var spells = new Spells(world.container);
   window.minimap = new MiniMap();
