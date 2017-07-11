@@ -73,12 +73,13 @@
 
 .inventory .bag {
   padding: 18px;
-  width: 452px;
+  width: 544px;
   text-align: left;
 }
 
 .inventory .bag .slot {
   display: inline-block;
   margin-right: 4px;
+  margin-bottom: 4px;
 }
 

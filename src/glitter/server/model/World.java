@@ -91,6 +91,8 @@ public class World {
         .with("command", "takeControl")
         .with("id", player.id));
 
+    player.inventory.syncBagToClient();
+
     for (Player p : players) {
       if (p != player) {
         player.send(createAddPlayerJson(p));

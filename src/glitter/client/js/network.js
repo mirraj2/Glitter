@@ -74,6 +74,8 @@ Network.prototype.handleMessage = function(msg) {
     new ItemExplosion(msg);
   } else if (command == "itemDropped") {
     window.createEntityForItem(msg.item, msg.x, msg.y);
+  } else if(command == "bagUpdate"){
+    window.inventory.bagUpdate(msg);
   } else if (command == "enterWorld") {
     if ($(".countdown").finish().is(":visible")) {
       $(".numPlayers label").text("alive");
@@ -103,13 +105,7 @@ Network.prototype.handleMessage = function(msg) {
   } else if (command == "consoleOutput") {
     $("<div>").text(msg.text).appendTo(".console .output");
   } else if (command == "error") {
-    clearTimeout(window.errorRemover);
-    $(".error").text(msg.text).fadeIn();
-    window.errorRemover = setTimeout(function() {
-      $(".error").fadeOut(function() {
-        $(this).text("");
-      });
-    }, 3000);
+    showError(msg.text);
   } else if (command == "start") {
     $(".summary .totalPlayers").text(" / " + Object.keys(world.idPlayers).length);
   } else {

@@ -163,3 +163,19 @@ Inventory.prototype.swap = function(from, to) {
     });
   }
 }
+
+/**
+ * Server is telling us the current contents of our bag.  This is called after we change the item in our 'bag' slot.
+ */
+Inventory.prototype.bagUpdate = function(msg) {
+  var bag = $(".inventory .bag").empty();
+  for (var i = 0; i < msg.numSlots; i++) {
+    var slot = $("<div>").addClass("slot").appendTo(bag);
+    if (i < msg.items.length) {
+      var item = msg.items[i];
+      $("<img>").attr("src", item.imageUrl).data("item", item).appendTo(slot);
+    } else {
+      slot.addClass("empty");
+    }
+  }
+}

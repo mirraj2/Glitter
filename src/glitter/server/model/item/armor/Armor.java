@@ -1,6 +1,7 @@
 package glitter.server.model.item.armor;
 
 import static java.lang.Double.parseDouble;
+import static ox.util.Utils.normalize;
 import static ox.util.Utils.parseEnum;
 import java.util.Map;
 import com.google.common.collect.Maps;
@@ -24,7 +25,7 @@ public class Armor extends Item {
 
     this.part = json.getEnum("part", Part.class);
     this.imageUrl = json.get("image");
-    this.flavorText = json.get("flavor");
+    this.flavorText = normalize(json.get("flavor"));
 
     Json statsJson = json.getJson("stats");
     if (statsJson != null) {

@@ -1,5 +1,32 @@
 [
   {
+    name: "Small Bag",
+    part: "bag",
+    rarity: "COMMON",
+    image: "/armor/small-bag.png",
+    stats: {
+      slots: 6
+    }
+  },
+  {
+    name: "Medium Bag",
+    part: "bag",
+    rarity: "RARE",
+    image: "/armor/medium-bag.png",
+    stats: {
+      slots: 12
+    }
+  },
+  {
+    name: "Large Bag",
+    part: "bag",
+    rarity: "EPIC",
+    image: "/armor/large-bag.png",
+    stats: {
+      slots: 18
+    }
+  },
+  {
     name: "Apprentice's Fire Armor",
     part: "chest",
     rarity: "COMMON",

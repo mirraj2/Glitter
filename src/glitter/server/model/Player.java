@@ -335,7 +335,7 @@ public class Player extends Entity {
   }
 
   public static enum Stat {
-    HEALTH, MANA, FIRE, ICE, HOLY, UNHOLY;
+    HEALTH, MANA, SLOTS, FIRE, ICE, HOLY, UNHOLY;
   }
 
 }
