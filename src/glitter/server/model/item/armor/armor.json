@@ -78,7 +78,8 @@
     flavor: "A little creature seems to be living inside of the orb.",
     stats: {
       mana: 35,
-      manaRegen: 2
+      manaRegen: 2,
+      luck: 1
     }
   },
   {
@@ -90,6 +91,35 @@
     stats: {
       health: 10,
       movement: 7
+    }
+  },
+  {
+    name: "Boots of Quickness",
+    part: "feet",
+    rarity: "RARE",
+    image: "/armor/red-boots.png",
+    stats: {
+      health: 15,
+      movement: 12
+    }
+  },
+  {
+    name: "Iron Helm",
+    part: "head",
+    rarity: "COMMON",
+    image: "/armor/helmet.png",
+    stats: {
+      health: 20,
+      healthRegen: 1
+    }
+  },
+  {
+    name: "Leather Pants",
+    part: "legs",
+    rarity: "COMMON",
+    image: "/armor/brown-pants.png",
+    stats: {
+      health: 12
     }
   }
 ]

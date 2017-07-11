@@ -66,6 +66,7 @@ public class Player extends Entity {
     this.stats.put(Stat.HEALTH_REGEN, 1.0);
     this.stats.put(Stat.MANA_REGEN, 5.0);
     this.stats.put(Stat.MOVEMENT, 0.0);
+    this.stats.put(Stat.LUCK, 0.0);
 
     this.health = getMaxHealth();
     this.mana = getMaxMana();
@@ -128,8 +129,8 @@ public class Player extends Entity {
 
   @Override
   public boolean update(double millis) {
-    health = Math.min(getMaxHealth(), health + stats.get(Stat.HEALTH_REGEN) * millis / 1000.0);
-    mana = Math.min(getMaxMana(), mana + stats.get(Stat.MANA_REGEN) * millis / 1000.0);
+    health = Math.min(getMaxHealth(), health + getStat(Stat.HEALTH_REGEN) * millis / 1000.0);
+    mana = Math.min(getMaxMana(), mana + getStat(Stat.MANA_REGEN) * millis / 1000.0);
 
     return movement.update(millis);
   }
@@ -304,18 +305,18 @@ public class Player extends Entity {
   }
 
   public double getMaxHealth() {
-    return stats.get(Stat.HEALTH);
+    return getStat(Stat.HEALTH);
   }
 
   public double getMaxMana() {
-    return stats.get(Stat.MANA);
+    return getStat(Stat.MANA);
   }
 
   /**
    * In tiles per second.
    */
   public double getMovementSpeed() {
-    return 6.0 * (1 + stats.get(Stat.MOVEMENT) / 100.0);
+    return 6.0 * (1 + getStat(Stat.MOVEMENT) / 100.0);
   }
 
   @Override
@@ -327,15 +328,20 @@ public class Player extends Entity {
         .with("stats", getStats());
   }
 
+  private double getStat(Stat stat) {
+    return stats.get(stat);
+  }
+
   private Json getStats() {
     return Json.object()
         .with("health", health)
         .with("mana", mana)
         .with("maxHealth", getMaxHealth())
         .with("maxMana", getMaxMana())
-        .with("healthRegen", stats.get(Stat.HEALTH_REGEN))
-        .with("manaRegen", stats.get(Stat.MANA_REGEN))
-        .with("speed", getMovementSpeed());
+        .with("healthRegen", getStat(Stat.HEALTH_REGEN))
+        .with("manaRegen", getStat(Stat.MANA_REGEN))
+        .with("speed", getMovementSpeed())
+        .with("luck", getStat(Stat.LUCK));
   }
 
   @Override
@@ -344,7 +350,7 @@ public class Player extends Entity {
   }
 
   public static enum Stat {
-    HEALTH, MANA, SLOTS, HEALTH_REGEN, MANA_REGEN, MOVEMENT, FIRE, ICE, HOLY, UNHOLY;
+    HEALTH, MANA, SLOTS, HEALTH_REGEN, MANA_REGEN, MOVEMENT, LUCK, FIRE, ICE, HOLY, UNHOLY;
   }
 
 }

@@ -16,6 +16,17 @@ function Player(data) {
   this.keys = {};
 }
 
+Player.prototype.acceptStats = function(stats) {
+  this.health = stats.health;
+  this.mana = stats.mana;
+  this.maxHealth = stats.maxHealth;
+  this.maxMana = stats.maxMana;
+  this.healthRegenPerSecond = stats.healthRegen;
+  this.manaRegenPerSecond = stats.manaRegen;
+  this.speed = stats.speed;
+  this.luck = stats.luck;
+}
+
 Player.prototype.centerX = function() {
   return this.x + this.width / 2;
 }
@@ -52,12 +63,3 @@ Player.prototype.getHitbox = function(rect, buffer) {
   return rect;
 }
 
-Player.prototype.acceptStats = function(stats) {
-  this.health = stats.health;
-  this.mana = stats.mana;
-  this.maxHealth = stats.maxHealth;
-  this.maxMana = stats.maxMana;
-  this.healthRegenPerSecond = stats.healthRegen;
-  this.manaRegenPerSecond = stats.manaRegen;
-  this.speed = stats.speed;
-}
