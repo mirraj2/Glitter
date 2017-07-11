@@ -1,17 +1,6 @@
-/* .loot-chooser {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  background: #393939;
-  padding: 32px;
-  white-space: nowrap;
-}*/
-
 .tooltip {
   position: fixed;
-  background: rgba(50, 50, 50, .8);
+  background: rgba(50, 50, 50, 1);
   pointer-events: none;
   opacity: 0;
   color: white;

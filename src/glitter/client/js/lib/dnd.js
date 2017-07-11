@@ -16,7 +16,9 @@ var DND = (function() {
         var dy = e.pageY - pressY;
         if (dx * dx + dy * dy >= 9) {
           dragging = pressed;
-          dragStartCallback($(pressed));
+          if (false === dragStartCallback($(pressed))) {
+            pressed = dragging = null;
+          }
         }
       }
     }

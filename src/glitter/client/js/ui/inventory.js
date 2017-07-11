@@ -4,7 +4,7 @@ function Inventory(quickbar) {
 }
 
 Inventory.prototype.add = function(item) {
-  var img = $("<img>").attr("src", item.imageUrl).attr("draggable", "true").data("item", item);
+  var img = $("<img>").attr("src", item.imageUrl).data("item", item);
 
   if (item.type == "spell") {
     // see if we can place the spell right into the quickbar
@@ -92,6 +92,11 @@ Inventory.prototype.init = function() {
   });
 
   DND.listen(".gui", ".slot:not(.empty)", function(slot) {
+    if (slot.closest(".loot-chooser").length) {
+      //can't drag things from the loot chooser
+      return false;
+    }
+
     self.sourceSlot = slot;
 
     $(".gui .slot").each(function() {

@@ -183,3 +183,30 @@ html, body {
   transition: none !important;
 }
 
+.gui .loot-chooser {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  background: #393939;
+  padding: 32px;
+  white-space: nowrap;
+}
+
+.gui .loot-chooser h1 {
+  margin-top: 0px;
+  text-align: center;
+}
+
+.gui .loot-chooser .slot {
+  width: 128px;
+  height: 128px;
+  display: inline-block;
+  margin-right: 16px;
+  border-color: gray;
+}
+
+.gui .loot-chooser .slot:hover {
+  border-color: #8bc0ff;
+}

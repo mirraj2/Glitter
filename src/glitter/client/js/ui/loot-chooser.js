@@ -1,11 +1,11 @@
 function LootChooser() {
   var self = this;
-  $(".loot-chooser").on("click", ".loot", function() {
+  $(".loot-chooser").on("click", ".slot", function() {
     if (self.closing) {
       return;
     }
 
-    var item = $(this).data("item");
+    var item = $(this).find("img").data("item");
 
     network.send({
       command : "choose",
@@ -16,39 +16,18 @@ function LootChooser() {
     window.input.allowMovement = true;
 
     window.inventory.add(item);
+    
+    window.tooltips.hide();
   });
 }
 
 LootChooser.prototype.show = function(choices) {
   var chooser = $(".loot-chooser");
-  chooser.find(".loot").remove();
+  chooser.find(".slot").remove();
   for (var i = 0; i < choices.length; i++) {
     var choice = choices[i];
-    var loot = $(".loot.prototype").clone().removeClass("prototype").appendTo(chooser);
-    loot.data("item", choice);
-    loot.find("img").attr("src", choice.imageUrl);
-    loot.find(".name").text(choice.name);
-
-    if (choice.type == "spell") {
-      loot.find(".mana").text(choice.manaCost + " mana");
-      loot.find(".description").text(choice.description);
-    } else if (choice.type == "armor") {
-      var description = loot.find(".description");
-      choice.stats.forEach(function(e) {
-        e.stat = e.stat.toLowerCase();
-        var text, school;
-        if (e.stat == "health") {
-          text = "+" + e.value + " Health";
-        } else if (e.stat == "fire" || e.stat == "ice" || e.stat == "holy" || e.stat == "unholy") {
-          school = e.stat;
-          text = e.value + "% increased " + e.stat + " damage";
-        } else {
-          text = "+" + e.value + " " + e.stat;
-        }
-        var div = $("<div>").addClass("stat").text(text).appendTo(description);
-        div.addClass(school);
-      });
-    }
+    var slot = $("<div>").addClass("slot").appendTo(chooser);
+    $("<img>").attr("src", choice.imageUrl).data("item", choice).appendTo(slot);
   }
   chooser.fadeIn();
 

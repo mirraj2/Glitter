@@ -2,6 +2,10 @@ function Tooltips() {
   this.listen();
 }
 
+Tooltips.prototype.hide = function() {
+  $(".tooltip").css("opacity", 0);
+}
+
 Tooltips.prototype.listen = function() {
   var tooltip = $(".tooltip");
   var last = null;
