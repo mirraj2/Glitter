@@ -4,14 +4,18 @@ import static ox.util.Utils.propagate;
 import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import com.google.common.collect.Sets;
 import glitter.server.arch.GRandom;
+import glitter.server.model.Player;
 import glitter.server.model.item.Item;
 import glitter.server.model.item.Item.Rarity;
+import glitter.server.model.item.SpellSlot;
 import glitter.server.model.item.armor.Armor;
 import glitter.server.model.item.spell.Fireball;
 import glitter.server.model.item.spell.Spell;
@@ -32,14 +36,24 @@ public class LootMaster {
     this.rand = rand;
   }
 
-  public List<Item> generateChoices() {
+  public List<Item> generateChoices(Player player) {
     int numChoices = 3;
 
+    for (int i = 0; i < player.getLuck(); i++) {
+      if (rand.nextFloat() < .1) {
+        Log.debug("Because of LUCK, %s got an extra loot option!", player);
+        numChoices++;
+      }
+    }
+
     List<Item> ret = Lists.newArrayListWithCapacity(numChoices);
+    Set<String> itemNames = Sets.newHashSet();
     while (ret.size() < numChoices) {
-      Rarity rarity = randomRarity();
-      Item item = generateItem(rarity);
-      if (!ret.contains(item)) {
+      Rarity rarity = randomRarity(player);
+      Item item = generateItem(player, rarity);
+
+      // avoid having two duplicate items in the set of choices
+      if (itemNames.add(item.name)) {
         ret.add(item);
       }
     }
@@ -49,7 +63,13 @@ public class LootMaster {
     return ret;
   }
 
-  public Item generateItem(Rarity rarity) {
+  public Item generateItem(Player player, Rarity rarity) {
+    if (rarity == Rarity.COMMON && player.inventory.numSpellSlots < 10) {
+      if (rand.nextFloat() < .08) {
+        return new SpellSlot();
+      }
+    }
+
     if (rand.nextBoolean()) {
       rarity = Rarity.COMMON; // right now we only have common spells.
       Spell ret = rand.random(raritySpells.get(rarity));
@@ -63,8 +83,13 @@ public class LootMaster {
     }
   }
 
-  private Rarity randomRarity() {
-    double d = rand.nextDouble();
+  private Rarity randomRarity(Player player) {
+    double d = rand.nextFloat();
+    double luck = player.getLuck();
+
+    // for every 2 points of luck, you are twice as likely to get to the next tier
+    d /= (1 + luck / 2);
+
     if (d < .001) {
       return Rarity.LEGENDARY;
     } else if (d < .01) {

@@ -4,6 +4,11 @@ function Inventory(quickbar) {
 }
 
 Inventory.prototype.add = function(item) {
+  if (item.type == "spell-slot") {
+    $("<div>").addClass("empty spell slot").appendTo(".quickbar");
+    return;
+  }
+
   var img = $("<img>").attr("src", item.imageUrl).data("item", item);
 
   if (item.type == "spell") {
@@ -93,14 +98,16 @@ Inventory.prototype.init = function() {
 
   DND.listen(".gui", ".slot:not(.empty)", function(slot) {
     if (slot.closest(".loot-chooser").length) {
-      //can't drag things from the loot chooser
+      // can't drag things from the loot chooser
       return false;
     }
 
     self.sourceSlot = slot;
 
     $(".gui .slot").each(function() {
-      if (this != self.sourceSlot[0] && self.canGoInSlot(self.sourceSlot.find("img").data("item"), $(this))) {
+      var fromItem = self.sourceSlot.find("img").data("item");
+      var toItem = $(this).find("img").data("item");
+      if (this != self.sourceSlot[0] && self.canGoInSlot(fromItem, $(this)) && self.canGoInSlot(toItem, self.sourceSlot)) {
         $(this).addClass("drop-target");
       }
     });
@@ -165,7 +172,7 @@ Inventory.prototype.swap = function(from, to) {
 }
 
 /**
- * Server is telling us the current contents of our bag.  This is called after we change the item in our 'bag' slot.
+ * Server is telling us the current contents of our bag. This is called after we change the item in our 'bag' slot.
  */
 Inventory.prototype.bagUpdate = function(msg) {
   var bag = $(".inventory .bag").empty();

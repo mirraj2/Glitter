@@ -1,5 +1,5 @@
 .quickbar {
-  white-space: nowrap;
+  display: flex;
 }
 
 .quickbar .slot {
@@ -9,6 +9,7 @@
   opacity: .5;
   vertical-align: bottom;
   pointer-events: all;
+  margin-right: 7px;
 }
 
 .quickbar .selected.slot {

@@ -33,8 +33,8 @@
     image: "/armor/fire-chest.png",
     flavor: "So you want to play with fire...",
     stats: {
-      health: 25,
-      fire: 30
+      fire: 30,
+      health: 25
     }
   },
   {
@@ -44,8 +44,8 @@
     image: "/armor/ice-chest.png",
     flavor: "I see you have a frosty heart",
     stats: {
-      health: 25,
-      ice: 30
+      ice: 30,
+      health: 25
     }
   },
   {
@@ -55,8 +55,8 @@
     image: "/armor/holy-chest.png",
     flavor: "Righteousness will prevail!",
     stats: {
-      health: 25,
-      holy: 30
+      holy: 30,
+      health: 25
     }
   },
   {
@@ -66,8 +66,8 @@
     image: "/armor/unholy-chest.png",
     flavor: "You do not know the power of the dark side",
     stats: {
-      health: 25,
-      unholy: 30
+      unholy: 30,
+      health: 25
     }
   },
   {

@@ -14,6 +14,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import glitter.server.model.Player.Stat;
 import glitter.server.model.item.Item;
+import glitter.server.model.item.SpellSlot;
 import glitter.server.model.item.armor.Armor;
 import glitter.server.model.item.armor.Armor.Part;
 import glitter.server.model.item.spell.Spell;
@@ -34,7 +35,7 @@ public class Inventory {
   private final Multimap<Armor.Part, Armor> armorMap = Multimaps.synchronizedMultimap(ArrayListMultimap.create());
 
   private final List<Spell> actionBar = Lists.newArrayListWithCapacity(10);
-  private int numSpellSlots = 2;
+  public int numSpellSlots = 2;
 
   private final List<Item> bagSlots = Lists.newArrayList();
   private int numBagSlots = STARTING_BAG_SLOTS;
@@ -70,6 +71,12 @@ public class Inventory {
 
   public void loot(Item item) {
     Log.info("%s just looted %s", player, item);
+    
+    if(item instanceof SpellSlot){
+      idItemMap.remove(item.id);
+      numSpellSlots = Math.min(numSpellSlots + 1, 10);
+      return;
+    }
 
     item.owner = player;
     idItemMap.put(item.id, item);

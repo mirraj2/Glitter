@@ -46,7 +46,7 @@ public class World {
     if (config.getBoolean("startWithLoot", false)) {
       for (Player player : getAlivePlayers()) {
         for (int i = 0; i < 50; i++) {
-          List<Item> items = lootMaster.generateChoices();
+          List<Item> items = lootMaster.generateChoices(player);
           Collections.sort(items, (a, b) -> b.rarity.compareTo(a.rarity));
           player.gift(items.get(0));
         }

@@ -176,7 +176,7 @@ public class Player extends Entity {
       TreasureChest chest = (TreasureChest) world.idEntities.get(entityId);
       chest.open();
 
-      this.lootChoices = world.lootMaster.generateChoices();
+      this.lootChoices = world.lootMaster.generateChoices(this);
       send(Json.object()
           .with("command", "choose")
           .with("choices", Json.array(lootChoices, Item::toJson)));
@@ -328,8 +328,12 @@ public class Player extends Entity {
         .with("stats", getStats());
   }
 
-  private double getStat(Stat stat) {
+  public double getStat(Stat stat) {
     return stats.get(stat);
+  }
+
+  public double getLuck() {
+    return stats.get(Stat.LUCK);
   }
 
   private Json getStats() {
