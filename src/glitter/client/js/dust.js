@@ -30,6 +30,7 @@ function Emitter(parent) {
   this.scaleAmount = 1;
   this.imageName = "particle.png";
   this.parent = parent;
+  this.tint = 0xf23026;
   Dust.emitters.push(this);
 }
 
@@ -52,6 +53,11 @@ Emitter.prototype.setLife = function(life) {
 
 Emitter.prototype.scale = function(scale) {
   this.scaleAmount = scale;
+  return this;
+}
+
+Emitter.prototype.color = function(color) {
+  this.tint = color;
   return this;
 }
 
@@ -123,7 +129,7 @@ Emitter.prototype.init = function() {
     // particle.blendMode = PIXI.BLEND_MODES.SCREEN;
     particle.scale.x = this.scaleAmount;
     particle.scale.y = this.scaleAmount;
-    particle.tint = 0xf23026;
+    particle.tint = this.tint;
     this.resetParticle(particle);
     particle.life = Math.random() * this.particleLife;
     this.particles[i] = particle;

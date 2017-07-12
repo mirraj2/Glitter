@@ -9,7 +9,6 @@ import ox.Json;
 public abstract class Spell extends Item {
 
   public double manaCost = 0;
-  public double castTimeSeconds = 0;
   public double cooldownSeconds = 0;
   public String description = "";
 
@@ -28,7 +27,6 @@ public abstract class Spell extends Item {
     return super.toJson()
         .with("type", "spell")
         .with("manaCost", manaCost)
-        .with("castTimeSeconds", castTimeSeconds)
         .with("cooldownSeconds", cooldownSeconds)
         .with("description", description)
         .with("imageUrl", "/spells/" + name.toLowerCase() + ".png");

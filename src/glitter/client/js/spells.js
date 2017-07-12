@@ -93,3 +93,12 @@ Spells.prototype.fireball = function(player, spell, locs) {
 
   return [ projectile ];
 }
+
+Spells.prototype.frostbolt = function(player, spell, locs) {
+  var speed = spell.speed * Tile.SIZE;
+
+  var projectile = new Emitter(this.container).color(0x3be5ff).numParticles(256).scale(.2).position(locs.fromX,
+      locs.fromY).velocity(locs.dx * speed, locs.dy * speed).setLife(spell.range / spell.speed * 1000);
+
+  return [ projectile ];
+}

@@ -10,24 +10,25 @@ import glitter.server.model.Tile;
 import ox.Json;
 import ox.Log;
 
-public class Fireball extends Spell {
+public class Frostbolt extends Spell {
 
   private final int minDamage, maxDamage;
 
   // the projectile's speed in tiles per second
-  public final double speed = 15;
+  public final double speed = 12;
 
   // the number of tiles the projectile will travel
-  public final double range = 50;
+  public final double range = 5000;
 
-  public Fireball() {
-    super("Fireball");
+  public Frostbolt() {
+    super("Frostbolt");
 
-    this.manaCost = 20;
+    this.manaCost = 15;
 
-    this.minDamage = 18;
-    this.maxDamage = 30;
-    this.description = String.format("Hurls a ball of fire, dealing %d to %d damage.", minDamage, maxDamage);
+    this.minDamage = 16;
+    this.maxDamage = 22;
+    this.description = String.format("Shoots a shard of ice, dealing %d to %d damage "
+        + "and slowing anyone hit for 3 seconds.", minDamage, maxDamage);
   }
 
   @Override
@@ -73,5 +74,6 @@ public class Fireball extends Spell {
         .with("speed", speed)
         .with("range", range);
   }
+
 
 }

@@ -18,6 +18,7 @@ import glitter.server.model.item.Item.Rarity;
 import glitter.server.model.item.SpellSlot;
 import glitter.server.model.item.armor.Armor;
 import glitter.server.model.item.spell.Fireball;
+import glitter.server.model.item.spell.Frostbolt;
 import glitter.server.model.item.spell.Spell;
 import ox.IO;
 import ox.Json;
@@ -125,7 +126,7 @@ public class LootMaster {
   }
 
   static {
-    List<Spell> spells = Lists.newArrayList(new Fireball());
+    List<Spell> spells = Lists.newArrayList(new Fireball(), new Frostbolt());
     List<Armor> armors = Lists.newArrayList();
 
     for (Json j : IO.from(Armor.class, "armor.json").toJson().asJsonArray()) {

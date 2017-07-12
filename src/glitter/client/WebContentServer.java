@@ -5,6 +5,7 @@ import bowser.WebServer;
 import glitter.client.dust.DustDemo;
 import glitter.client.home.HomePage;
 import glitter.client.js.JSController;
+import glitter.client.particles.ParticleEditor;
 import glitter.client.perlin.PerlinPage;
 import ox.Config;
 import ox.Log;
@@ -23,6 +24,7 @@ public class WebContentServer {
     WebServer server = new WebServer("Glitter", port, devMode)
         .controller(new HomePage())
         .controller(new PerlinPage())
+        .controller(new ParticleEditor())
         .controller(new DustDemo())
         .controller(new JSController());
 

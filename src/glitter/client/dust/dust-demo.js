@@ -21,8 +21,8 @@ $(function() {
   stage = new PIXI.Container();
 
   var emitters = new Array();
-  for (var i = 0; i < 10; i++) {
-    var emitter = new Emitter(stage).numParticles(256).scale(.5);
+  for (var i = 0; i < 1; i++) {
+    var emitter = new Emitter(stage).numParticles(500).scale(.5);
     reset(emitter);
     emitters.push(emitter);
   }
@@ -38,8 +38,8 @@ $(function() {
     renderer.render(stage);
     var now3 = performance.now();
 
-    // console.log("update took " + (now2 - now));
-    // console.log("render took " + (now3 - now2));
+     console.log("update took " + (now2 - now));
+     console.log("render took " + (now3 - now2));
 
     for (var i = 0; i < emitters.length; i++) {
       var emitter = emitters[i];
@@ -54,4 +54,5 @@ $(function() {
 function reset(emitter) {
   emitter.position(Math.random() * width, Math.random() * height);
   emitter.velocity(Math.random() * 1000 - 500, Math.random() * 1000 - 500);
+  emitter.setLife(10000);
 }
