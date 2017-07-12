@@ -22,14 +22,14 @@ function LootChooser() {
 }
 
 LootChooser.prototype.show = function(choices) {
-  var chooser = $(".loot-chooser");
-  chooser.find(".slot").remove();
+  var panel = $(".loot-chooser .choices").empty();
   for (var i = 0; i < choices.length; i++) {
     var choice = choices[i];
-    var slot = $("<div>").addClass("slot").appendTo(chooser);
+    var slot = $("<div>").addClass("slot").appendTo(panel);
+    slot.attr("rarity", choice.rarity);
     $("<img>").attr("src", choice.imageUrl).data("item", choice).appendTo(slot);
   }
-  chooser.fadeIn();
+  panel.closest(".loot-chooser").fadeIn();
 
   this.closing = false;
 

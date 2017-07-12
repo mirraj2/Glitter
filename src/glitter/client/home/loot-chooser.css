@@ -1,0 +1,47 @@
+.gui .loot-chooser {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  background: #393939;
+  padding: 32px;
+  white-space: nowrap;
+}
+
+.gui .loot-chooser h1 {
+  margin-top: 0px;
+  text-align: center;
+}
+
+.gui .loot-chooser .slot {
+  width: 128px;
+  height: 128px;
+  display: inline-block;
+  margin-right: 16px;
+  border: solid 3px;
+}
+
+.gui .slot[rarity=COMMON] {
+  border-color: white;
+}
+
+.gui .slot[rarity=RARE] {
+  border-color: #3b93ff;
+}
+
+.gui .slot[rarity=EPIC] {
+  border-color: #a757ff;
+}
+
+.gui .slot[rarity=LEGENDARY] {
+  border-color: #f9802b;
+}
+
+.loot-chooser .choices:hover .slot{
+  opacity: .5;
+}
+
+.loot-chooser .choices .slot:hover{
+  opacity: 1;
+}
