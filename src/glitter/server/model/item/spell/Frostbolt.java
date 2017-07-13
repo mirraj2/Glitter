@@ -18,7 +18,7 @@ public class Frostbolt extends Spell {
   public final double speed = 9;
 
   // the number of tiles the projectile will travel
-  public final double range = 5000;
+  public final double range = 50;
 
   public Frostbolt() {
     super("Frostbolt");
