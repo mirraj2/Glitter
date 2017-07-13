@@ -1,5 +1,6 @@
 function Spells(parent, particleSystem) {
   this.container = new PIXI.Container();
+  this.container.displayGroup = new PIXI.DisplayGroup(1);
   this.idCounter = 0;
   this.idProjectiles = {};
   this.particleSystem = particleSystem;

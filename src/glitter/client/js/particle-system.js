@@ -1,6 +1,5 @@
 function ParticleSystem() {
   glitter.register(this);
-  this.displayGroup = new PIXI.DisplayGroup(1);
   this.emitters = [];
   this.configs = {
     fireball : {
@@ -107,7 +106,7 @@ ParticleSystem.prototype.update = function(millis) {
     var emitter = this.emitters[i];
     if (!emitter.emit && emitter.particleCount == 0) {
       this.emitters.splice(i, 1);
-      
+
       emitter.parent.removeChild(emitter.container);
       emitter.container.destroy({
         child : true
@@ -127,7 +126,7 @@ ParticleSystem.prototype.createProjectile = function(parent, configName, spell, 
   var config = this.configs[configName];
 
   var container = new PIXI.Container();
-  container.displayGroup = this.displayGroup;
+  // container.displayGroup = new PIXI.DisplayGroup(1);
   container.displayFlag = PIXI.DISPLAY_FLAG.MANUAL_CONTAINER;
   parent.addChild(container);
 
