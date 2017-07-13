@@ -68,6 +68,9 @@ ParticleSystem.prototype.createProjectile = function(parent, configName, spell, 
 
   return {
     emitter : emitter,
+    update : function(millis) {
+      emitter.update(millis / 1000);
+    },
     destroy : function() {
       emitter.emit = false;
     }

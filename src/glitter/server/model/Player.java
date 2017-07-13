@@ -164,8 +164,9 @@ public class Player extends Entity {
   }
 
   public void broadcastStats() {
-    send(Json.object()
+    world.sendToAll(Json.object()
         .with("command", "stats")
+        .with("playerId", this.id)
         .with("stats", getStats()));
   }
 

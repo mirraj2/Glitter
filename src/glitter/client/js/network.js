@@ -69,12 +69,12 @@ Network.prototype.handleMessage = function(msg) {
   } else if (command == "receiveItem") {
     window.inventory.add(msg.item);
   } else if (command == "stats") {
-    me.acceptStats(msg.stats);
+    world.idPlayers[msg.playerId].acceptStats(msg.stats);
   } else if (command == "itemExplosion") {
     new ItemExplosion(msg);
   } else if (command == "itemDropped") {
     window.createEntityForItem(msg.item, msg.x, msg.y);
-  } else if(command == "bagUpdate"){
+  } else if (command == "bagUpdate") {
     window.inventory.bagUpdate(msg);
   } else if (command == "enterWorld") {
     if ($(".countdown").finish().is(":visible")) {

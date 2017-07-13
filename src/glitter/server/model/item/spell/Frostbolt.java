@@ -20,6 +20,8 @@ public class Frostbolt extends Spell {
   // the number of tiles the projectile will travel
   public final double range = 50;
 
+  public final int slowDuration = 3;
+
   public Frostbolt() {
     super("Frostbolt");
 
@@ -28,7 +30,7 @@ public class Frostbolt extends Spell {
     this.minDamage = 16;
     this.maxDamage = 22;
     this.description = String.format("Shoots a shard of ice, dealing %d to %d damage "
-        + "and slowing anyone hit for 3 seconds.", minDamage, maxDamage);
+        + "and slowing anyone hit for %d seconds.", minDamage, maxDamage, slowDuration);
   }
 
   @Override
