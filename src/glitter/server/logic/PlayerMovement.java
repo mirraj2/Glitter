@@ -15,7 +15,7 @@ public class PlayerMovement {
     this.p = player;
   }
 
-  public boolean update(double millis) {
+  public void update(double millis) {
     double distance = p.getMovementSpeed() * Tile.SIZE * millis / 1000;
 
     double dx = 0, dy = 0;
@@ -44,8 +44,6 @@ public class PlayerMovement {
     if (dy != 0) {
       move(0, dy);
     }
-
-    return true;
   }
 
   private void move(double dx, double dy) {

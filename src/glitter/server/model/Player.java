@@ -1,14 +1,20 @@
 package glitter.server.model;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static ox.util.Functions.toSet;
+import static ox.util.Utils.last;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import bowser.websocket.ClientSocket;
 import glitter.server.arch.Rect;
@@ -54,6 +60,8 @@ public class Player extends Entity {
 
   public final PlayerMovement movement = new PlayerMovement(this);
 
+  private final Multimap<String, StatusEffect> statusEffects = LinkedListMultimap.create();
+
   public Player(ClientSocket socket) {
     super(48, 64);
 
@@ -74,6 +82,21 @@ public class Player extends Entity {
     this.socket = socket;
 
     socket.onMessage(this::handleMessage);
+  }
+
+  public void addStatusEffect(StatusEffect effect) {
+    checkNotNull(effect);
+
+    Log.debug("Adding " + effect + " to " + this);
+
+    Collection<StatusEffect> currentEffects = statusEffects.get(effect.name);
+    if (currentEffects.size() >= effect.getMaxStacks()) {
+      // Because we've reached the maximum stacks, just refresh the last effect we already have
+      last(currentEffects).refresh();
+    } else {
+      currentEffects.add(effect);
+      effect.onStart(this);
+    }
   }
 
   /**
@@ -132,7 +155,25 @@ public class Player extends Entity {
     health = Math.min(getMaxHealth(), health + getStat(Stat.HEALTH_REGEN) * millis / 1000.0);
     mana = Math.min(getMaxMana(), mana + getStat(Stat.MANA_REGEN) * millis / 1000.0);
 
-    return movement.update(millis);
+    // handle status effects
+    {
+      List<StatusEffect> toRemove = Lists.newArrayListWithCapacity(0);
+      for (StatusEffect effect : statusEffects.values()) {
+        if (!effect.update(millis)) {
+          toRemove.add(effect);
+        }
+      }
+
+      for (StatusEffect effect : toRemove) {
+        Log.debug("Removing " + effect + " from " + this);
+        statusEffects.remove(effect.name, effect);
+        effect.onEnd(this);
+      }
+    }
+
+    movement.update(millis);
+
+    return true;
   }
 
   public Rect getCollisionRect() {

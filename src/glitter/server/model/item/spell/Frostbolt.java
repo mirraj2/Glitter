@@ -6,6 +6,7 @@ import glitter.server.model.Entity;
 import glitter.server.model.Player;
 import glitter.server.model.Player.Stat;
 import glitter.server.model.Projectile;
+import glitter.server.model.StatusEffect.Chilled;
 import glitter.server.model.Tile;
 import ox.Json;
 import ox.Log;
@@ -20,7 +21,7 @@ public class Frostbolt extends Spell {
   // the number of tiles the projectile will travel
   public final double range = 50;
 
-  public final int slowDuration = 3;
+  public final int slowDurationSeconds = 3;
 
   public Frostbolt() {
     super("Frostbolt");
@@ -30,7 +31,7 @@ public class Frostbolt extends Spell {
     this.minDamage = 16;
     this.maxDamage = 22;
     this.description = String.format("Shoots a shard of ice, dealing %d to %d damage "
-        + "and slowing anyone hit for %d seconds.", minDamage, maxDamage, slowDuration);
+        + "and slowing anyone hit for %d seconds.", minDamage, maxDamage, slowDurationSeconds);
   }
 
   @Override
@@ -44,10 +45,15 @@ public class Frostbolt extends Spell {
     p.onHit(hit -> {
       if (hit != caster) {
         double damage = minDamage + Math.random() * (maxDamage - minDamage);
-        damage *= 1 + caster.stats.get(Stat.FIRE) / 100;
+        damage *= 1 + caster.stats.get(Stat.ICE) / 100;
+
+        Log.info("%s did %s damage to %s with %s", caster, damage, hit, this);
 
         hit.health = Math.max(0, hit.health - damage);
-        Log.info("%s did %s damage to %s with %s", caster, damage, hit, this);
+
+        // apply chilled effect
+        hit.addStatusEffect(new Chilled(slowDurationSeconds * 1000));
+
         if (hit.health == 0) {
           Log.info("FATAL HIT!");
           hit.alive = false;
@@ -58,6 +64,7 @@ public class Frostbolt extends Spell {
             .with("casterId", caster.id)
             .with("targetId", hit.id)
             .with("damage", damage)
+            .with("currentHealth", hit.health)
             .with("fatal", !hit.alive));
         if (!hit.alive) {
           hit.onDeath();

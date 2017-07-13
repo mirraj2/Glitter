@@ -55,6 +55,7 @@ public class Fireball extends Spell {
             .with("casterId", caster.id)
             .with("targetId", hit.id)
             .with("damage", damage)
+            .with("currentHealth", hit.health)
             .with("fatal", !hit.alive));
         if (!hit.alive) {
           hit.onDeath();

@@ -47,7 +47,7 @@ Network.prototype.handleMessage = function(msg) {
     this.spells.castEffects(msg);
   } else if (command == "onHit") {
     var player = world.idPlayers[msg.targetId];
-    player.health -= msg.damage;
+    player.health = msg.currentHealth;
     if (msg.fatal) {
       player.health = 0;
       player.alive = false;
