@@ -79,6 +79,7 @@ Emitter.prototype.update = function(millis) {
 }
 
 Emitter.prototype.tickParticles = function(millis) {
+  console.log("tick");
   var ret = false;
   for (var i = 0; i < this.particles.length; i++) {
     var particle = this.particles[i];
@@ -101,11 +102,13 @@ Emitter.prototype.tickParticles = function(millis) {
 }
 
 Emitter.prototype.resetParticle = function(particle) {
+  console.log("reset");
   particle.x = this.x + this.offsetX;
   particle.y = this.y + this.offsetY;
-  particle.vx = (Math.random() - .5) * 100 / 1000;
-  particle.vy = (Math.random() - .5) * 100 / 1000;
-  particle.life = .9 * this.particleLife + Math.random() * .2 * this.particleLife;
+  particle.vx = particle.vy = 0;
+  // particle.vx = (Math.random() - .5) * 100 / 1000;
+  // particle.vy = (Math.random() - .5) * 100 / 1000;
+  particle.life = this.particleLife;
 }
 
 Emitter.prototype.destroy = function() {
@@ -121,12 +124,13 @@ Emitter.prototype.init = function() {
   this.parent.addChild(this.container);
 
   var texture = PIXI.Texture.fromImage(this.imageName);
+  window.texture = texture;
   this.offsetX = -this.scaleAmount * texture.width / 2;
   this.offsetY = -this.scaleAmount * texture.height / 2;
   this.particles = new Array(this.particleCount);
   for (var i = 0; i < this.particleCount; i++) {
     var particle = new PIXI.Sprite(texture);
-    // particle.blendMode = PIXI.BLEND_MODES.SCREEN;
+    particle.blendMode = PIXI.BLEND_MODES.ADD;
     particle.scale.x = this.scaleAmount;
     particle.scale.y = this.scaleAmount;
     particle.tint = this.tint;

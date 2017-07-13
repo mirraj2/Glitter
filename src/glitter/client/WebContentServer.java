@@ -2,7 +2,6 @@ package glitter.client;
 
 import com.google.common.base.Stopwatch;
 import bowser.WebServer;
-import glitter.client.dust.DustDemo;
 import glitter.client.home.HomePage;
 import glitter.client.js.JSController;
 import glitter.client.particles.ParticleEditor;
@@ -25,7 +24,6 @@ public class WebContentServer {
         .controller(new HomePage())
         .controller(new PerlinPage())
         .controller(new ParticleEditor())
-        .controller(new DustDemo())
         .controller(new JSController());
 
     server.start();

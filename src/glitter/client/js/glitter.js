@@ -13,14 +13,12 @@ Glitter.prototype.initGame = function() {
   window.world = new World();
   window.camera = new Camera();
   window.tooltips = new Tooltips();
-
-  var spells = new Spells(world.container);
+  
+  var spells = new Spells(world.container, new ParticleSystem());
   window.minimap = new MiniMap();
   window.quickbar = new Quickbar();
   window.inventory = new Inventory(quickbar);
   window.input = new Input(spells);
-
-  glitter.register(Dust);
 
   new GameLoop(canvas);
 

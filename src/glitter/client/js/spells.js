@@ -1,7 +1,8 @@
-function Spells(parent) {
+function Spells(parent, particleSystem) {
   this.container = new PIXI.Container();
   this.idCounter = 0;
   this.idProjectiles = {};
+  this.particleSystem = particleSystem;
   parent.addChild(this.container);
 }
 
@@ -86,19 +87,9 @@ Spells.prototype.assignIds = function(entities, ids) {
 }
 
 Spells.prototype.fireball = function(player, spell, locs) {
-  var speed = spell.speed * Tile.SIZE;
-
-  var projectile = new Emitter(this.container).numParticles(256).scale(.4).position(locs.fromX, locs.fromY).velocity(
-      locs.dx * speed, locs.dy * speed).setLife(spell.range / spell.speed * 1000);
-
-  return [ projectile ];
+  return [ this.particleSystem.createProjectile(this.container, "fireball", spell, locs) ];
 }
 
 Spells.prototype.frostbolt = function(player, spell, locs) {
-  var speed = spell.speed * Tile.SIZE;
-
-  var projectile = new Emitter(this.container).color(0x3be5ff).numParticles(256).scale(.2).position(locs.fromX,
-      locs.fromY).velocity(locs.dx * speed, locs.dy * speed).setLife(spell.range / spell.speed * 1000);
-
-  return [ projectile ];
+  return [ this.particleSystem.createProjectile(this.container, "frostbolt", spell, locs) ];
 }

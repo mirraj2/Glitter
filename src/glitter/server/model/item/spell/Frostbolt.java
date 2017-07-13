@@ -15,7 +15,7 @@ public class Frostbolt extends Spell {
   private final int minDamage, maxDamage;
 
   // the projectile's speed in tiles per second
-  public final double speed = 12;
+  public final double speed = 9;
 
   // the number of tiles the projectile will travel
   public final double range = 5000;
