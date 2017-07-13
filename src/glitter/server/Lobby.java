@@ -113,15 +113,15 @@ public class Lobby {
     }
     for (int i = 4; i <= 5; i++) {
       for (int j = 3; j <= 5; j++) {
-        t.tiles[i][j] = Tile.WATER;
+        t.tiles[i][j] = Tile.VOID;
       }
     }
     for (int i = 4; i <= 7; i++) {
       for (int j = 6; j <= 6; j++) {
-        t.tiles[i][j] = Tile.WATER;
+        t.tiles[i][j] = Tile.VOID;
       }
     }
-    t.tiles[6][5] = Tile.WATER;
+    t.tiles[6][5] = Tile.VOID;
     t.tiles[4][6] = Tile.GRASS;
 
     World world = new World(new GRandom(), t);

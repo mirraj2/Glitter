@@ -14,7 +14,11 @@ Glitter.prototype.initGame = function() {
   window.camera = new Camera();
   window.tooltips = new Tooltips();
   
-  var spells = new Spells(world.container, new ParticleSystem());
+  var particleSystem = new ParticleSystem();
+  
+  new Background(particleSystem);
+  
+  var spells = new Spells(world.container, particleSystem);
   window.minimap = new MiniMap();
   window.quickbar = new Quickbar();
   window.inventory = new Inventory(quickbar);
