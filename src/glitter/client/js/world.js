@@ -13,7 +13,7 @@ function World() {
   this.entityDisplayGroup.on("add", function(sprite) {
     sprite.zOrder = -(sprite.y + sprite.height);
   });
-  
+
   this.tiles.displayGroup = new PIXI.DisplayGroup(0);
 
   canvas.stage.addChild(this.container);
@@ -111,6 +111,16 @@ World.prototype.removeEntity = function(entityId) {
 
   // we may have the spacebar interaction UI up and need to remove it.
   window.input.findInteraction();
+}
+
+World.prototype.getPlayersAt = function(x, y) {
+  var ret = [];
+  Object.values(this.idPlayers).forEach(function(player) {
+    if (player.spriteIntersects(x, y)) {
+      ret.push(player);
+    }
+  });
+  return ret;
 }
 
 World.prototype.renderTiles = function() {

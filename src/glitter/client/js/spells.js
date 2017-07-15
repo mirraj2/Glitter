@@ -22,7 +22,6 @@ Spells.prototype.cast = function(spell, toX, toY) {
   if (me.mana < spell.manaCost) {
     return;
   }
-  me.mana -= spell.manaCost;
 
   toX -= world.container.x;
   toY -= world.container.y;
@@ -35,8 +34,6 @@ Spells.prototype.cast = function(spell, toX, toY) {
   dx *= normalizationVal;
   dy *= normalizationVal;
 
-  console.log("Casting " + spell.name);
-
   var locs = {
     fromX : fromX,
     fromY : fromY,
@@ -47,7 +44,16 @@ Spells.prototype.cast = function(spell, toX, toY) {
   }
 
   var castId = this.idCounter++;
+
+  console.log("Casting " + spell.name);
   var projectiles = this[spell.name.toLowerCase()](me, spell, locs);
+
+  if (projectiles === null) {
+    return;
+  }
+
+  me.mana -= spell.manaCost;
+
   this.idProjectiles[castId] = projectiles;
 
   network.send({
@@ -93,4 +99,15 @@ Spells.prototype.fireball = function(player, spell, locs) {
 
 Spells.prototype.frostbolt = function(player, spell, locs) {
   return [ this.particleSystem.createProjectile(this.container, "frostbolt", spell, locs) ];
+}
+
+Spells.prototype.heal = function(player, spell, locs) {
+  var targets = world.getPlayersAt(locs.toX, locs.toY);
+  //TODO filter friendly players
+  
+  if (targets.length == 0) {
+    console.log("Not a valid heal target.");
+    return null;
+  }
+  return [];
 }

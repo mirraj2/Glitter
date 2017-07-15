@@ -29,7 +29,7 @@ public abstract class Spell extends Item {
         .with("manaCost", manaCost)
         .with("cooldownSeconds", cooldownSeconds)
         .with("description", description)
-        .with("imageUrl", "/spells/" + name.toLowerCase() + ".png");
+        .with("imageUrl", "/spells/" + name.toLowerCase().replace(" ", "_") + ".png");
   }
 
 }

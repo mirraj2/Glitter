@@ -27,6 +27,6 @@ Background.prototype.onWindowResize = function() {
   var h = win.height();
   emitter.spawnRect.width = win.width();
   emitter.spawnRect.height = win.height();
-  emitter.maxParticles = w * h / 1000;
+  emitter.maxParticles = w * h / 5000;
 }
 

@@ -2,9 +2,9 @@ function Player(data) {
   this.id = data.id;
   this.x = data.x;
   this.y = data.y;
-  
+
   this.acceptStats(data.stats);
-  
+
   this.width = 48;
   this.height = 64;
   this.sprite = null;
@@ -63,3 +63,6 @@ Player.prototype.getHitbox = function(rect, buffer) {
   return rect;
 }
 
+Player.prototype.spriteIntersects = function(x, y) {
+  return x >= this.x && y >= this.y && x < this.x + this.width && y < this.y + this.height;
+}

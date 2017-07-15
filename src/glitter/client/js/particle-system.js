@@ -190,8 +190,8 @@ ParticleSystem.prototype.getConfigs = function() {
         "end" : "#adf4fa"
       },
       "speed" : {
-        "start" : 1,
-        "end" : 1,
+        "start" : .25,
+        "end" : .25,
         "minimumSpeedMultiplier" : 30
       },
       "acceleration" : {
