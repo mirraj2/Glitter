@@ -20,6 +20,8 @@ ParticleSystem.prototype.update = function(millis) {
     }
     if (emitter.spawnPos && emitter.vx) {
       emitter.updateSpawnPos(emitter.spawnPos.x + emitter.vx * millis, emitter.spawnPos.y + emitter.vy * millis);
+    } else if (emitter.entityLink) {
+      emitter.updateSpawnPos(emitter.entityLink.centerX(), emitter.entityLink.centerY());
     }
     emitter.update(millis / 1000);
   }
@@ -113,8 +115,8 @@ ParticleSystem.prototype.getConfigs = function() {
         "max" : -1
       },
       "lifetime" : {
-        "min" : 0.5,
-        "max" : 1
+        "min" : 0.1,
+        "max" : .4
       },
       "blendMode" : "add",
       "frequency" : 0.001,
@@ -161,8 +163,8 @@ ParticleSystem.prototype.getConfigs = function() {
         "max" : -1
       },
       "lifetime" : {
-        "min" : 1,
-        "max" : 1
+        "min" : .25,
+        "max" : .5
       },
       "blendMode" : "add",
       "frequency" : 0.004,
@@ -174,6 +176,60 @@ ParticleSystem.prototype.getConfigs = function() {
       },
       "addAtBack" : false,
       "spawnType" : "point"
+    },
+    heal : {
+      "alpha" : {
+        "start" : 1,
+        "end" : 0
+      },
+      "scale" : {
+        "start" : 0.07,
+        "end" : 0.01,
+        "minimumScaleMultiplier" : 10
+      },
+      "color" : {
+        "start" : "#7aff14",
+        "end" : "#05f549"
+      },
+      "speed" : {
+        "start" : 10,
+        "end" : 50,
+        "minimumSpeedMultiplier" : 10
+      },
+      "acceleration" : {
+        "x" : 0,
+        "y" : -500
+      },
+      "maxSpeed" : 0,
+      "startRotation" : {
+        "min" : 0,
+        "max" : 360
+      },
+      "noRotation" : false,
+      "rotationSpeed" : {
+        "min" : 0,
+        "max" : 0
+      },
+      "lifetime" : {
+        "min" : 1,
+        "max" : 1
+      },
+      "blendMode" : "screen",
+      "frequency" : 0.001,
+      "emitterLifetime" : 0.25,
+      "maxParticles" : 100,
+      "pos" : {
+        "x" : 0,
+        "y" : 0
+      },
+      "addAtBack" : false,
+      "spawnType" : "rect",
+      "spawnRect" : {
+        "x" : -24,
+        "y" : -32,
+        "w" : 48,
+        "h" : 64
+      }
     },
     starfield : {
       "alpha" : {

@@ -84,6 +84,33 @@ Spells.prototype.onCast = function(json) {
   this.assignIds(projectiles, json.entityIds);
 }
 
+Spells.prototype.onHit = function(msg) {
+  var player = world.idPlayers[msg.targetId];
+  player.health = msg.currentHealth;
+
+  if (player.health <= 0) {
+    player.alive = false;
+    world.removePlayer(player.id);
+
+    var numPlayersLeft = Object.keys(world.idPlayers).length;
+    if (player == me) {
+      $(".summary h1").text("Better luck next time!");
+      $(".summary .rank").text("#" + (numPlayersLeft + 1));
+      $(".summary").fadeIn();
+    } else if (numPlayersLeft == 1 && me.alive) {
+      $(".summary h1").text("Perfect Victory");
+      $(".summary .rank").text("#1");
+      $(".summary").fadeIn();
+    }
+  }
+
+  if (msg.spell == "heal") {
+    // add the heal animation
+    var emitter = this.particleSystem.createEmitter(this.container, "heal");
+    emitter.entityLink = player;
+  }
+}
+
 Spells.prototype.assignIds = function(entities, ids) {
   for (var i = 0; i < entities.length; i++) {
     var id = ids[i];
@@ -102,12 +129,16 @@ Spells.prototype.frostbolt = function(player, spell, locs) {
 }
 
 Spells.prototype.heal = function(player, spell, locs) {
-  var targets = world.getPlayersAt(locs.toX, locs.toY);
-  //TODO filter friendly players
-  
+  var targets = world.getPlayersAt(locs.toX, locs.toY).filter(function(player) {
+    return player == me; // TODO, allow heal on friendly players as well
+  });
+
   if (targets.length == 0) {
     console.log("Not a valid heal target.");
     return null;
   }
+
+  locs.targetId = targets[0].id;
+
   return [];
 }

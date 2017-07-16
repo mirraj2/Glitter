@@ -46,24 +46,7 @@ Network.prototype.handleMessage = function(msg) {
   } else if (command == "castEffects") {
     this.spells.castEffects(msg);
   } else if (command == "onHit") {
-    var player = world.idPlayers[msg.targetId];
-    player.health = msg.currentHealth;
-    if (msg.fatal) {
-      player.health = 0;
-      player.alive = false;
-      world.removePlayer(player.id);
-
-      var numPlayersLeft = Object.keys(world.idPlayers).length;
-      if (player == me) {
-        $(".summary h1").text("Better luck next time!");
-        $(".summary .rank").text("#" + (numPlayersLeft + 1));
-        $(".summary").fadeIn();
-      } else if (numPlayersLeft == 1 && me.alive) {
-        $(".summary h1").text("Perfect Victory");
-        $(".summary .rank").text("#1");
-        $(".summary").fadeIn();
-      }
-    }
+    this.spells.onHit(msg);
   } else if (command == "choose") {
     network.lootChooser.show(msg.choices);
   } else if (command == "receiveItem") {
