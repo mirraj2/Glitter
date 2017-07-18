@@ -6,7 +6,16 @@ function Emitter(config, parent) {
   container.displayFlag = PIXI.DISPLAY_FLAG.MANUAL_CONTAINER;
   parent.addChild(container);
 
-  var emitter = this.emitter = new PIXI.particles.Emitter(container, [ PIXI.Texture.fromImage("particle.png") ], config);
+  var particles = config.particles;
+  if (!particles) {
+    particles = [ "particle.png" ];
+  }
+  
+  particles = $.map(particles, function(p){
+    return PIXI.Texture.fromImage(p);
+  });
+
+  var emitter = this.emitter = new PIXI.particles.Emitter(container, particles, config);
   emitter.emit = true;
 
   this.callback = null;

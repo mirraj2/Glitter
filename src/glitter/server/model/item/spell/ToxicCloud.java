@@ -64,6 +64,14 @@ public class ToxicCloud extends Spell {
       super("Toxic Cloud", durationMillis);
     }
 
+    @Override
+    public void onStart(Player player) {
+      player.world.sendToAll(Json.object()
+          .with("command", "addStatusEffect")
+          .with("playerId", player.id)
+          .with("name", name));
+    }
+
   }
 
 }

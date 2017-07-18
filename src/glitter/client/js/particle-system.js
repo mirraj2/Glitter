@@ -291,6 +291,60 @@ ParticleSystem.prototype.getConfigs = function() {
       },
       "addAtBack" : true,
       "spawnType" : "point"
+    },
+    toxicCloud : {
+      "particles" : [ "smokeparticle.png" ],
+      "alpha" : {
+        "start" : 0.52,
+        "end" : 0
+      },
+      "scale" : {
+        "start" : 0.5,
+        "end" : 1,
+        "minimumScaleMultiplier" : 0.1
+      },
+      "color" : {
+        "start" : "#6bff61",
+        "end" : "#d8ff4a"
+      },
+      "speed" : {
+        "start" : 1,
+        "end" : 1,
+        "minimumSpeedMultiplier" : 1
+      },
+      "acceleration" : {
+        "x" : 0,
+        "y" : 0
+      },
+      "maxSpeed" : 100,
+      "startRotation" : {
+        "min" : 0,
+        "max" : 360
+      },
+      "noRotation" : true,
+      "rotationSpeed" : {
+        "min" : 0,
+        "max" : 0
+      },
+      "lifetime" : {
+        "min" : 2,
+        "max" : 2
+      },
+      "blendMode" : "normal",
+      "frequency" : 0.01,
+      "emitterLifetime" : -1,
+      "maxParticles" : 1000,
+      "pos" : {
+        "x" : 0,
+        "y" : 0
+      },
+      "addAtBack" : true,
+      "spawnType" : "circle",
+      "spawnCircle" : {
+        "x" : 0,
+        "y" : 0,
+        "r" : 40
+      }
     }
   };
 }

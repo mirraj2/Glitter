@@ -16,6 +16,17 @@ function Player(data) {
   this.keys = {};
 }
 
+Player.prototype.addStatusEffect = function(msg) {
+  var self = this;
+  var name = msg.name;
+  if (name == "Toxic Cloud") {
+    var emitter = window.particleSystem.createAndRegister(window.spells.container, "toxicCloud");
+    emitter.callback = function() {
+      emitter.position(self.centerX(), self.centerY());
+    }
+  }
+}
+
 Player.prototype.acceptStats = function(stats) {
   this.health = stats.health;
   this.mana = stats.mana;
