@@ -21,6 +21,7 @@ import glitter.server.model.item.spell.Fireball;
 import glitter.server.model.item.spell.Frostbolt;
 import glitter.server.model.item.spell.Heal;
 import glitter.server.model.item.spell.Spell;
+import glitter.server.model.item.spell.ToxicCloud;
 import ox.IO;
 import ox.Json;
 import ox.Log;
@@ -127,7 +128,7 @@ public class LootMaster {
   }
 
   static {
-    List<Spell> spells = Lists.newArrayList(new Fireball(), new Frostbolt(), new Heal());
+    List<Spell> spells = Lists.newArrayList(new Fireball(), new Frostbolt(), new Heal(), new ToxicCloud());
     List<Armor> armors = Lists.newArrayList();
 
     for (Json j : IO.from(Armor.class, "armor.json").toJson().asJsonArray()) {

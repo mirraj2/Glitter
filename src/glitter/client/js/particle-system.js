@@ -1,82 +1,41 @@
 function ParticleSystem() {
-  glitter.register(this);
-  this.emitters = [];
   this.configs = this.getConfigs();
+  this.emitters = [];
+
+  glitter.register(this);
 }
 
 ParticleSystem.prototype.update = function(millis) {
   for (var i = this.emitters.length - 1; i >= 0; i--) {
     var emitter = this.emitters[i];
-    if (!emitter.emit && emitter.particleCount == 0) {
+    if (!emitter.update(millis)) {
       this.emitters.splice(i, 1);
-
-      emitter.parent.removeChild(emitter.container);
-      emitter.container.destroy({
-        child : true
-      });
-      emitter.destroy();
-
-      continue;
     }
-    if (emitter.spawnPos && emitter.vx) {
-      emitter.updateSpawnPos(emitter.spawnPos.x + emitter.vx * millis, emitter.spawnPos.y + emitter.vy * millis);
-    } else if (emitter.entityLink) {
-      emitter.updateSpawnPos(emitter.entityLink.centerX(), emitter.entityLink.centerY());
-    }
-    emitter.update(millis / 1000);
   }
 }
 
 ParticleSystem.prototype.createEmitter = function(parent, configName) {
-  var config = this.configs[configName];
+  return new Emitter(this.configs[configName], parent);
+}
 
-  var container = new PIXI.Container();
-  container.displayGroup = new PIXI.DisplayGroup(-1);
-  container.displayFlag = PIXI.DISPLAY_FLAG.MANUAL_CONTAINER;
-  parent.addChild(container);
-
-  var emitter = new PIXI.particles.Emitter(container, [ PIXI.Texture.fromImage("particle.png") ], config);
-  emitter.emit = true;
-  emitter.container = container;
-  emitter.parent = parent;
-
-  this.emitters.push(emitter);
-
-  return emitter;
+ParticleSystem.prototype.createAndRegister = function(parent, configName) {
+  var ret = this.createEmitter(parent, configName);
+  this.emitters.push(ret);
+  return ret;
 }
 
 ParticleSystem.prototype.createProjectile = function(parent, configName, spell, locs) {
   var config = this.configs[configName];
-
-  var container = new PIXI.Container();
-  // container.displayGroup = new PIXI.DisplayGroup(1);
-  container.displayFlag = PIXI.DISPLAY_FLAG.MANUAL_CONTAINER;
-  parent.addChild(container);
-
-  var speed = spell.speed * Tile.SIZE;
-
   config.emitterLifetime = spell.range / spell.speed;
   config.pos.x = locs.fromX;
   config.pos.y = locs.fromY;
 
-  var emitter = new PIXI.particles.Emitter(container, [ PIXI.Texture.fromImage("particle.png") ], config);
-  emitter.vx = locs.dx * speed / 1000;
-  emitter.vy = locs.dy * speed / 1000;
-  emitter.emit = true;
-  emitter.container = container;
-  emitter.parent = parent;
+  var emitter = new Emitter(config, parent);
 
-  this.emitters.push(emitter);
-
-  return {
-    emitter : emitter,
-    update : function(millis) {
-      emitter.update(millis / 1000);
-    },
-    destroy : function() {
-      emitter.emit = false;
-    }
-  };
+  var projectile = new Projectile(emitter);
+  projectile.vx = locs.dx * spell.speed * Tile.SIZE;
+  projectile.vy = locs.dy * spell.speed * Tile.SIZE;
+  return projectile;
 }
 
 ParticleSystem.prototype.getConfigs = function() {
@@ -284,6 +243,54 @@ ParticleSystem.prototype.getConfigs = function() {
         "w" : 100,
         "h" : 100
       }
+    },
+    toxicCloudProjectile : {
+      "alpha" : {
+        "start" : 1,
+        "end" : 0
+      },
+      "scale" : {
+        "start" : 0.4,
+        "end" : 1.2,
+        "minimumScaleMultiplier" : 2
+      },
+      "color" : {
+        "start" : "#4ad143",
+        "end" : "#000000"
+      },
+      "speed" : {
+        "start" : 10,
+        "end" : 10,
+        "minimumSpeedMultiplier" : 1
+      },
+      "acceleration" : {
+        "x" : 0,
+        "y" : 0
+      },
+      "maxSpeed" : 0,
+      "startRotation" : {
+        "min" : 0,
+        "max" : 360
+      },
+      "noRotation" : false,
+      "rotationSpeed" : {
+        "min" : 0,
+        "max" : 0
+      },
+      "lifetime" : {
+        "min" : 0.5,
+        "max" : 1
+      },
+      "blendMode" : "add",
+      "frequency" : 0.007,
+      "emitterLifetime" : -1,
+      "maxParticles" : 1000,
+      "pos" : {
+        "x" : 0,
+        "y" : 0
+      },
+      "addAtBack" : true,
+      "spawnType" : "point"
     }
   };
 }

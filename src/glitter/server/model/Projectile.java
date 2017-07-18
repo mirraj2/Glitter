@@ -13,6 +13,13 @@ public class Projectile extends Entity {
 
   private Predicate<Player> onHit = player -> false;
 
+  /**
+   * If non-null, this projectile will home towards the target. Homing projectiles ignore 'vx' and 'vy'.
+   */
+  private Player homingTarget = null;
+
+  private double homingSpeed; // in tiles per second
+
   public Projectile(World world, double x, double y, double radius) {
     super(x - radius, y - radius, radius * 2, radius * 2);
 
@@ -23,10 +30,23 @@ public class Projectile extends Entity {
   @Override
   public boolean update(double millis) {
     life -= millis;
-    this.bounds.x += vx * millis / 1000;
-    this.bounds.y += vy * millis / 1000;
 
-    // boolean ret = life > 0;
+    if (homingTarget == null) {
+      this.bounds.x += vx * millis / 1000;
+      this.bounds.y += vy * millis / 1000;
+    } else {
+      double dx = homingTarget.bounds.centerX() - this.bounds.x;
+      double dy = homingTarget.bounds.centerY() - this.bounds.y;
+
+      double speed = this.homingSpeed * Tile.SIZE * millis / 1000;
+
+      double norm = speed / Math.sqrt(dx * dx + dy * dy);
+      dx *= norm;
+      dy *= norm;
+      
+      bounds.x += dx;
+      bounds.y += dy;
+    }
 
     boolean finished = false;
 
@@ -64,6 +84,12 @@ public class Projectile extends Entity {
 
   public Projectile life(double life) {
     this.life = life;
+    return this;
+  }
+
+  public Projectile homeInOn(Player target, double homingSpeed) {
+    this.homingTarget = target;
+    this.homingSpeed = homingSpeed;
     return this;
   }
 

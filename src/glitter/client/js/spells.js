@@ -1,18 +1,18 @@
 function Spells(parent, particleSystem) {
   this.container = new PIXI.Container();
   this.container.displayGroup = new PIXI.DisplayGroup(1);
-  this.idCounter = 0;
-  this.idProjectiles = {};
+  this.idCounter = -1;
   this.particleSystem = particleSystem;
   parent.addChild(this.container);
 }
 
 Spells.prototype.castEffects = function(msg) {
-  var ids = msg.entityIds;
-  var projectiles = this.idProjectiles[msg.castId];
-  delete this.idProjectiles[msg.castId];
-
-  this.assignIds(projectiles, ids);
+  msg.idMapping.forEach(function(mapping) {
+    var projectile = world.idEntities[mapping[0]];
+    delete world.idEntities[projectile.id];
+    projectile.id = mapping[1];
+    world.idEntities[projectile.id] = projectile;
+  });
 }
 
 /**
@@ -43,10 +43,8 @@ Spells.prototype.cast = function(spell, toX, toY) {
     dy : dy
   }
 
-  var castId = this.idCounter++;
-
   console.log("Casting " + spell.name);
-  var projectiles = this[spell.name.toLowerCase()](me, spell, locs);
+  var projectiles = this[spell.name.toLowerCase().replace(" ", "_")](me, spell, locs);
 
   if (projectiles === null) {
     return;
@@ -54,13 +52,21 @@ Spells.prototype.cast = function(spell, toX, toY) {
 
   me.mana -= spell.manaCost;
 
-  this.idProjectiles[castId] = projectiles;
+  for (var i = 0; i < projectiles.length; i++) {
+    // temporary ids are negative. the server will send us a 'castEffects'
+    // message which we'll use to map to the real ids
+    var projectile = projectiles[i];
+    projectile.id = this.idCounter--;
+    world.idEntities[projectile.id] = projectiles[i];
+  }
 
   network.send({
     command : "cast",
-    castId : castId,
     spellId : spell.id,
-    locs : locs
+    locs : locs,
+    tempIds : $.map(projectiles, function(p) {
+      return p.id;
+    })
   });
 }
 
@@ -70,7 +76,14 @@ Spells.prototype.cast = function(spell, toX, toY) {
 Spells.prototype.onCast = function(json) {
   var spell = json.spell;
   var player = world.idPlayers[json.casterId];
-  var projectiles = this[spell.name.toLowerCase()](player, spell, json.locs);
+  var projectiles = this[spell.name.toLowerCase().replace(" ", "_")](player, spell, json.locs);
+
+  for (var i = 0; i < projectiles.length; i++) {
+    var id = json.entityIds[i];
+    var e = projectiles[i];
+    e.id = id;
+    world.idEntities[id] = e;
+  }
 
   console.log("Applying " + json.latency + "ms of latency compensation.");
   while (json.latency > 0) {
@@ -80,13 +93,13 @@ Spells.prototype.onCast = function(json) {
       projectiles[i].update(millis);
     }
   }
-
-  this.assignIds(projectiles, json.entityIds);
 }
 
 Spells.prototype.onHit = function(msg) {
   var player = world.idPlayers[msg.targetId];
-  player.health = msg.currentHealth;
+  if (msg.currentHealth != null) {
+    player.health = msg.currentHealth;
+  }
 
   if (player.health <= 0) {
     player.alive = false;
@@ -106,17 +119,13 @@ Spells.prototype.onHit = function(msg) {
 
   if (msg.spell == "heal") {
     // add the heal animation
-    var emitter = this.particleSystem.createEmitter(this.container, "heal");
-    emitter.entityLink = player;
-  }
-}
-
-Spells.prototype.assignIds = function(entities, ids) {
-  for (var i = 0; i < entities.length; i++) {
-    var id = ids[i];
-    var e = entities[i];
-    e.id = id;
-    world.idEntities[id] = e;
+    var emitter = this.particleSystem.createAndRegister(this.container, "heal");
+    emitter.callback = function() {
+      emitter.container.x = player.centerX();
+      emitter.container.y = player.centerY();
+    }
+  } else if (msg.spell == "toxic_cloud") {
+    // add the toxin effect
   }
 }
 
@@ -141,4 +150,29 @@ Spells.prototype.heal = function(player, spell, locs) {
   locs.targetId = targets[0].id;
 
   return [];
+}
+
+Spells.prototype.toxic_cloud = function(player, spell, locs) {
+  if (locs.targetId == null) {
+    var targets = world.getPlayersAt(locs.toX, locs.toY).filter(function(player) {
+      return player != me; // TODO, don't allow you to target teammates
+    });
+
+    if (targets.length == 0) {
+      console.log("Not a valid target.");
+      return null;
+    }
+
+    locs.targetId = targets[0].id;
+  }
+
+  var target = world.idPlayers[locs.targetId];
+
+  var emitter = this.particleSystem.createEmitter(this.container, "toxicCloudProjectile");
+  emitter.position(player.centerX(), player.centerY());
+  
+  var projectile = new Projectile(emitter);
+  projectile.homeInOn(target, spell.speed);
+
+  return [ projectile ];
 }

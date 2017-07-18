@@ -1,7 +1,7 @@
 function World() {
   this.terrain = null;
   this.idPlayers = {};
-  this.idEntities = {};
+  this.idEntities = {}; // does NOT contain player entities right now
   this.container = new PIXI.Container();
   this.tiles = new PIXI.Container();
   this.entities = new PIXI.Container();
@@ -20,6 +20,24 @@ function World() {
   this.container.addChild(this.tiles);
   this.container.addChild(this.entities);
   this.container.addChild(this.players);
+
+  glitter.register(this);
+}
+
+World.prototype.update = function(millis) {
+  var idsToDelete = [];
+  Object.values(this.idEntities).forEach(function(entity) {
+    if (entity.update) {
+      if (entity.update(millis) == false) {
+        idsToDelete.push(entity.id);
+      }
+    }
+  });
+
+  for (var i = 0; i < idsToDelete.length; i++) {
+    var id = idsToDelete[i];
+    delete this.idEntities[id];
+  }
 }
 
 World.prototype.setChests = function(chests) {
@@ -96,17 +114,22 @@ World.prototype.removeEntity = function(entityId) {
   var entity = this.idEntities[entityId];
 
   if (entity == null) {
+    console.log("could not find entity with id: " + entityId)
     return;
+  }
+
+  if (entity.destroy) {
+    if (entity.destroy() == false) {
+      // gives the entity a chance to tell us that it should not be destroyed immediately.
+      // for example, a projectile will want to finish rendering its final particles
+      return;
+    }
   }
 
   delete this.idEntities[entityId];
 
   if (entity.sprite) {
     world.entities.removeChild(entity.sprite);
-  }
-
-  if (entity.destroy) {
-    entity.destroy();
   }
 
   // we may have the spacebar interaction UI up and need to remove it.

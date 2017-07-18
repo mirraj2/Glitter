@@ -1,5 +1,8 @@
 function Background(particleSystem) {
-  this.emitter = particleSystem.createEmitter(canvas.stage, "starfield");
+  var emitter = particleSystem.createAndRegister(canvas.stage, "starfield");
+  emitter.container.displayGroup = new PIXI.DisplayGroup(-1);
+  this.emitter = emitter.emitter;
+  
   this.emitter.customEase = function(t) {
     if (t < .1) {
       return t / .1;
@@ -29,4 +32,3 @@ Background.prototype.onWindowResize = function() {
   emitter.spawnRect.height = win.height();
   emitter.maxParticles = w * h / 5000;
 }
-
