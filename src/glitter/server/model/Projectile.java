@@ -60,20 +60,16 @@ public class Projectile extends Entity {
   }
 
   private boolean intersects(Rect r) {
-    double dx = Math.abs(this.bounds.x - r.x);
-    double dy = Math.abs(this.bounds.y - r.y);
+    double cx = this.bounds.centerX();
+    double cy = this.bounds.centerY();
+    
+    double closestX = cx < r.x ? r.x : (cx > r.maxX() ? r.maxX() : cx);
+    double closestY = cy < r.y ? r.y : (cy > r.maxY() ? r.maxY() : cy);
 
-    if (dx > r.w / 2 + radius || dy > r.h / 2 + radius) {
-      return false;
-    }
+    double dx = closestX - cx;
+    double dy = closestY - cy;
 
-    if (dx <= r.w / 2 || dy <= r.h / 2) {
-      return true;
-    }
-
-    double cornerDistanceSq = Math.pow(dx - r.w / 2, 2) + Math.pow(dy - r.h / 2, 2);
-
-    return cornerDistanceSq <= radius * radius;
+    return (dx * dx + dy * dy) <= radius * radius;
   }
 
   public Projectile velocity(double vx, double vy) {
