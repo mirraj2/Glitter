@@ -23,7 +23,7 @@ import ox.Log;
 
 public class Inventory {
 
-  private static final int STARTING_BAG_SLOTS = 6;
+  private static final int STARTING_BAG_SLOTS = 4;
 
   private final Player player;
 

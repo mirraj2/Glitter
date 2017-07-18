@@ -1,5 +1,6 @@
 package glitter.server.model;
 
+import static java.lang.Integer.parseInt;
 import java.util.List;
 import com.google.common.base.Splitter;
 import glitter.server.Lobby;
@@ -18,8 +19,12 @@ public class AdminConsole {
     String command = m.get(0);
 
     if (command.equals("/start")) {
-      Lobby.get().startGameIn(1);
-      output(from, "Game starting in 3 seconds...");
+      Lobby.get().startGameIn(0);
+      output(from, "Starting game now!");
+    } else if (command.equals("/countdown")) {
+      int seconds = parseInt(m.get(1));
+      Lobby.get().startGameIn(seconds);
+      output(from, "Setting countdown timer to " + seconds + " seconds.");
     } else {
       output(from, "Unrecognized command: " + command);
     }

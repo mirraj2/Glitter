@@ -5,7 +5,7 @@
     rarity: "COMMON",
     image: "/armor/small-bag.png",
     stats: {
-      slots: 6
+      slots: 2
     }
   },
   {
@@ -14,7 +14,7 @@
     rarity: "RARE",
     image: "/armor/medium-bag.png",
     stats: {
-      slots: 12
+      slots: 4
     }
   },
   {
@@ -23,7 +23,7 @@
     rarity: "EPIC",
     image: "/armor/large-bag.png",
     stats: {
-      slots: 18
+      slots: 8
     }
   },
   {
