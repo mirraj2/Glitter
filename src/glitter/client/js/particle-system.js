@@ -121,7 +121,7 @@ ParticleSystem.prototype.getConfigs = function() {
       "blendMode" : "add",
       "frequency" : 0.001,
       "emitterLifetime" : -1,
-      "maxParticles" : 1000,
+      "maxParticles" : 300,
       "pos" : {
         "x" : 0,
         "y" : 0
@@ -163,13 +163,13 @@ ParticleSystem.prototype.getConfigs = function() {
         "max" : -1
       },
       "lifetime" : {
-        "min" : .25,
-        "max" : .5
+        "min" : .15,
+        "max" : .25
       },
       "blendMode" : "add",
-      "frequency" : 0.004,
+      "frequency" : 0.001,
       "emitterLifetime" : -1,
-      "maxParticles" : 1000,
+      "maxParticles" : 200,
       "pos" : {
         "x" : 0,
         "y" : 0

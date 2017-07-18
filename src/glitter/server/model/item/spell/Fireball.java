@@ -15,7 +15,7 @@ public class Fireball extends Spell {
   private final int minDamage, maxDamage;
 
   // the projectile's speed in tiles per second
-  public final double speed = 15;
+  public final double speed = 22;
 
   // the number of tiles the projectile will travel
   public final double range = 50;
