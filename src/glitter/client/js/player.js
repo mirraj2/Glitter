@@ -14,6 +14,8 @@ function Player(data) {
 
   // the keys this player has pressed down
   this.keys = {};
+
+  this.statusEffects = {};
 }
 
 Player.prototype.addStatusEffect = function(msg) {
@@ -24,6 +26,15 @@ Player.prototype.addStatusEffect = function(msg) {
     emitter.callback = function() {
       emitter.position(self.centerX(), self.centerY());
     }
+    this.statusEffects[name] = emitter;
+  }
+}
+
+Player.prototype.removeStatusEffect = function(msg) {
+  var effect = this.statusEffects[msg.name];
+  if (effect != null) {
+    delete this.statusEffects[msg.name];
+    effect.finishUp();
   }
 }
 

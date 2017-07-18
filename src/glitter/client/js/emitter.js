@@ -10,8 +10,8 @@ function Emitter(config, parent) {
   if (!particles) {
     particles = [ "particle.png" ];
   }
-  
-  particles = $.map(particles, function(p){
+
+  particles = $.map(particles, function(p) {
     return PIXI.Texture.fromImage(p);
   });
 
@@ -50,4 +50,8 @@ Emitter.prototype.translate = function(dx, dy) {
 
 Emitter.prototype.position = function(x, y) {
   this.emitter.updateSpawnPos(x, y);
+}
+
+Emitter.prototype.finishUp = function() {
+  this.emitter.emit = false;
 }

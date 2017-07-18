@@ -53,8 +53,10 @@ Network.prototype.handleMessage = function(msg) {
     window.inventory.add(msg.item);
   } else if (command == "stats") {
     world.idPlayers[msg.playerId].acceptStats(msg.stats);
-  } else if(command == "addStatusEffect"){
+  } else if (command == "addStatusEffect") {
     world.idPlayers[msg.playerId].addStatusEffect(msg);
+  } else if (command == "removeStatusEffect") {
+    world.idPlayers[msg.playerId].removeStatusEffect(msg);
   } else if (command == "itemExplosion") {
     new ItemExplosion(msg);
   } else if (command == "itemDropped") {
