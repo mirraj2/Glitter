@@ -39,10 +39,6 @@ Quickbar.prototype.getEmptySlot = function() {
 
 Quickbar.prototype.update = function(millis) {
   if (window.me) {
-    if (me.alive) {
-      me.health = Math.min(me.maxHealth, me.health + me.healthRegenPerSecond * millis / 1000);
-      me.mana = Math.min(me.maxMana, me.mana + me.manaRegenPerSecond * millis / 1000);
-    }
     $(".health .text").text(Math.round(me.health) + " / " + me.maxHealth);
     $(".mana .text").text(Math.round(me.mana) + " / " + me.maxMana);
     this.interpBar($(".health .fill"), me.health / me.maxHealth, millis);

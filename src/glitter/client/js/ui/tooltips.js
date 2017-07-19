@@ -22,8 +22,10 @@ Tooltips.prototype.listen = function() {
         if (newlyShown) {
           tooltip.addClass("notransition");
         }
+        var left = (slot.offset().left + slot.width() / 2 - width / 2);
+        left = Math.max(left, 8);
         tooltip.css({
-          left : (slot.offset().left + slot.width() / 2 - width / 2) + "px",
+          left : left + "px",
           top : (slot.offset().top - height - 8) + "px"
         });
         tooltip[0].offsetHeight; // Trigger a reflow, flushing the CSS changes

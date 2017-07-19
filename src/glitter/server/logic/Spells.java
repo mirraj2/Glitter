@@ -40,6 +40,7 @@ public class Spells {
         .remove("castId")
         .with("spell", spell.toJson());
     json.with("casterId", p.id);
+    json.with("casterMana", p.mana);
     json.with("entityIds", entityIds);
     for (Player player : p.world.players) {
       if (player != p) {

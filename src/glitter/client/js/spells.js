@@ -82,6 +82,8 @@ Spells.prototype.onCast = function(json) {
   var spell = json.spell;
   var player = world.idPlayers[json.casterId];
   var projectiles = this[spell.name.toLowerCase().replace(/ /g, "_")](player, spell, json.locs, json.latency);
+  
+  player.mana = json.casterMana;
 
   for (var i = 0; i < projectiles.length; i++) {
     var id = json.entityIds[i];

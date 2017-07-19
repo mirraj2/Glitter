@@ -27,12 +27,34 @@ function Player(data) {
   stunSprite.visible = false;
   this.sprite.addChild(stunSprite);
 
+  var healthBar = this.healthBar = new PIXI.Graphics();
+  healthBar.y = -15;
+  healthBar.x = -15;
+
+  this.sprite.addChild(healthBar);
+
   this.setX(data.x);
   this.setY(data.y);
 }
 
 Player.prototype.update = function(millis) {
   this.stunSprite.rotation = (this.stunSprite.rotation + millis / 150) % (2 * Math.PI);
+
+  if (this.alive) {
+    this.health = Math.min(this.maxHealth, this.health + this.healthRegenPerSecond * millis / 1000);
+    this.mana = Math.min(this.maxMana, this.mana + this.manaRegenPerSecond * millis / 1000);
+  }
+  
+  var healthBar = this.healthBar;
+  healthBar.clear();
+  healthBar.lineStyle(1, 0xFFFFFF, .5);
+  healthBar.beginFill(0x000000, 1);
+  healthBar.drawRect(0, 0, this.width + 20, 10);
+  healthBar.lineStyle(0);
+  healthBar.beginFill(0x3dff07, 1);
+  healthBar.drawRect(1, 1, (this.health / this.maxHealth) * (this.width + 20 - 2), 5)
+  healthBar.beginFill(0x038fff, 1);
+  healthBar.drawRect(1, 6, (this.mana / this.maxMana) * (this.width + 20 - 2), 3)
 }
 
 Player.prototype.addStatusEffect = function(msg) {
