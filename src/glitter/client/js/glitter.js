@@ -27,7 +27,7 @@ Glitter.prototype.initGame = function() {
 
   new GameLoop(canvas);
 
-  PIXI.loader.add("tiles.png").add("wizard.png").load(function() {
+  PIXI.loader.add("tiles.png").add("wizard.png").add("stun.png").load(function() {
     console.log("done loading sprites.");
 
     window.network = new Network("$$(websocketIP)", $$(websocketPort), spells);

@@ -16,6 +16,10 @@ public class PlayerMovement {
   }
 
   public void update(double millis) {
+    if (p.isStunned()) {
+      return;
+    }
+
     double distance = p.getMovementSpeed() * Tile.SIZE * millis / 1000;
 
     double dx = 0, dy = 0;

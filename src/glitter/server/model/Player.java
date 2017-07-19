@@ -284,6 +284,7 @@ public class Player extends Entity {
     } else if (command.equals("cast")) {
       Spells.cast(this, json);
     } else if (command.equals("interact")) {
+      checkState(!isStunned());
       long entityId = json.getLong("entityId");
       interact(entityId);
     } else if (command.equals("choose")) {
@@ -389,6 +390,10 @@ public class Player extends Entity {
         .with("manaRegen", getStat(Stat.MANA_REGEN))
         .with("speed", getMovementSpeed())
         .with("luck", getStat(Stat.LUCK));
+  }
+
+  public boolean isStunned() {
+    return statusEffects.containsKey("Stunned");
   }
 
   @Override

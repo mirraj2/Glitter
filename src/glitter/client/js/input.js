@@ -20,7 +20,7 @@ function Input(spells) {
 }
 
 Input.prototype.interact = function() {
-  if (this.interactionEntity) {
+  if (this.interactionEntity && !me.stunned) {
     network.send({
       command : "interact",
       entityId : this.interactionEntity.id

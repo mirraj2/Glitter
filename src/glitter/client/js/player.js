@@ -1,13 +1,10 @@
 function Player(data) {
   this.id = data.id;
-  this.x = data.x;
-  this.y = data.y;
 
   this.acceptStats(data.stats);
 
   this.width = 48;
   this.height = 64;
-  this.sprite = null;
   this.hitbox = new PIXI.Rectangle(12, 48, 24, 16);
   this.alive = true;
   this.stunned = false;
@@ -17,6 +14,25 @@ function Player(data) {
   this.keys = {};
 
   this.statusEffects = {};
+
+  var texture = PIXI.loader.resources["wizard.png"].texture;
+  this.sprite = new PIXI.Sprite(texture);
+
+  var stunSprite = this.stunSprite = new PIXI.Sprite(PIXI.loader.resources["stun.png"].texture);
+  var scale = .8;
+  stunSprite.scale.set(scale, scale);
+  stunSprite.alpha = .7;
+  stunSprite.x = this.width / 2;
+  stunSprite.pivot.set(stunSprite.width / 2 / scale, stunSprite.height / 2 / scale);
+  stunSprite.visible = false;
+  this.sprite.addChild(stunSprite);
+
+  this.setX(data.x);
+  this.setY(data.y);
+}
+
+Player.prototype.update = function(millis) {
+  this.stunSprite.rotation = (this.stunSprite.rotation + millis / 150) % (2 * Math.PI);
 }
 
 Player.prototype.addStatusEffect = function(msg) {
@@ -33,6 +49,7 @@ Player.prototype.addStatusEffect = function(msg) {
     this.statusEffects[name] = emitter;
   } else if (name == "Stunned") {
     this.stunned = true;
+    this.stunSprite.visible = true;
   }
 }
 
@@ -40,6 +57,7 @@ Player.prototype.removeStatusEffect = function(msg) {
   var name = msg.name;
   if (name == "Stunned") {
     this.stunned = false;
+    this.stunSprite.visible = false;
   } else {
     var effect = this.statusEffects[name];
     if (effect != null) {

@@ -34,6 +34,10 @@ World.prototype.update = function(millis) {
     }
   });
 
+  Object.values(this.idPlayers).forEach(function(player) {
+    player.update(millis);
+  });
+
   for (var i = 0; i < idsToDelete.length; i++) {
     var id = idsToDelete[i];
     delete this.idEntities[id];
@@ -74,15 +78,9 @@ World.prototype.addPlayer = function(player) {
   checkNotNull(player.id);
   this.idPlayers[player.id] = player;
 
-  var texture = PIXI.loader.resources["wizard.png"].texture;
-  var sprite = new PIXI.Sprite(texture);
-  sprite.displayGroup = this.entityDisplayGroup;
+  player.sprite.displayGroup = this.entityDisplayGroup;
 
-  player.sprite = sprite;
-  sprite.x = player.x;
-  sprite.y = player.y;
-
-  this.players.addChild(sprite);
+  this.players.addChild(player.sprite);
 
   $(".numPlayers .count").text(Object.keys(this.idPlayers).length);
 }

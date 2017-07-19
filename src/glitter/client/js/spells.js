@@ -19,6 +19,10 @@ Spells.prototype.castEffects = function(msg) {
  * Called when we cast a spell.
  */
 Spells.prototype.cast = function(spell, toX, toY) {
+  if (window.me.stunned) {
+    return;
+  }
+
   if (me.mana < spell.manaCost) {
     return;
   }
