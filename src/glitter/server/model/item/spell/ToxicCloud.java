@@ -7,7 +7,7 @@ import glitter.server.model.Entity;
 import glitter.server.model.Player;
 import glitter.server.model.Player.Stat;
 import glitter.server.model.Projectile;
-import glitter.server.model.StatusEffect;
+import glitter.server.model.status.StatusEffect;
 import ox.Json;
 import ox.Log;
 
@@ -131,9 +131,9 @@ public class ToxicCloud extends Spell {
     }
 
     @Override
-    public void refresh() {
-      tickIndex = 0;
-      super.refresh();
+    public void merge(StatusEffect other) {
+      super.merge(other);
+      this.tickIndex = 0;
     }
 
   }

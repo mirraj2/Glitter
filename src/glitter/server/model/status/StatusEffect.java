@@ -1,5 +1,6 @@
-package glitter.server.model;
+package glitter.server.model.status;
 
+import glitter.server.model.Player;
 import glitter.server.model.Player.Stat;
 
 /**
@@ -41,10 +42,10 @@ public abstract class StatusEffect {
   }
 
   /**
-   * Refreshes this effect, resetting the time left.
+   * Merges these two status effects together.
    */
-  public void refresh() {
-    this.millisLeft = durationMillis;
+  public void merge(StatusEffect other) {
+    this.millisLeft = Math.max(this.millisLeft, other.durationMillis);
   }
 
   /**

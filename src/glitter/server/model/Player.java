@@ -23,6 +23,7 @@ import glitter.server.gen.world.Point;
 import glitter.server.logic.PlayerMovement;
 import glitter.server.logic.Spells;
 import glitter.server.model.item.Item;
+import glitter.server.model.status.StatusEffect;
 import ox.Json;
 import ox.Log;
 
@@ -92,7 +93,7 @@ public class Player extends Entity {
     Collection<StatusEffect> currentEffects = statusEffects.get(effect.name);
     if (currentEffects.size() >= effect.getMaxStacks()) {
       // Because we've reached the maximum stacks, just refresh the last effect we already have
-      last(currentEffects).refresh();
+      last(currentEffects).merge(effect);
     } else {
       currentEffects.add(effect);
       effect.onStart(this);

@@ -44,7 +44,8 @@ Spells.prototype.cast = function(spell, toX, toY) {
   }
 
   console.log("Casting " + spell.name);
-  var projectiles = this[spell.name.toLowerCase().replace(" ", "_")](me, spell, locs);
+  var name = spell.name.toLowerCase().replace(/ /g, "_");
+  var projectiles = this[name](me, spell, locs);
 
   if (projectiles === null) {
     return;
@@ -76,7 +77,7 @@ Spells.prototype.cast = function(spell, toX, toY) {
 Spells.prototype.onCast = function(json) {
   var spell = json.spell;
   var player = world.idPlayers[json.casterId];
-  var projectiles = this[spell.name.toLowerCase().replace(" ", "_")](player, spell, json.locs);
+  var projectiles = this[spell.name.toLowerCase().replace(/ /g, "_")](player, spell, json.locs, json.latency);
 
   for (var i = 0; i < projectiles.length; i++) {
     var id = json.entityIds[i];
@@ -85,12 +86,14 @@ Spells.prototype.onCast = function(json) {
     world.idEntities[id] = e;
   }
 
-  console.log("Applying " + json.latency + "ms of latency compensation.");
-  while (json.latency > 0) {
-    var millis = Math.min(json.latency, 30);
-    json.latency -= millis;
-    for (var i = 0; i < projectiles.length; i++) {
-      projectiles[i].update(millis);
+  if (projectiles.length) {
+    console.log("Applying " + json.latency + "ms of latency compensation.");
+    while (json.latency > 0) {
+      var millis = Math.min(json.latency, 30);
+      json.latency -= millis;
+      for (var i = 0; i < projectiles.length; i++) {
+        projectiles[i].update(millis);
+      }
     }
   }
 }
@@ -138,16 +141,23 @@ Spells.prototype.frostbolt = function(player, spell, locs) {
 }
 
 Spells.prototype.heal = function(player, spell, locs) {
-  var targets = world.getPlayersAt(locs.toX, locs.toY).filter(function(player) {
-    return player == me; // TODO, allow heal on friendly players as well
-  });
+  if (locs.targetId == null) {
+    var targets = world.getPlayersAt(locs.toX, locs.toY).filter(function(player) {
+      return player == me; // TODO, allow heal on friendly players as well
+    });
 
-  if (targets.length == 0) {
-    console.log("Not a valid heal target.");
-    return null;
+    if (targets.length == 0) {
+      console.log("Not a valid heal target.");
+      return null;
+    }
+
+    locs.targetId = targets[0].id;
+
+    if (!this.isInRange(player, targets[0], spell.range)) {
+      showError("Out of range!");
+      return null;
+    }
   }
-
-  locs.targetId = targets[0].id;
 
   return [];
 }
@@ -162,10 +172,10 @@ Spells.prototype.toxic_cloud = function(player, spell, locs) {
       console.log("Not a valid target.");
       return null;
     }
-    
+
     locs.targetId = targets[0].id;
-    
-    if(!this.isInRange(player, targets[0], spell.range)){
+
+    if (!this.isInRange(player, targets[0], spell.range)) {
       showError("Out of range!");
       return null;
     }
@@ -182,9 +192,45 @@ Spells.prototype.toxic_cloud = function(player, spell, locs) {
   return [ projectile ];
 }
 
+Spells.prototype.pillar_of_flame = function(player, spell, locs, latency) {
+  var self = this;
+
+  if (player == me) {
+    var dx = locs.fromX - locs.toX;
+    var dy = locs.fromY - locs.toY;
+    var range = spell.range * Tile.SIZE;
+    if (dx * dx + dy * dy > range * range) {
+      // normalize it
+      locs.toX = locs.fromX + locs.dx * range;
+      locs.toY = locs.fromY + locs.dy * range;
+
+    }
+  }
+
+  var emitter = this.particleSystem.createAndRegister(self.container, "pillarOfFlameBase");
+  emitter.position(locs.toX, locs.toY);
+
+  var timeTilPillar = spell.delay * 1000;
+
+  if (latency) {
+    console.log("applying " + latency + " ms of latency compensation.");
+    timeTilPillar -= latency;
+  }
+
+  setTimeout(function() {
+    emitter.finishUp();
+    emitter.update(1000);
+
+    var emitter2 = this.particleSystem.createAndRegister(self.container, "pillarOfFlame");
+    emitter2.position(locs.toX, locs.toY);
+  }, timeTilPillar);
+
+  return [];
+}
+
 Spells.prototype.isInRange = function(a, b, range) {
   range *= Tile.SIZE;
-  var dx = a.x - b.x;
-  var dy = a.y - b.y;
+  var dx = a.centerX() - b.centerX();
+  var dy = a.centerY() - b.centerY();
   return dx * dx + dy * dy < range * range;
 }

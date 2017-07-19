@@ -19,7 +19,7 @@ public class Spells {
     List<Entity> entities = spell.cast(p, json.getJson("locs"));
     Json entityIds = Json.array(entities, e -> e.id);
 
-    if (!entities.isEmpty()) {
+    if (!entities.isEmpty() && json.hasKey("tempIds")) {
       Json castEffects = Json.object()
           .with("command", "castEffects");
 

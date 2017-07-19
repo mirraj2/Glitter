@@ -9,12 +9,16 @@ public class GRandom extends Random {
 
   private static final SecureRandom secureRandom = new SecureRandom();
 
+  public final long seed;
+
   public GRandom() {
     this(secureRandom.nextLong());
   }
 
   public GRandom(long seed) {
     super(seed);
+
+    this.seed = seed;
   }
 
   public double gauss() {

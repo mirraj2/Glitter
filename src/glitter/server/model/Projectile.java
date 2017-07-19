@@ -1,6 +1,7 @@
 package glitter.server.model;
 
 import java.util.function.Predicate;
+import glitter.server.arch.GMath;
 import glitter.server.arch.Rect;
 
 public class Projectile extends Entity {
@@ -60,16 +61,7 @@ public class Projectile extends Entity {
   }
 
   private boolean intersects(Rect r) {
-    double cx = this.bounds.centerX();
-    double cy = this.bounds.centerY();
-    
-    double closestX = cx < r.x ? r.x : (cx > r.maxX() ? r.maxX() : cx);
-    double closestY = cy < r.y ? r.y : (cy > r.maxY() ? r.maxY() : cy);
-
-    double dx = closestX - cx;
-    double dy = closestY - cy;
-
-    return (dx * dx + dy * dy) <= radius * radius;
+    return GMath.intersects(this.bounds.centerX(), this.bounds.centerY(), this.radius, r);
   }
 
   public Projectile velocity(double vx, double vy) {

@@ -24,6 +24,8 @@ public class WorldGen {
   private final BridgeBuilder bridgeBuilder = new BridgeBuilder(rand, threshold);
 
   private World generate(int minTiles) {
+    Log.info("Using random with seed: " + rand.seed);
+
     Log.info("Generating terrain (%d tiles)", minTiles);
 
     Islands islands = islandFinder.findIslands(minTiles);

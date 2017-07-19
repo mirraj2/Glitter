@@ -9,7 +9,6 @@ function Input(spells) {
   // whether the user has pressed any keys since the last update
   this.dirty = false;
   this.interactionEntity = null;
-  this.allowMovement = true;
   this.consoleVisible = false;
   this.inventoryVisible = false;
 
@@ -18,12 +17,6 @@ function Input(spells) {
   this.buf = {};
 
   glitter.register(this);
-}
-
-Input.prototype.haltMovement = function() {
-  this.allowMovement = false;
-  me.keys = {};
-  this.sendMyState();
 }
 
 Input.prototype.interact = function() {
@@ -58,12 +51,12 @@ Input.prototype.update = function(t) {
     return;
   }
 
-  if (this.dirty && this.allowMovement) {
+  if (this.dirty) {
     self.sendMyState();
   }
 
   $.each(world.idPlayers, function(id, player) {
-    if (player.alive && (self.allowMovement || player != window.me)) {
+    if (player.alive && !player.stunned) {
       self.movePlayer(player, t);
     }
   });

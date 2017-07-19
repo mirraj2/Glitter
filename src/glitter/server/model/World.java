@@ -1,7 +1,6 @@
 package glitter.server.model;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static ox.util.Utils.random;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -9,6 +8,7 @@ import java.util.Map;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import glitter.server.arch.GMath;
 import glitter.server.arch.GRandom;
 import glitter.server.logic.LootMaster;
 import glitter.server.model.item.Item;
@@ -37,6 +37,12 @@ public class World {
 
   public Iterable<Player> getAlivePlayers() {
     return Iterables.filter(this.players, p -> p.alive);
+  }
+
+  public Iterable<Player> getPlayersInCircle(double x, double y, double radius) {
+    return Iterables.filter(getAlivePlayers(), p -> {
+      return GMath.intersects(x, y, radius, p.bounds);
+    });
   }
 
   public void start() {
@@ -135,8 +141,8 @@ public class World {
 
   private void spawnInRandomLocation(Player player) {
     while (true) {
-      int i = random(terrain.width);
-      int j = random(terrain.height);
+      int i = rand.random(terrain.width);
+      int j = rand.random(terrain.height);
       if (terrain.tiles[i][j].isWalkable()) {
         player.moveToTile(i, j);
         if (!player.movement.isCollision(player.getCollisionRect())) {

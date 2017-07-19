@@ -13,7 +13,6 @@ function LootChooser() {
     });
     self.closing = true;
     $(".loot-chooser").fadeOut();
-    window.input.allowMovement = true;
 
     window.inventory.add(item);
 
@@ -32,6 +31,4 @@ LootChooser.prototype.show = function(choices) {
   panel.closest(".loot-chooser").fadeIn();
 
   this.closing = false;
-
-  window.input.haltMovement();
 }

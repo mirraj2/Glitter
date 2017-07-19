@@ -10,6 +10,7 @@ function Player(data) {
   this.sprite = null;
   this.hitbox = new PIXI.Rectangle(12, 48, 24, 16);
   this.alive = true;
+  this.stunned = false;
   this.flying = false;
 
   // the keys this player has pressed down
@@ -26,15 +27,25 @@ Player.prototype.addStatusEffect = function(msg) {
     emitter.callback = function() {
       emitter.position(self.centerX(), self.centerY());
     }
+    emitter.onEnd = function() {
+      this.finishUp();
+    };
     this.statusEffects[name] = emitter;
+  } else if (name == "Stunned") {
+    this.stunned = true;
   }
 }
 
 Player.prototype.removeStatusEffect = function(msg) {
-  var effect = this.statusEffects[msg.name];
-  if (effect != null) {
-    delete this.statusEffects[msg.name];
-    effect.finishUp();
+  var name = msg.name;
+  if (name == "Stunned") {
+    this.stunned = false;
+  } else {
+    var effect = this.statusEffects[name];
+    if (effect != null) {
+      delete this.statusEffects[name];
+      effect.onEnd();
+    }
   }
 }
 

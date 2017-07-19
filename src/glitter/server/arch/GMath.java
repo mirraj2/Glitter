@@ -26,5 +26,15 @@ public class GMath {
     return xDiff * xDiff + yDiff * yDiff;
   }
 
+  public static boolean intersects(double circleX, double circleY, double circleRadius, Rect rect) {
+    double closestX = circleX < rect.x ? rect.x : (circleX > rect.maxX() ? rect.maxX() : circleX);
+    double closestY = circleY < rect.y ? rect.y : (circleY > rect.maxY() ? rect.maxY() : circleY);
+
+    double dx = closestX - circleX;
+    double dy = closestY - circleY;
+
+    return (dx * dx + dy * dy) <= circleRadius * circleRadius;
+  }
+
 
 }
