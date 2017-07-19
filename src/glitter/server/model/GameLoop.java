@@ -9,7 +9,15 @@ public class GameLoop {
 
   private static final Executor executor = Executors.newCachedThreadPool();
 
+  private final Consumer<Double> callback;
+  private boolean running = false;
+
   public GameLoop(Consumer<Double> callback) {
+    this.callback = callback;
+  }
+
+  public void start() {
+    running = true;
     executor.execute(() -> {
       try {
         run(callback);
@@ -19,13 +27,17 @@ public class GameLoop {
     });
   }
 
+  public void stop() {
+    running = false;
+  }
+
   private void run(Consumer<Double> callback) {
     long lastFPSUpdate = System.nanoTime();
     long MAX_UPDATE_TIME = 100;
     double t = 10;
     double timeSpentOnUpdate = 0;
     int numFrames = 0;
-    while (true) {
+    while (running) {
       long now = System.nanoTime();
 
       double timeLeft = t;

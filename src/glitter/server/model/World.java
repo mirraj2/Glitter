@@ -26,8 +26,11 @@ public class World {
   public Collection<Player> players = Lists.newCopyOnWriteArrayList();
   public final Map<Long, Entity> idEntities = Maps.newConcurrentMap();
   public final AdminConsole console = new AdminConsole(this);
-
   private final List<Long> entitiesToRemove = Lists.newArrayList();
+  private final GameLoop loop = new GameLoop(this::update);
+
+  public Runnable onDeathCallback = () -> {
+  };
 
   public World(GRandom rand, Terrain terrain) {
     this.rand = rand;
@@ -51,7 +54,7 @@ public class World {
 
     if (config.getBoolean("startWithLoot", false)) {
       for (Player player : getAlivePlayers()) {
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 25; i++) {
           List<Item> items = lootMaster.generateChoices(player);
           Collections.sort(items, (a, b) -> b.rarity.compareTo(a.rarity));
           player.gift(items.get(0));
@@ -59,7 +62,7 @@ public class World {
       }
     }
 
-    new GameLoop(this::update);
+    loop.start();
   }
 
   private void update(double millis) {
@@ -173,6 +176,10 @@ public class World {
     return Json.object()
         .with("terrain", terrain.toJson())
         .with("chests", Json.array(Iterables.filter(idEntities.values(), TreasureChest.class), Entity::toJson));
+  }
+
+  public void destroy() {
+    loop.stop();
   }
 
 }

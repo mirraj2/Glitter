@@ -135,6 +135,8 @@ public class Player extends Entity {
 
     world.sendToAll(itemExplosion);
     inventory.idItemMap.clear();
+
+    world.onDeathCallback.run();
   }
 
   private void traceProjectile(Point p, double dx, double dy, double maxDistance) {
