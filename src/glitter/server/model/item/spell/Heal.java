@@ -12,7 +12,7 @@ public class Heal extends Spell {
   private final int minHeal, maxHeal;
 
   // the number of tiles the projectile will travel
-  public final double range = 50;
+  public final double range = 5;
 
   public Heal() {
     super("Heal");

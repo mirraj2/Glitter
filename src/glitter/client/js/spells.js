@@ -162,17 +162,29 @@ Spells.prototype.toxic_cloud = function(player, spell, locs) {
       console.log("Not a valid target.");
       return null;
     }
-
+    
     locs.targetId = targets[0].id;
+    
+    if(!this.isInRange(player, targets[0], spell.range)){
+      showError("Out of range!");
+      return null;
+    }
   }
 
   var target = world.idPlayers[locs.targetId];
 
   var emitter = this.particleSystem.createEmitter(this.container, "toxicCloudProjectile");
   emitter.position(player.centerX(), player.centerY());
-  
+
   var projectile = new Projectile(emitter);
   projectile.homeInOn(target, spell.speed);
 
   return [ projectile ];
+}
+
+Spells.prototype.isInRange = function(a, b, range) {
+  range *= Tile.SIZE;
+  var dx = a.x - b.x;
+  var dy = a.y - b.y;
+  return dx * dx + dy * dy < range * range;
 }

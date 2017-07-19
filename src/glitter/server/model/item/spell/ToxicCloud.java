@@ -20,6 +20,8 @@ public class ToxicCloud extends Spell {
 
   public final int duration = 5;
 
+  public final int range = 6;
+
   public ToxicCloud() {
     super("Toxic Cloud");
 
@@ -61,7 +63,8 @@ public class ToxicCloud extends Spell {
   public Json toJson() {
     return super.toJson()
         .with("speed", speed)
-        .with("duration", duration);
+        .with("duration", duration)
+        .with("range", range);
   }
 
   public static class Poison extends StatusEffect {

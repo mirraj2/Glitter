@@ -23,6 +23,7 @@ Glitter.prototype.initGame = function() {
   window.quickbar = new Quickbar();
   window.inventory = new Inventory(quickbar);
   window.input = new Input(spells);
+  window.castIndicator = new CastIndicator();
 
   new GameLoop(canvas);
 

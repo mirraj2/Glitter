@@ -2,7 +2,7 @@ function Emitter(config, parent) {
   this.parent = checkNotNull(parent);
 
   var container = this.container = new PIXI.Container();
-  container.displayGroup = new PIXI.DisplayGroup(1);
+  container.displayGroup = new PIXI.DisplayGroup(7);
   container.displayFlag = PIXI.DISPLAY_FLAG.MANUAL_CONTAINER;
   parent.addChild(container);
 

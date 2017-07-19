@@ -9,7 +9,7 @@ function World() {
 
   canvas.stage.displayList = new PIXI.DisplayList();
 
-  this.entityDisplayGroup = new PIXI.DisplayGroup(1, true);
+  this.entityDisplayGroup = new PIXI.DisplayGroup(5, true);
   this.entityDisplayGroup.on("add", function(sprite) {
     sprite.zOrder = -(sprite.y + sprite.height);
   });
