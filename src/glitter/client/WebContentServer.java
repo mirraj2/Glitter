@@ -22,6 +22,7 @@ public class WebContentServer {
 
     WebServer server = new WebServer("Glitter", port, devMode)
         .controller(new HomePage())
+        .controller(new WorldData())
         .controller(new PerlinPage())
         .controller(new ParticleEditor())
         .controller(new JSController());

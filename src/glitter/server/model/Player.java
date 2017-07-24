@@ -56,6 +56,8 @@ public class Player extends Entity {
 
   public boolean alive = true;
 
+  public boolean connected = true;
+
   private long lastPingRequestTime = 0;
   public double latency = 0;
 
@@ -83,6 +85,10 @@ public class Player extends Entity {
     this.socket = socket;
 
     socket.onMessage(this::handleMessage);
+    socket.onClose(() -> {
+      connected = false;
+      world.onDisconnectCallback.accept(this);
+    });
   }
 
   public void addStatusEffect(StatusEffect effect) {
@@ -337,7 +343,8 @@ public class Player extends Entity {
       }
       socket.send(array);
     } catch (Exception e) {
-      if ("Broken pipe".equals(Throwables.getRootCause(e).getMessage())) {
+      String s = Throwables.getRootCause(e).getMessage();
+      if (s != null && s.contains("Broken pipe")) {
         // ignore
       } else {
         e.printStackTrace();

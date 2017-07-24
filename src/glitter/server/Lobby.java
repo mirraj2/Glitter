@@ -56,8 +56,11 @@ public class Lobby {
     Log.info("Starting a new game!");
 
     List<Player> players = ImmutableList.copyOf(((SwappingQueue<Player>) world.players).swap());
-    for (Player player : players) {
-      world.idEntities.remove(player.id);
+
+    synchronized (world) {
+      for (Player player : players) {
+        world.idEntities.remove(player.id);
+      }
     }
 
     nextGameStartTime = null;
@@ -79,9 +82,6 @@ public class Lobby {
   public void accept(ClientSocket socket) {
     Player player = new Player(socket);
     world.addPlayer(player);
-    socket.onClose(() -> {
-      world.removePlayer(player);
-    });
 
     if (nextGameStartTime == null) {
       if (world.players.size() >= MIN_PLAYERS) {
@@ -126,6 +126,11 @@ public class Lobby {
 
     World world = new World(new GRandom(), t);
     world.players = new SwappingQueue<>();
+
+    world.onDisconnectCallback = p -> {
+      world.removePlayer(p);
+    };
+
     return world;
   }
 

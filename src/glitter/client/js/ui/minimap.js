@@ -3,7 +3,7 @@ function MiniMap() {
 
   this.container = new PIXI.Container();
   this.container.displayGroup = new PIXI.DisplayGroup(10);
-  this.tiles = new PIXI.Container();
+  this.tiles = new PIXI.Graphics();
   this.width = 170;
   this.height = 170;
 
@@ -51,32 +51,24 @@ MiniMap.prototype.update = function() {
   }
 }
 
-MiniMap.prototype.renderMap = function() {
-  this.tiles.removeChildren();
-
-  var sheet = PIXI.loader.resources["tiles.png"].texture;
-
-  var textures = [];
-  for (var i = 0; i < 5; i++) {
-    var texture = new PIXI.Texture(sheet.baseTexture);
-    texture.frame = new PIXI.Rectangle(Tile.SIZE * i, 0, Tile.SIZE, Tile.SIZE);
-    textures.push(texture);
-  }
-
+MiniMap.prototype.onEnterWorld = function(world) {
   var tiles = world.terrain.tiles;
-  var tileSize = 1;
+
+  this.tiles.clear();
   for (var i = 0; i < tiles.length; i++) {
     var col = tiles[i];
     for (var j = 0; j < col.length; j++) {
-      var t = tiles[i][j];
+      var t = col[j];
       if (t > 0) {
-        var texture = textures[t];
-        var tile = new PIXI.Sprite(texture);
-        tile.x = i * tileSize;
-        tile.y = j * tileSize;
-        tile.width = tileSize;
-        tile.height = tileSize;
-        this.tiles.addChild(tile);
+        if (t == Tile.GRASS) {
+          this.tiles.beginFill(0x431D01, 1);
+        } else if (t == Tile.BRIDGE) {
+          this.tiles.beginFill(0x514F4A, 1);
+        } else {
+          this.tiles.beginFill(0xFFFFFF, 1);
+        }
+        this.tiles.drawRect(i, j, 1, 1);
+        this.tiles.endFill();
       }
     }
   }

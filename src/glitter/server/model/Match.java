@@ -1,5 +1,6 @@
 package glitter.server.model;
 
+import static com.google.common.collect.Iterables.filter;
 import static ox.util.Utils.only;
 import java.util.List;
 import com.google.common.collect.ImmutableList;
@@ -19,8 +20,18 @@ public class Match {
     }
 
     this.world.onDeathCallback = this::onDeath;
+    this.world.onDisconnectCallback = this::onDisconnect;
 
     this.world.start();
+  }
+
+  private void onDisconnect(Player player) {
+    ImmutableList<Player> connectedPlayers = ImmutableList.copyOf(filter(world.getAlivePlayers(), p -> p.connected));
+
+    if (connectedPlayers.isEmpty()) {
+      Log.info("All players disconnected, ending match.");
+      world.destroy();
+    }
   }
 
   private void onDeath() {

@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -20,6 +22,11 @@ public class World {
 
   private static final Config config = Config.load("glitter");
 
+  private static final AtomicLong idCounter = new AtomicLong();
+
+  public static final Map<Long, World> idWorlds = Maps.newConcurrentMap();
+
+  public final long id = idCounter.getAndIncrement();
   public final GRandom rand;
   public final Terrain terrain;
   public final LootMaster lootMaster;
@@ -32,10 +39,14 @@ public class World {
   public Runnable onDeathCallback = () -> {
   };
 
+  public Consumer<Player> onDisconnectCallback = player -> {
+  };
+
   public World(GRandom rand, Terrain terrain) {
     this.rand = rand;
     this.terrain = terrain;
     this.lootMaster = new LootMaster(rand);
+    idWorlds.put(this.id, this);
   }
 
   public Iterable<Player> getAlivePlayers() {
@@ -65,7 +76,11 @@ public class World {
     loop.start();
   }
 
-  private void update(double millis) {
+  /**
+   * The lobby takes advantage of the fact that this is synchronized in order to remove players outside of an iteration
+   * of the game loop.
+   */
+  private synchronized void update(double millis) {
     for (Entity e : idEntities.values()) {
       if (!e.update(millis)) {
         entitiesToRemove.add(e.id);
@@ -89,6 +104,7 @@ public class World {
     spawnInRandomLocation(player);
 
     Log.debug("player connected. (%d players in world)", players.size());
+    Log.debug("Spawning player at " + player.bounds.x + ", " + player.bounds.y);
 
     player.send(Json.object()
         .with("command", "enterWorld")
@@ -174,12 +190,14 @@ public class World {
 
   public Json toJson() {
     return Json.object()
+        .with("id", id)
         .with("terrain", terrain.toJson())
         .with("chests", Json.array(Iterables.filter(idEntities.values(), TreasureChest.class), Entity::toJson));
   }
 
   public void destroy() {
     loop.stop();
+    idWorlds.remove(this.id);
   }
 
 }

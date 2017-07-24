@@ -72,7 +72,7 @@ Network.prototype.handleMessage = function(msg) {
     world.terrain = new Terrain(msg.world.terrain);
     world.renderTiles();
     world.setChests(msg.world.chests);
-    minimap.renderMap();
+    minimap.onEnterWorld(msg.world);
     window.me = null;
   } else if (command == "addPlayer") {
     world.addPlayer(new Player(msg.player));
