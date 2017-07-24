@@ -19,8 +19,8 @@ public class Heal extends Spell {
 
     this.manaCost = 28;
 
-    this.minHeal = 25;
-    this.maxHeal = 50;
+    this.minHeal = 12;
+    this.maxHeal = 25;
     this.description = String.format("Heal yourself or an ally for %d to %d", minHeal, maxHeal);
   }
 

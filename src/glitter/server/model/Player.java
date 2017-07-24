@@ -73,7 +73,7 @@ public class Player extends Entity {
     this.stats.put(Stat.HEALTH, 100.0);
     this.stats.put(Stat.MANA, 100.0);
     this.stats.put(Stat.HEALTH_REGEN, 1.0);
-    this.stats.put(Stat.MANA_REGEN, 5.0);
+    this.stats.put(Stat.MANA_REGEN, 10.0);
     this.stats.put(Stat.MOVEMENT, 0.0);
     this.stats.put(Stat.LUCK, 0.0);
 
