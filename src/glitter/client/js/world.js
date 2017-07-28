@@ -47,10 +47,10 @@ World.prototype.update = function(millis) {
 World.prototype.setChests = function(chests) {
   var self = this;
 
-  var sheet = PIXI.loader.resources["tiles.png"].texture;
+  var texture = PIXI.Texture.fromImage("/treasure-chest.png");
 
-  var texture = new PIXI.Texture(sheet.baseTexture);
-  texture.frame = new PIXI.Rectangle(Tile.SIZE * 5, 0, Tile.SIZE, Tile.SIZE);
+  // var texture = new PIXI.Texture(sheet.baseTexture);
+  // texture.frame = new PIXI.Rectangle(Tile.SIZE * 5, 0, Tile.SIZE, Tile.SIZE);
 
   chests.forEach(function(chest) {
     chest.blocksWalking = true;

@@ -19,7 +19,7 @@ import com.google.common.collect.Sets;
 import bowser.websocket.ClientSocket;
 import glitter.server.arch.Rect;
 import glitter.server.arch.SwappingQueue;
-import glitter.server.gen.world.Point;
+import glitter.server.gen.Point;
 import glitter.server.logic.PlayerMovement;
 import glitter.server.logic.Spells;
 import glitter.server.model.item.Item;
@@ -57,6 +57,12 @@ public class Player extends Entity {
   public boolean alive = true;
 
   public boolean connected = true;
+
+  /**
+   * How long the player has been outside the forcefield. The player will take increased damage the longer they are
+   * caught outside.
+   */
+  public double millisOutsideForcefield = 0;
 
   private long lastPingRequestTime = 0;
   public double latency = 0;

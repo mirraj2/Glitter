@@ -1,4 +1,4 @@
-package glitter.server.gen.world;
+package glitter.server.gen;
 
 import java.util.Iterator;
 import java.util.List;

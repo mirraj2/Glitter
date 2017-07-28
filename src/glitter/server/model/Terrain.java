@@ -24,6 +24,13 @@ public class Terrain {
     this.height = tiles[0].length;
   }
 
+  public Tile get(int i, int j) {
+    if (i < 0 || j < 0 || i >= width || j >= height) {
+      return null;
+    }
+    return tiles[i][j];
+  }
+
   public List<TileLoc> getTilesIntersecting(Rect r, Predicate<TileLoc> filter) {
     int minI = Math.max(GMath.floor(r.x / Tile.SIZE), 0);
     int minJ = Math.max(GMath.floor(r.y / Tile.SIZE), 0);
@@ -56,11 +63,8 @@ public class Terrain {
   }
 
   public boolean isWalkable(int i, int j) {
-    if (i < 0 || j < 0 || i >= width || j >= height) {
-      return false;
-    }
-    Tile tile = tiles[i][j];
-    return tile.isWalkable();
+    Tile tile = get(i, j);
+    return tile != null && tile.isWalkable();
   }
 
   private Json serializeTiles() {

@@ -55,12 +55,10 @@ public class Forcefield {
     for (Player player : world.getAlivePlayers()) {
       double d = GMath.distSquared(player.bounds.centerX(), player.bounds.centerY(), x, y);
       if (d > radius * radius) {
-        double distanceFromBorder = Math.sqrt(d) - radius;
-        double damagePercent = distanceFromBorder / Tile.SIZE / 500.0;
-        if (radius < Tile.SIZE) {
-          damagePercent *= 10;
-          damagePercent = Math.min(damagePercent, .25);
-        }
+        player.millisOutsideForcefield += 1000;
+
+        // every 3 seconds spent outside the forcefield increases the damage per tick by 1% max health
+        double damagePercent = .01 + player.millisOutsideForcefield / 1000 / 100 / 3;
         double damage = damagePercent * player.getMaxHealth();
 
         player.health = Math.max(0, player.health - damage);
@@ -77,6 +75,8 @@ public class Forcefield {
         if (!player.alive) {
           player.onDeath();
         }
+      } else {
+        player.millisOutsideForcefield = 0;
       }
     }
   }

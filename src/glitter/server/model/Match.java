@@ -4,7 +4,7 @@ import static com.google.common.collect.Iterables.filter;
 import static ox.util.Utils.only;
 import java.util.List;
 import com.google.common.collect.ImmutableList;
-import glitter.server.gen.world.WorldGen;
+import glitter.server.gen.WorldGen;
 import ox.Log;
 
 public class Match {

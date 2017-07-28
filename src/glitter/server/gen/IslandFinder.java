@@ -1,4 +1,4 @@
-package glitter.server.gen.world;
+package glitter.server.gen;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static ox.util.Utils.propagate;
@@ -8,9 +8,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Sets;
 import glitter.server.arch.GRandom;
-import glitter.server.gen.world.Traversals.TState;
-import glitter.server.gen.world.perlin.ContinentsAndIslands;
-import glitter.server.gen.world.perlin.NoiseFunction;
+import glitter.server.gen.Traversals.TState;
+import glitter.server.gen.perlin.ContinentsAndIslands;
+import glitter.server.gen.perlin.NoiseFunction;
 import ox.Log;
 
 /**

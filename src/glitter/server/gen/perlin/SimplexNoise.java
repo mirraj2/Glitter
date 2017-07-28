@@ -1,4 +1,4 @@
-package glitter.server.gen.world.perlin;
+package glitter.server.gen.perlin;
 
 /*
  * A speed-improved simplex noise algorithm for 2D, 3D and 4D in Java.

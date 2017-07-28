@@ -2,7 +2,7 @@ package glitter.server.model;
 
 public enum Tile {
 
-  VOID, GRASS, BRIDGE, WATER, LAVA;
+  VOID, GRASS, BRIDGE, WATER, LAVA, WALL;
 
   public static final int SIZE = 48;
 

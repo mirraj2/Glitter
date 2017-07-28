@@ -1,4 +1,4 @@
-package glitter.server.gen.world.perlin;
+package glitter.server.gen.perlin;
 
 public abstract class NoiseFunction {
 

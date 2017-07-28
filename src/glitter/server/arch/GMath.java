@@ -1,6 +1,6 @@
 package glitter.server.arch;
 
-import glitter.server.gen.world.Point;
+import glitter.server.gen.Point;
 
 public class GMath {
 

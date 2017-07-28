@@ -7,9 +7,9 @@ import com.google.common.collect.Lists;
 import bowser.Controller;
 import bowser.Handler;
 import bowser.template.Data;
-import glitter.server.gen.world.perlin.BinaryColoring;
-import glitter.server.gen.world.perlin.ColoringFunction;
-import glitter.server.gen.world.perlin.ContinentsAndIslands;
+import glitter.server.gen.perlin.BinaryColoring;
+import glitter.server.gen.perlin.ColoringFunction;
+import glitter.server.gen.perlin.ContinentsAndIslands;
 import ox.IO;
 
 public class PerlinPage extends Controller {

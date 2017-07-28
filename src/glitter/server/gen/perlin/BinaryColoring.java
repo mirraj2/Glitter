@@ -1,4 +1,4 @@
-package glitter.server.gen.world.perlin;
+package glitter.server.gen.perlin;
 
 import java.awt.Color;
 

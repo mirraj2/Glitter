@@ -55,7 +55,7 @@ MiniMap.prototype.update = function() {
   if (forcefield.isActive()) {
     var g = this.forcefield;
     g.clear();
-    g.beginFill(0x444444, 1);
+    g.beginFill(0x444444, .5);
     var x = forcefield.x / Tile.SIZE;
     var y = forcefield.y / Tile.SIZE;
     var r = forcefield.radius / Tile.SIZE;
