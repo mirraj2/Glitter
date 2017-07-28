@@ -8,10 +8,12 @@ function MiniMap() {
   this.height = 170;
 
   var background = new PIXI.Graphics();
-  background.lineStyle(2, 0xFFFFFF, .8);
-  background.beginFill(0x444444, .8);
-  background.drawCircle(this.width / 2, this.height / 2, this.width / 2);
+  background.lineStyle(1, 0xFFFFFF, .8);
+  background.beginFill(0x000000, 1);
+  background.drawRect(0, 0, this.width, this.height);
   background.endFill();
+
+  this.forcefield = new PIXI.Graphics();
 
   var redDot = new PIXI.Graphics();
   redDot.beginFill(0xFF0000, 1);
@@ -19,14 +21,15 @@ function MiniMap() {
   redDot.endFill();
 
   var mask = new PIXI.Graphics();
-  mask.lineStyle(1, 0xFFFFFF, 1);
+  // mask.lineStyle(1, 0xFFFFFF, 1);
   mask.beginFill(0x444444, 1);
-  mask.drawCircle(this.width / 2, this.height / 2, this.width / 2);
+  mask.drawRect(0, 0, this.width, this.height);
   mask.endFill();
   this.container.addChild(mask);
-  this.tiles.mask = mask;
+  this.container.mask = mask;
 
   this.container.addChild(background);
+  this.container.addChild(this.forcefield);
   this.container.addChild(this.tiles);
   this.container.addChild(redDot);
   canvas.stage.addChild(this.container);
@@ -46,8 +49,18 @@ MiniMap.prototype.onResize = function() {
 
 MiniMap.prototype.update = function() {
   if (window.me) {
-    this.tiles.x = this.width / 2 - me.x / Tile.SIZE;
-    this.tiles.y = this.height / 2 - me.y / Tile.SIZE;
+    this.tiles.x = this.forcefield.x = Math.round(this.width / 2 - me.x / Tile.SIZE);
+    this.tiles.y = this.forcefield.y = Math.round(this.height / 2 - me.y / Tile.SIZE);
+  }
+  if (forcefield.isActive()) {
+    var g = this.forcefield;
+    g.clear();
+    g.beginFill(0x444444, 1);
+    var x = forcefield.x / Tile.SIZE;
+    var y = forcefield.y / Tile.SIZE;
+    var r = forcefield.radius / Tile.SIZE;
+    g.drawCircle(x, y, r);
+    g.endFill();
   }
 }
 

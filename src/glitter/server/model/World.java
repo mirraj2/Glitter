@@ -35,6 +35,7 @@ public class World {
   public final AdminConsole console = new AdminConsole(this);
   private final List<Long> entitiesToRemove = Lists.newArrayList();
   private final GameLoop loop = new GameLoop(this::update);
+  private final Forcefield forcefield;
 
   public Runnable onDeathCallback = () -> {
   };
@@ -42,10 +43,17 @@ public class World {
   public Consumer<Player> onDisconnectCallback = player -> {
   };
 
-  public World(GRandom rand, Terrain terrain) {
+  public World(GRandom rand, Terrain terrain, boolean enableForcefield) {
     this.rand = rand;
     this.terrain = terrain;
     this.lootMaster = new LootMaster(rand);
+
+    if (enableForcefield) {
+      this.forcefield = new Forcefield(this, this.rand, this.terrain);
+    } else {
+      this.forcefield = null;
+    }
+
     idWorlds.put(this.id, this);
   }
 
@@ -60,6 +68,10 @@ public class World {
   }
 
   public void start() {
+    if (forcefield != null) {
+      forcefield.moveToRandomLocation();
+    }
+
     this.sendToAll(Json.object()
         .with("command", "start"));
 
@@ -91,6 +103,10 @@ public class World {
     }
     entitiesToRemove.clear();
 
+    if (forcefield != null) {
+      forcefield.update(millis);
+    }
+
     for (Player player : players) {
       player.flushMessages();
     }
@@ -111,6 +127,7 @@ public class World {
         .with("world", this.toJson()));
 
     sendToAll(createAddPlayerJson(player));
+    Log.debug("DEBUG: player bounds are: " + player.bounds.x + ", " + player.bounds.y);
 
     player.send(Json.object()
         .with("command", "takeControl")

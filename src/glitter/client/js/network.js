@@ -82,6 +82,8 @@ Network.prototype.handleMessage = function(msg) {
     window.me = world.idPlayers[msg.id];
     $(".numPlayers").show();
     window.camera.onPlayerSpawned();
+  } else if (command == "forcefield") {
+    window.forcefield.updateBounds(msg.forcefield);
   } else if (command == "countdown") {
     if (msg.millisLeft == -1) {
       $(".countdown").fadeOut();

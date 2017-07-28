@@ -36,7 +36,7 @@ public class WorldGen {
 
     Tile[][] tiles = createTiles(islands);
     Terrain terrain = new Terrain(tiles);
-    World ret = new World(rand, terrain);
+    World ret = new World(rand, terrain, true);
 
     ret.addEntities(genTreasureChests(islands, terrain));
 

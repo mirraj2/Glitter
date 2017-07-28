@@ -124,7 +124,7 @@ public class Lobby {
     t.tiles[6][5] = Tile.VOID;
     t.tiles[4][6] = Tile.GRASS;
 
-    World world = new World(new GRandom(), t);
+    World world = new World(new GRandom(), t, false);
     world.players = new SwappingQueue<>();
 
     world.onDisconnectCallback = p -> {

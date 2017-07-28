@@ -13,6 +13,7 @@ Glitter.prototype.initGame = function() {
   window.world = new World();
   window.camera = new Camera();
   window.tooltips = new Tooltips();
+  window.forcefield = new Forcefield();
   
   window.particleSystem = new ParticleSystem();
   
