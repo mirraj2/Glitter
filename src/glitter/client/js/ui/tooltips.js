@@ -47,7 +47,7 @@ Tooltips.prototype.renderTooltip = function(slot, tooltip) {
   tooltip.empty();
 
   var item = slot.find("img").data("item");
-  $("<div>").addClass("name").text(item.name).appendTo(tooltip);
+  $("<div>").addClass("name").attr("rarity", item.rarity).text(item.name).appendTo(tooltip);
 
   if (item.type == "spell") {
     $("<div>").addClass("mana").text(item.manaCost + " mana").appendTo(tooltip);

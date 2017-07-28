@@ -16,6 +16,23 @@
   display: inline-block;
 }
 
+
+.tooltip .name[rarity=COMMON] {
+  color: white;
+}
+
+.tooltip .name[rarity=RARE] {
+  color: #3b93ff;
+}
+
+.tooltip .name[rarity=EPIC] {
+  color: #a757ff;
+}
+
+.tooltip .name[rarity=LEGENDARY] {
+  color: #f9802b;
+}
+
 .tooltip .mana {
   color: #446fff;
   float: right;

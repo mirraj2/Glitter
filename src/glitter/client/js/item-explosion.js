@@ -40,6 +40,37 @@ window.createEntityForItem = function(item, x, y) {
     buf.height = sprite.height;
   }
 
+  var fill;
+  if (item.rarity == "COMMON") {
+    fill = 0xFFFFFF;
+  } else if (item.rarity == "RARE") {
+    fill = 0x3b93ff;
+  } else if (item.rarity == "EPIC") {
+    fill = 0xa757ff;
+  } else if (item.rarity == "LEGENDARY") {
+    fill = 0xf9802b;
+  }
+
+  var text = new PIXI.Text(item.name, new PIXI.TextStyle({
+    fontSize : 44,
+    fill : fill
+  }));
+  var margin = 8;
+  text.x = margin;
+  text.y = margin;
+
+  var nameBox = new PIXI.Graphics();
+
+  var rect = new PIXI.Rectangle();
+  text.getLocalBounds(rect);
+  nameBox.beginFill(0x222222, .7);
+  nameBox.drawRect(0, 0, rect.width + margin * 2, rect.height + margin * 2);
+  nameBox.x = sprite.width - rect.width / 2;
+  nameBox.y = -rect.height - 4;
+
+  sprite.addChild(nameBox);
+  nameBox.addChild(text);
+
   world.addEntity(entity);
 
   return entity;
