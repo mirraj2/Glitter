@@ -21,6 +21,15 @@ function World() {
   this.container.addChild(this.entities);
   this.container.addChild(this.players);
 
+  var sheet = PIXI.loader.resources["tiles.png"].texture;
+
+  var textures = this.tileTextures = [];
+  for (var i = 0; i < sheet.width / Tile.SIZE; i++) {
+    var texture = new PIXI.Texture(sheet.baseTexture);
+    texture.frame = new PIXI.Rectangle(Tile.SIZE * i, 0, Tile.SIZE, Tile.SIZE);
+    textures.push(texture);
+  }
+
   glitter.register(this);
 }
 
@@ -147,20 +156,13 @@ World.prototype.getPlayersAt = function(x, y) {
 World.prototype.renderTiles = function() {
   this.tiles.removeChildren();
 
-  var sheet = PIXI.loader.resources["tiles.png"].texture;
-
-  var textures = [];
-  for (var i = 0; i < sheet.width / Tile.SIZE; i++) {
-    var texture = new PIXI.Texture(sheet.baseTexture);
-    texture.frame = new PIXI.Rectangle(Tile.SIZE * i, 0, Tile.SIZE, Tile.SIZE);
-    textures.push(texture);
-  }
+  var textures = this.tileTextures;
 
   var tiles = this.terrain.tiles;
   for (var i = 0; i < tiles.length; i++) {
     var col = tiles[i];
     for (var j = 0; j < col.length; j++) {
-      var t = tiles[i][j];
+      var t = col[j];
       if (t > 0) {
         var texture = textures[t];
         var tile = new PIXI.Sprite(texture);
@@ -172,4 +174,17 @@ World.prototype.renderTiles = function() {
       }
     }
   }
+}
+
+World.prototype.updateTile = function(i, j, type) {
+  var textures = this.tileTextures;
+  var texture = textures[type];
+  var tile = new PIXI.Sprite(texture);
+  tile.x = i * Tile.SIZE;
+  tile.y = j * Tile.SIZE;
+  tile.width = Tile.SIZE;
+  tile.height = Tile.SIZE;
+  this.tiles.addChild(tile);
+
+  this.terrain.tiles[i][j] = type;
 }

@@ -263,6 +263,19 @@ public class Player extends Entity {
     }
   }
 
+  private void interactWithTile(int tileI, int tileJ) {
+    Tile tile = world.terrain.tiles[tileI][tileJ];
+    if (tile == Tile.DOOR) {
+      Log.info(this + " is opening a door.");
+      world.terrain.tiles[tileI][tileJ] = Tile.GRASS;
+      world.sendToAll(Json.object()
+          .with("command", "updateTile")
+          .with("x", tileI)
+          .with("y", tileJ)
+          .with("type", Tile.GRASS.ordinal()));
+    }
+  }
+
   /**
    * TODO these messages are handled whenever they are received, but there is some code here that we might want to run
    * synchronized or on a per-tick basis.
@@ -299,8 +312,13 @@ public class Player extends Entity {
       Spells.cast(this, json);
     } else if (command.equals("interact")) {
       checkState(!isStunned());
-      long entityId = json.getLong("entityId");
-      interact(entityId);
+      Long entityId = json.getLong("entityId");
+      if (entityId != null) {
+        interact(entityId);
+      } else {
+        Json tileJson = json.getJson("tile");
+        interactWithTile(tileJson.getInt("x"), tileJson.getInt("y"));
+      }
     } else if (command.equals("choose")) {
       chooseLoot(json.getLong("id"));
     } else if (command.equals("swap")) {

@@ -32,11 +32,14 @@ Terrain.prototype.getTilesIntersecting = function(x, y, w, h, callback) {
 
   for (var i = minI; i <= maxI; i++) {
     for (var j = minJ; j <= maxJ; j++) {
-      callback({
+      var tile = {
         x : i,
         y : j,
         type : this.tiles[i][j]
-      });
+      };
+      if (callback(tile) === false) {
+        return;
+      }
     }
   }
 }

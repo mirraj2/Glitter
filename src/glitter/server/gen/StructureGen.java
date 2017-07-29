@@ -1,5 +1,9 @@
 package glitter.server.gen;
 
+import static com.google.common.base.Preconditions.checkState;
+import java.util.Collections;
+import java.util.List;
+import com.google.common.collect.Lists;
 import glitter.server.arch.GRandom;
 import glitter.server.arch.Rect;
 import glitter.server.model.Terrain;
@@ -22,28 +26,85 @@ public class StructureGen {
   }
 
   private void generate(World world, Island island) {
-    int numStructures = island.size() / 300;
+    int numStructures = island.size() / 100;
     numStructures = rand.gaussInt(numStructures, numStructures / 10);
 
     numStructures = Math.max(1, numStructures);
-
-    Tile[][] tiles = world.terrain.tiles;
 
     for (int i = 0; i < numStructures; i++) {
       Rect r = findLargeRect(world.terrain, island, 6, 6);
       if (r == null) {
         break;
       }
-      for (int x = r.x(); x < r.maxX(); x++) {
-        for (int y = r.y(); y < r.maxY(); y++) {
-          tiles[x][y] = Tile.WALL;
-        }
-      }
+      generateStructure(r, world.terrain);
     }
   }
 
+  private void generateStructure(Rect plotArea, Terrain terrain) {
+    Rect r = getStructureBounds(plotArea);
+
+    double averageNumDoors = (plotArea.w * 2 + plotArea.h * 2 - 4) / 16.0;
+    int numDoors = rand.gaussInt(averageNumDoors, averageNumDoors * .5);
+    numDoors = Math.max(numDoors, 1);
+
+    Tile[][] tiles = terrain.tiles;
+    List<Point> wallPoints = Lists.newArrayList();
+
+    for (int x = r.x(); x < r.maxX(); x++) {
+      wallPoints.add(new Point(x, r.y()));
+      wallPoints.add(new Point(x, r.maxY() - 1));
+    }
+    for (int y = r.y() + 1; y < r.maxY() - 1; y++) {
+      wallPoints.add(new Point(r.x(), y));
+      wallPoints.add(new Point(r.maxX() - 1, y));
+    }
+
+    for (Point p : wallPoints) {
+      tiles[p.x][p.y] = Tile.WALL;
+    }
+
+    // remove the corners
+    checkState(wallPoints.remove(new Point(r.x(), r.y())));
+    checkState(wallPoints.remove(new Point(r.maxX() - 1, r.y())));
+    checkState(wallPoints.remove(new Point(r.maxX() - 1, r.maxY() - 1)));
+    checkState(wallPoints.remove(new Point(r.x(), r.maxY() - 1)));
+
+    Collections.shuffle(wallPoints, rand);
+
+    numDoors = Math.min(numDoors, wallPoints.size());
+    for (int i = 0; i < numDoors; i++) {
+      Point p = wallPoints.get(i);
+      tiles[p.x][p.y] = Tile.DOOR;
+    }
+  }
+
+  private Rect getStructureBounds(Rect plotArea) {
+    // give the structure some room around it for players to walk. We never want to obstruct a bridge / make movement to
+    // another place impossible.
+    plotArea.x++;
+    plotArea.y++;
+    plotArea.w -= 2;
+    plotArea.h -= 2;
+
+    int width = rand.gaussInt(6, 2);
+    width = Math.max(width, 4);
+    width = Math.min(width, plotArea.w());
+
+    int height = rand.gaussInt(width, width * .15);
+    height = Math.max(height, 4);
+    height = Math.min(height, plotArea.h());
+
+    return randomSubRect(plotArea, width, height);
+  }
+
+  private Rect randomSubRect(Rect r, int w, int h) {
+    int x = rand.nextInt(r.w() - w + 1);
+    int y = rand.nextInt(r.h() - h + 1);
+    return new Rect(r.x + x, r.y + y, w, h);
+  }
+
   private Rect findLargeRect(Terrain terrain, Island island, int minWidth, int minHeight) {
-    for (int attempt = 0; attempt < 8; attempt++) {
+    for (int attempt = 0; attempt < 16; attempt++) {
       Rect r = findRandomRect(terrain, island);
       if (r.w >= minWidth && r.h >= minHeight) {
         return r;

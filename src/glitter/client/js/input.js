@@ -21,10 +21,17 @@ function Input(spells) {
 
 Input.prototype.interact = function() {
   if (this.interactionEntity && !me.stunned) {
-    network.send({
-      command : "interact",
-      entityId : this.interactionEntity.id
-    });
+    if (this.interactionEntity.id) {
+      network.send({
+        command : "interact",
+        entityId : this.interactionEntity.id
+      });
+    } else {
+      network.send({
+        command : "interact",
+        tile : this.interactionEntity
+      });
+    }
   }
 }
 
@@ -112,12 +119,21 @@ Input.prototype.findInteraction = function() {
   var self = this;
   var rect = me.getHitbox(this.rect, 16);
 
-  $.each(world.idEntities, function(key, entity) {
-    if (entity.canInteract && self.intersects(rect, entity)) {
-      interactionEntity = entity;
+  world.terrain.getTilesIntersecting(rect.x, rect.y, rect.width, rect.height, function(tile) {
+    if (tile.type == Tile.DOOR) {
+      interactionEntity = tile;
       return false;
     }
   });
+
+  if (interactionEntity == null) {
+    $.each(world.idEntities, function(key, entity) {
+      if (entity.canInteract && self.intersects(rect, entity)) {
+        interactionEntity = entity;
+        return false;
+      }
+    });
+  }
 
   if (interactionEntity != this.interactionEntity) {
     this.interactionEntity = interactionEntity;

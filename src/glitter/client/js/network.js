@@ -57,6 +57,8 @@ Network.prototype.handleMessage = function(msg) {
     world.idPlayers[msg.playerId].addStatusEffect(msg);
   } else if (command == "removeStatusEffect") {
     world.idPlayers[msg.playerId].removeStatusEffect(msg);
+  } else if (command == "updateTile") {
+    world.updateTile(msg.x, msg.y, msg.type);
   } else if (command == "itemExplosion") {
     new ItemExplosion(msg);
   } else if (command == "itemDropped") {

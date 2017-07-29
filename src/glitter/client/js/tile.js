@@ -5,5 +5,6 @@ window.Tile = {
   BRIDGE : 2,
   WATER : 3,
   LAVA : 4,
-  CHEST : 5
+  WALL : 5,
+  DOOR: 6
 }
