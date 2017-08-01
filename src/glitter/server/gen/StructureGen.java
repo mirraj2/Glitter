@@ -3,11 +3,14 @@ package glitter.server.gen;
 import static com.google.common.base.Preconditions.checkState;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import glitter.server.arch.GRandom;
 import glitter.server.arch.Rect;
 import glitter.server.model.Terrain;
 import glitter.server.model.Tile;
+import glitter.server.model.TreasureChest;
 import glitter.server.model.World;
 
 public class StructureGen {
@@ -36,11 +39,38 @@ public class StructureGen {
       if (r == null) {
         break;
       }
-      generateStructure(r, world.terrain);
+      r = generateStructure(r, world.terrain);
+
+      world.addEntities(spawnChests(r));
     }
   }
 
-  private void generateStructure(Rect plotArea, Terrain terrain) {
+  private List<TreasureChest> spawnChests(Rect r) {
+    List<TreasureChest> ret = Lists.newArrayList();
+
+    double d = Math.pow((r.w - 2) * (r.h - 2), .75) / 4;
+    int numChests = rand.gaussInt(d, d * .75);
+
+    if (numChests == 0) {
+      if (rand.nextFloat() < .9) {
+        numChests = 1;
+      }
+    }
+
+    Set<Point> used = Sets.newHashSet();
+    for (int i = 0; i < numChests; i++) {
+      int x = rand.nextInt(r.w() - 2);
+      int y = rand.nextInt(r.h() - 2);
+      Point p = new Point(x, y);
+      if (used.add(p)) {
+        ret.add(new TreasureChest((r.x + x + 1) * Tile.SIZE, (r.y + y + 1) * Tile.SIZE));
+      }
+    }
+
+    return ret;
+  }
+
+  private Rect generateStructure(Rect plotArea, Terrain terrain) {
     Rect r = getStructureBounds(plotArea);
 
     double averageNumDoors = (plotArea.w * 2 + plotArea.h * 2 - 4) / 16.0;
@@ -76,6 +106,8 @@ public class StructureGen {
       Point p = wallPoints.get(i);
       tiles[p.x][p.y] = Tile.DOOR;
     }
+
+    return r;
   }
 
   private Rect getStructureBounds(Rect plotArea) {
