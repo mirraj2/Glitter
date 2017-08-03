@@ -31,6 +31,10 @@ public class Terrain {
     return tiles[i][j];
   }
 
+  public Tile getFromWorldCoords(double x, double y) {
+    return get((int) (x / Tile.SIZE), (int) (y / Tile.SIZE));
+  }
+
   public List<TileLoc> getTilesIntersecting(Rect r, Predicate<TileLoc> filter) {
     int minI = Math.max(GMath.floor(r.x / Tile.SIZE), 0);
     int minJ = Math.max(GMath.floor(r.y / Tile.SIZE), 0);

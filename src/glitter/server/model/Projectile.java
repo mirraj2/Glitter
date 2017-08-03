@@ -57,6 +57,14 @@ public class Projectile extends Entity {
       }
     }
 
+    if (!finished) {
+      // see if we crashed into a wall
+      Tile tile = world.terrain.getFromWorldCoords(this.bounds.centerX(), this.bounds.centerY());
+      if (tile != null && tile == Tile.WALL || tile == Tile.DOOR) {
+        finished = true;
+      }
+    }
+
     return !finished && life > 0;
   }
 
