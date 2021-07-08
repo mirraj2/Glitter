@@ -3,8 +3,11 @@ package glitter.server.model.item.armor;
 import static java.lang.Double.parseDouble;
 import static ox.util.Utils.normalize;
 import static ox.util.Utils.parseEnum;
+
 import java.util.Map;
+
 import com.google.common.collect.Maps;
+
 import glitter.server.model.Player.Stat;
 import glitter.server.model.item.Item;
 import ox.Json;

@@ -1,11 +1,14 @@
 package glitter.server.gen;
 
 import static com.google.common.base.Preconditions.checkState;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
 import glitter.server.arch.GRandom;
 import glitter.server.arch.Rect;
 import glitter.server.model.Terrain;

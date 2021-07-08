@@ -3,6 +3,7 @@ package glitter.server.arch;
 import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.Random;
+
 import com.google.common.collect.Iterables;
 
 public class GRandom extends Random {

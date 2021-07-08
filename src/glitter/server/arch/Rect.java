@@ -1,7 +1,9 @@
 package glitter.server.arch;
 
 import static java.lang.Integer.parseInt;
+
 import java.util.Iterator;
+
 import com.google.common.base.Splitter;
 
 public class Rect {

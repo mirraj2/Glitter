@@ -1,6 +1,7 @@
 package glitter.server.model;
 
 import static com.google.common.base.Preconditions.checkState;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TreasureChest extends Entity {

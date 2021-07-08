@@ -2,7 +2,9 @@ package glitter.server.logic;
 
 import static com.google.common.base.Preconditions.checkState;
 import static ox.util.Functions.splice;
+
 import java.util.List;
+
 import glitter.server.model.Entity;
 import glitter.server.model.Player;
 import glitter.server.model.item.spell.Spell;

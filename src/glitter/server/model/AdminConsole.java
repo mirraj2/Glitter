@@ -1,8 +1,11 @@
 package glitter.server.model;
 
 import static java.lang.Integer.parseInt;
+
 import java.util.List;
+
 import com.google.common.base.Splitter;
+
 import glitter.server.Lobby;
 import ox.Json;
 import ox.Log;

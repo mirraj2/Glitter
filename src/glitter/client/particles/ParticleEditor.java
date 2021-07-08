@@ -1,6 +1,6 @@
 package glitter.client.particles;
 
-import bowser.Controller;
+import bowser.model.Controller;
 
 public class ParticleEditor extends Controller {
 

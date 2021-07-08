@@ -1,6 +1,7 @@
 package glitter.server.model;
 
 import java.util.concurrent.atomic.AtomicLong;
+
 import glitter.server.arch.Rect;
 import ox.Json;
 

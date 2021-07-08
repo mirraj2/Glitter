@@ -1,10 +1,8 @@
 package glitter.server;
 
-import java.io.File;
 import bowser.websocket.WebSocketServer;
 import glitter.client.WebContentServer;
 import ox.Log;
-import ox.OS;
 
 public class GlitterServer {
 
@@ -22,7 +20,7 @@ public class GlitterServer {
   }
 
   public static void main(String[] args) {
-    Log.logToFolder(new File(OS.getHomeFolder(), "log"));
+    Log.logToFolder("glitter");
 
     new GlitterServer().run();
   }

@@ -2,7 +2,9 @@ package glitter.server.model;
 
 import java.util.List;
 import java.util.function.Predicate;
+
 import com.google.common.collect.Lists;
+
 import glitter.server.arch.GMath;
 import glitter.server.arch.Rect;
 import ox.Json;

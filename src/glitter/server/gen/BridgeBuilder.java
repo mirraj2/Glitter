@@ -1,13 +1,16 @@
 package glitter.server.gen;
 
 import static ox.util.Functions.map;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+
 import glitter.server.arch.GRandom;
 import glitter.server.arch.Ref;
 import glitter.server.gen.Traversals.TState;

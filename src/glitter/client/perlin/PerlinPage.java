@@ -1,11 +1,14 @@
 package glitter.client.perlin;
 
 import static ox.util.Utils.random;
+
 import java.awt.image.BufferedImage;
 import java.util.List;
+
 import com.google.common.collect.Lists;
-import bowser.Controller;
-import bowser.Handler;
+
+import bowser.model.Controller;
+import bowser.model.Handler;
 import bowser.template.Data;
 import glitter.server.gen.perlin.BinaryColoring;
 import glitter.server.gen.perlin.ColoringFunction;

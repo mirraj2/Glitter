@@ -1,10 +1,9 @@
 package glitter.client.home;
 
-import bowser.Controller;
+import bowser.model.Controller;
 import bowser.template.Data;
 import glitter.client.WebContentServer;
 import glitter.server.GlitterServer;
-import ox.IO;
 
 public class HomePage extends Controller {
 

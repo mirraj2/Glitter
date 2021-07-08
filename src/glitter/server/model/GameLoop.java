@@ -3,6 +3,7 @@ package glitter.server.model;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+
 import ox.util.Utils;
 
 public class GameLoop {

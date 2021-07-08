@@ -1,6 +1,7 @@
 package glitter.server.model.item.spell;
 
 import java.util.List;
+
 import glitter.server.model.Entity;
 import glitter.server.model.Player;
 import glitter.server.model.item.Item;

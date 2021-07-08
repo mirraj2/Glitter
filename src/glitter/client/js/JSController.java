@@ -1,6 +1,6 @@
 package glitter.client.js;
 
-import bowser.Controller;
+import bowser.model.Controller;
 
 public class JSController extends Controller {
 

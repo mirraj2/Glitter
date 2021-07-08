@@ -1,6 +1,7 @@
 package glitter.client;
 
 import com.google.common.base.Stopwatch;
+
 import bowser.WebServer;
 import glitter.client.home.HomePage;
 import glitter.client.js.JSController;
@@ -12,7 +13,7 @@ import ox.Log;
 public class WebContentServer {
 
   private static final Config config = Config.load("glitter");
-  public static final boolean devMode = config.getBoolean("devMode", false);
+  public static final boolean devMode = config.getBoolean("devMode", true);
 
   public void run() {
     Stopwatch watch = Stopwatch.createStarted();

@@ -1,6 +1,7 @@
 package glitter.server.logic;
 
 import java.util.List;
+
 import glitter.server.arch.Rect;
 import glitter.server.model.Entity;
 import glitter.server.model.Player;

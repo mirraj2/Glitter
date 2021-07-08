@@ -1,15 +1,18 @@
 package glitter.server.model;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
+
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import glitter.server.arch.GMath;
 import glitter.server.arch.GRandom;
 import glitter.server.logic.LootMaster;

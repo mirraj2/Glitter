@@ -1,6 +1,7 @@
 package glitter.server.model;
 
 import java.util.List;
+
 import glitter.server.arch.GMath;
 import glitter.server.arch.GRandom;
 import glitter.server.arch.Rect;

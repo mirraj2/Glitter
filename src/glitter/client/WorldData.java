@@ -1,7 +1,7 @@
 package glitter.client;
 
-import bowser.Controller;
-import bowser.Handler;
+import bowser.model.Controller;
+import bowser.model.Handler;
 
 public class WorldData extends Controller {
 

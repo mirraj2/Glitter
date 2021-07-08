@@ -1,7 +1,9 @@
 package glitter.server.model.item.spell;
 
 import java.util.List;
+
 import com.google.common.collect.ImmutableList;
+
 import glitter.server.arch.GMath;
 import glitter.server.model.Entity;
 import glitter.server.model.Player;
